@@ -1,0 +1,1056 @@
+<title>Indonesia 2026</title>
+<style>
+:root {
+  --bg:#0e1117;--sf:#161b27;--sf2:#1e2535;--bd:#2a3347;
+  --tx:#e8eaf0;--mu:#7a849a;--ac:#3b82f6;--ac2:#06b6d4;
+  --gr:#22c55e;--yw:#eab308;--rd:#ef4444;--or:#f97316;
+  --java:#fb923c;--bali:#34d399;--flores:#fbbf24;--gili:#60a5fa;--reg:#a78bfa;
+  --r:10px;--rs:6px;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh;padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}a{color:var(--ac);text-decoration:none}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(14,17,23,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);padding:0 16px;height:52px;display:flex;align-items:center;gap:10px}
+.topbar-left{flex:1;min-width:0}
+.topbar-title{font-size:15px;font-weight:700}
+.topbar-sub{font-size:11px;color:var(--mu)}
+.icon-btn{width:34px;height:34px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--mu)}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(14,17,23,.96);backdrop-filter:blur(12px);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;border:none;background:none;color:var(--mu);padding:10px 4px 8px;font-size:10px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;transition:color .15s;-webkit-tap-highlight-color:transparent}
+.nb .ni{font-size:20px;line-height:1}
+.nb.on{color:var(--ac)}
+
+.page{display:none;max-width:680px;margin:0 auto;padding:14px}
+.page.on{display:block}
+
+/* HOME */
+.trip-hero{background:linear-gradient(135deg,#0f2847,#0a3d2e 50%,#1a1065);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+.trip-hero::before{content:'🌏';position:absolute;right:-10px;top:-10px;font-size:100px;opacity:.07;transform:rotate(15deg)}
+.trip-hero h1{font-size:22px;font-weight:800;line-height:1.2}
+.trip-hero .hm{font-size:12px;color:var(--mu);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid}
+
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px}
+.stat .sv{font-size:22px;font-weight:800}
+.stat .sl{font-size:11px;color:var(--mu);margin-top:3px}
+
+/* currency switcher */
+.cur-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.cur-label{font-size:12px;color:var(--mu)}
+.cur-btns{display:flex;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.cur-btn{border:none;background:var(--sf2);color:var(--mu);padding:6px 14px;font-size:12px;font-weight:600;transition:all .15s}
+.cur-btn.on{background:var(--ac);color:#fff}
+.cur-manual{display:flex;gap:6px;align-items:center;flex:1;min-width:160px}
+.cur-manual input{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:6px 10px;font-size:12px;color:var(--tx);outline:none;width:90px}
+.cur-manual input:focus{border-color:var(--ac)}
+.cur-manual span{font-size:11px;color:var(--mu)}
+
+.shdr{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 8px}
+.conf-item{background:var(--sf);border:1px solid var(--bd);border-left:3px solid var(--gr);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.conf-item h4{font-size:13px;font-weight:700}
+.conf-item p{font-size:12px;color:var(--mu);margin-top:3px;line-height:1.5}
+.conf-item .cnum{font-size:11px;color:var(--gr);font-family:monospace;margin-top:4px;display:block}
+
+/* DÍAS */
+.swrap{position:sticky;top:calc(52px + env(safe-area-inset-top,0px));z-index:30;background:var(--bg);padding:10px 0 8px}
+.srch{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;font-size:14px;color:var(--tx);outline:none}
+.srch:focus{border-color:var(--ac)}
+.zfils{display:flex;gap:6px;overflow-x:auto;margin-top:8px;scrollbar-width:none}
+.zfils::-webkit-scrollbar{display:none}
+.zf{white-space:nowrap;border:1px solid var(--bd);background:var(--sf2);color:var(--mu);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;-webkit-tap-highlight-color:transparent}
+.zf.on{color:#000;border-color:transparent}
+
+.dc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.dh{display:flex;gap:12px;padding:13px 14px;align-items:flex-start;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dh:active{background:var(--sf2)}
+.dnum{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;border:1.5px solid}
+.dm{flex:1;min-width:0}
+.dpl{font-size:14px;font-weight:700}
+.ddt{font-size:11px;color:var(--mu);margin-top:2px}
+.dac{font-size:12px;color:var(--mu);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dbdg{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.bdg{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.bw{background:rgba(239,68,68,.15);color:#fca5a5}
+.bo{background:rgba(34,197,94,.15);color:#86efac}
+.bn{background:rgba(59,130,246,.15);color:#93c5fd}
+.by{background:rgba(234,179,8,.15);color:#fde68a}
+.dchev{font-size:12px;color:var(--mu);flex-shrink:0;margin-top:2px;transition:transform .2s}
+.dc.op .dchev{transform:rotate(180deg)}
+
+.dbody{display:none;border-top:1px solid var(--bd);padding:14px}
+.dc.op .dbody{display:block}
+.flbl{font-size:10px;color:var(--mu);font-weight:600;margin-bottom:6px;display:block}
+.fview{font-size:13px;line-height:1.7;color:var(--mu);white-space:pre-wrap;background:var(--sf2);border:1px solid transparent;border-radius:var(--rs);padding:10px;cursor:text;min-height:36px;transition:border-color .15s}
+.fview:hover{border-color:var(--bd)}
+.fview.ed{display:none}
+.fedit{width:100%;background:var(--sf2);border:1.5px solid var(--ac);border-radius:var(--rs);padding:10px;font-size:13px;line-height:1.7;color:var(--tx);resize:none;outline:none;overflow:hidden;display:none}
+.fedit.ed{display:block}
+.fbtns{display:none;gap:6px;margin-top:8px}
+.fbtns.ed{display:flex}
+.sbtn{border:none;background:var(--ac);color:#fff;border-radius:var(--rs);padding:7px 14px;font-size:12px;font-weight:700}
+.cbtn{border:1px solid var(--bd);background:transparent;color:var(--mu);border-radius:var(--rs);padding:7px 10px;font-size:12px}
+.hrow{display:flex;gap:10px;background:var(--sf2);border-radius:var(--rs);padding:10px;margin-top:10px;border:1px solid var(--bd)}
+.hname{font-size:13px;font-weight:700}
+.hmeta{font-size:11px;color:var(--mu);margin-top:3px;line-height:1.5}
+.lnk{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:600;color:var(--ac2)}
+.notes-sec{margin-top:14px;border-top:1px solid var(--bd);padding-top:12px}
+.notes-hdr{font-size:11px;color:var(--mu);font-weight:600;margin-bottom:8px}
+.note-item{background:rgba(234,179,8,.08);border-left:3px solid var(--yw);border-radius:0 var(--rs) var(--rs) 0;padding:8px 32px 8px 10px;margin-bottom:6px;font-size:12px;color:var(--tx);line-height:1.5;white-space:pre-wrap;position:relative}
+.ndel{position:absolute;top:6px;right:8px;background:none;border:none;color:var(--mu);font-size:13px}
+.nadd{display:flex;gap:8px;margin-top:6px}
+.nta{flex:1;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px;font-size:12px;color:var(--tx);resize:none;min-height:48px;outline:none}
+.nta:focus{border-color:var(--ac)}
+.nadd-btn{align-self:flex-end;border:none;background:var(--ac);color:#fff;border-radius:var(--rs);padding:8px 12px;font-size:13px;font-weight:700}
+
+/* HOTELES */
+.h-srch-wrap{position:sticky;top:calc(52px + env(safe-area-inset-top,0px));z-index:30;background:var(--bg);padding:10px 0 8px}
+.hcard{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.hcard-zona{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-bottom:8px}
+.hcard h3{font-size:15px;font-weight:800;margin-bottom:4px}
+.hcard-sub{font-size:12px;color:var(--mu)}
+.hcard-conf{font-size:11px;color:var(--gr);font-family:monospace;margin-top:5px;display:block}
+.hcard-det{font-size:12px;color:var(--mu);margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid var(--bd)}
+.hcard-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.hpill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mu)}
+.maps-btn{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:7px 12px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);border-radius:var(--rs);font-size:12px;font-weight:600;color:var(--ac)}
+.maps-actions{display:flex;gap:7px;flex-wrap:wrap}
+.mapsme-btn{color:#86efac;background:rgba(34,197,94,.09);border-color:rgba(34,197,94,.28)}
+
+/* GASTOS */
+.g-summary{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.g-total-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.g-total{font-size:28px;font-weight:800;color:var(--gr)}
+.g-total-sec{font-size:14px;color:var(--mu)}
+.g-sub{font-size:12px;color:var(--mu);margin-top:4px}
+.g-bar{height:6px;border-radius:99px;background:var(--sf2);margin-top:14px;overflow:hidden}
+.g-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.g-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.gcat{text-align:center}
+.gcat .gv{font-size:15px;font-weight:700}
+.gcat .gl{font-size:11px;color:var(--mu);margin-top:2px}
+
+/* persona split */
+.split-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.split-persona{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px;flex:1;min-width:120px}
+.sp-name{font-size:11px;color:var(--mu);font-weight:600;margin-bottom:4px}
+.sp-monto{font-size:18px;font-weight:800;color:var(--gr)}
+.sp-pct{font-size:11px;color:var(--mu);margin-top:2px}
+
+.balance-card{margin-top:12px;padding:13px 14px;border-radius:var(--rs);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25)}
+.balance-label{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.balance-main{font-size:15px;font-weight:800;line-height:1.35}
+.balance-main.settled{color:var(--gr)}
+.balance-sub{font-size:11px;color:var(--mu);margin-top:4px}
+
+.add-form{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.add-form h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.form-full{margin-bottom:8px}
+.fi{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--tx);outline:none}
+.fi:focus{border-color:var(--ac)}
+.fsel{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--tx);outline:none;-webkit-appearance:none}
+
+/* moneda toggle en gasto */
+.monto-wrap{display:flex;gap:0}
+.monto-input{flex:1;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs) 0 0 var(--rs);padding:10px 12px;font-size:13px;color:var(--tx);outline:none}
+.monto-input:focus{border-color:var(--ac)}
+.cur-tog{border:1px solid var(--bd);border-left:none;background:var(--sf);color:var(--mu);border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;font-size:12px;font-weight:700;min-width:54px}
+.cur-tog.usd{color:#86efac;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.cur-tog.idr{color:#fde68a;border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.08)}
+
+/* split mode */
+.split-mode-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.sm-btn{border:1px solid var(--bd);background:var(--sf2);color:var(--mu);border-radius:var(--rs);padding:6px 12px;font-size:12px;font-weight:600}
+.sm-btn.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.split-fields{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px;margin-bottom:8px;display:none}
+.split-fields.show{display:block}
+.sf-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sf-row label{font-size:12px;color:var(--mu);width:60px;flex-shrink:0}
+.sf-row input{flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:7px 10px;font-size:13px;color:var(--tx);outline:none}
+.sf-row input:focus{border-color:var(--ac)}
+.sf-auto{font-size:11px;color:var(--mu);margin-top:4px}
+
+.add-g-btn{width:100%;border:none;background:var(--ac);color:#fff;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;margin-top:4px}
+
+/* gasto item */
+.gi{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:8px}
+.gi-top{display:flex;align-items:flex-start;gap:10px}
+.gi-ico{font-size:22px;flex-shrink:0}
+.gi-info{flex:1;min-width:0}
+.gi-desc{font-size:13px;font-weight:600}
+.gi-meta{font-size:11px;color:var(--mu);margin-top:3px;line-height:1.5}
+.gi-right{text-align:right;flex-shrink:0}
+.gi-amt{font-size:16px;font-weight:800;color:var(--gr)}
+.gi-actions{display:flex;gap:4px;justify-content:flex-end;margin-top:5px}.gi-edit,.gi-del{border:1px solid var(--bd);background:var(--sf2);color:var(--mu);font-size:13px;min-width:34px;height:32px;border-radius:var(--rs);display:inline-flex;align-items:center;justify-content:center}.gi-edit{color:#93c5fd}.gi-del{color:#fca5a5}.edit-banner{display:none;margin:-2px 0 10px;padding:9px 10px;border-radius:var(--rs);background:rgba(59,130,246,.09);border:1px solid rgba(59,130,246,.25);font-size:12px;color:#bfdbfe}.edit-banner.show{display:flex;align-items:center;justify-content:space-between;gap:8px}.edit-cancel{border:1px solid var(--bd);background:var(--sf2);color:var(--tx);border-radius:var(--rs);padding:5px 9px;font-size:11px}
+.gi-split{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)}
+.gi-sp{flex:1;text-align:center}
+.gi-sp .gsn{font-size:10px;color:var(--mu)}
+.gi-sp .gsv{font-size:13px;font-weight:700;color:var(--gr)}
+.gi-mp{font-size:10px;color:var(--mu);margin-top:2px}
+
+/* VUELOS */
+.ftabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.ftabs::-webkit-scrollbar{display:none}
+.ft{white-space:nowrap;border:1px solid var(--bd);background:var(--sf2);color:var(--mu);border-radius:99px;padding:6px 14px;font-size:12px;font-weight:600}
+.ft.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.fp{display:none}.fp.on{display:block}
+.flc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.flr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fliat{font-size:24px;font-weight:900;letter-spacing:-1px}
+.flmid{flex:1;text-align:center}
+.flair{font-size:11px;color:var(--mu)}
+.flarr{color:var(--mu);font-size:16px;margin:3px 0}
+.flgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fk{font-size:10px;color:var(--mu);font-weight:600}
+.fv{font-size:13px;margin-top:2px;font-weight:600}
+.fsep{text-align:center;font-size:12px;color:var(--mu);padding:8px 0}
+.al{border-radius:var(--rs);padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.5}
+.aok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.awn{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.2);color:#fde68a}
+.adn{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.tg{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.tok{background:rgba(34,197,94,.15);color:#86efac}
+.twn{background:rgba(234,179,8,.15);color:#fde68a}
+.tbd{background:rgba(239,68,68,.15);color:#fca5a5}
+
+.empty{text-align:center;padding:40px;color:var(--mu);font-size:14px}
+
+/* SYNC + DATOS */
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--mu);border:1px solid var(--bd);background:var(--sf2);border-radius:99px;padding:5px 10px;white-space:nowrap}
+.sync::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--mu)}
+.sync.ok{color:#86efac;border-color:rgba(34,197,94,.3)}.sync.ok::before{background:var(--gr)}
+.sync.local{color:#fde68a;border-color:rgba(234,179,8,.3)}.sync.local::before{background:var(--yw)}
+.sync.err{color:#fca5a5;border-color:rgba(239,68,68,.3)}.sync.err::before{background:var(--rd)}
+.data-box{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-top:8px}
+.data-box p{font-size:12px;color:var(--mu);line-height:1.5}
+.data-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.data-btn{border:1px solid var(--bd);background:var(--sf2);color:var(--tx);border-radius:var(--rs);padding:8px 12px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.data-msg{font-size:12px;margin-top:8px;color:var(--mu)}
+.gi-del.arm{color:#fff;background:var(--rd);border-color:var(--rd);font-size:11px;font-weight:700;padding:0 8px}
+.ndel.arm{color:var(--rd);font-weight:700;font-size:11px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--sf2);border:1px solid var(--bd);color:var(--tx);font-size:12px;padding:9px 14px;border-radius:99px;max-width:calc(100% - 32px)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+</style>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title">Indonesia 2026</div>
+    <div class="topbar-sub">15 oct → 5 nov · Dani & Wally</div>
+  </div>
+  <span class="sync" id="sync" title="Estado de sincronización">Conectando…</span>
+</header>
+
+<main>
+<!-- HOME -->
+<section class="page on" id="p-home">
+  <div class="trip-hero">
+    <h1>🌏 Indonesia<br>oct–nov 2026</h1>
+    <div class="hm">13 oct COR → 5 nov AEP · 21 días</div>
+    <div class="chips">
+      <span class="chip" style="color:var(--java);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08)">☕ Java</span>
+      <span class="chip" style="color:var(--bali);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">🌿 Bali</span>
+      <span class="chip" style="color:var(--flores);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">🐉 Flores</span>
+      <span class="chip" style="color:var(--gili);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">🏝 Gili Air</span>
+      <span class="chip" style="color:var(--reg);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)">✈️ Vuelta</span>
+    </div>
+  </div>
+
+  <div class="cur-row">
+    <span class="cur-label">Mostrar en:</span>
+    <div class="cur-btns">
+      <button class="cur-btn on" id="cb-usd" onclick="setCur('USD')">USD</button>
+      <button class="cur-btn" id="cb-ars" onclick="setCur('ARS')">ARS</button>
+      <button class="cur-btn" id="cb-idr" onclick="setCur('IDR')">IDR</button>
+    </div>
+    <div class="cur-manual">
+      <span>USD 1 =</span>
+      <input type="number" id="tc-ars" value="1350" min="1" oninput="recalcStats();renderGastos()" onchange="saveTc()" placeholder="ARS">
+      <span>ARS</span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="sv" id="st-pagado">$0</div><div class="sl">ya pagado</div></div>
+    <div class="stat"><div class="sv" id="st-gastos">$0</div><div class="sl">gastos viaje</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="sv" id="st-dani">$0</div><div class="sl">gasto Dani</div></div>
+    <div class="stat"><div class="sv" id="st-wally">$0</div><div class="sl">gasto Wally</div></div>
+  </div>
+
+  <div class="shdr">✅ Confirmado</div>
+  <div class="conf-item"><h4>✈️ Emirates BZV4HW</h4><p>GRU→DXB→CGK · DPS→DXB→GRU · 2×23 kg bodega</p><span class="cnum">PNR: BZV4HW · Tickets: 176-2210889797/98</span></div>
+  <div class="conf-item"><h4>✈️ Garuda GA202 — CGK→YIA</h4><p>16 oct · 09:20→10:40 · 23 kg p/p</p><span class="cnum">PNR: FC8H3X</span></div>
+  <div class="conf-item"><h4>✈️ AirAsia QZ646 — DPS→LBJ</h4><p>26 oct · 11:40→13:00 · Dani 25kg · Wally 15kg</p><span class="cnum">Reserva: PLYJPR</span></div>
+  <div class="conf-item"><h4>✈️ Wings Air IW1950 — LBJ→LOP</h4><p>29 oct · 09:20→10:40 · 1h20 directo</p><span class="cnum">Gotogate: 1152-551-169</span></div>
+  <div class="conf-item"><h4>🌅 Borobudur Sunrise</h4><p>17 oct 04:00 · 2 tickets · IDR 2.000.000</p><span class="cnum">V37644-A9E1F27-822</span></div>
+  <div class="conf-item"><h4>🏛️ Prambanan Entrada</h4><p>16 oct · 2× Foreigner · IDR 800.000</p><span class="cnum">V38570-AA89CDF-292</span></div>
+  <div class="conf-item"><h4>🗺️ Tour Smartine Bromo+Ijen 2D1N</h4><p>19-20 oct · Pickup Malang → drop-off Ubud · USD 371</p><span class="cnum">PayPal: 77595161L7273642B · Saldo USD 259,70 efectivo al pickup</span></div>
+  <div class="conf-item"><h4>🚆 Tren Malioboro Ekspres 170B</h4><p>18 oct 10:50→17:30 · Executive AC · 6A y 6B</p><span class="cnum">Tiket.com YJD9C4C · Order 1360879499</span></div>
+  <div class="conf-item"><h4>🛂 e-VOA B1 — Daniela Nasif</h4><p>30 días · válido hasta 11/12/2026</p><span class="cnum">Z1B1457312 · Ref. 2130926B1203917</span></div>
+  <div class="conf-item"><h4>🛂 e-VOA B1 — Augusto Traghetti</h4><p>30 días · válido hasta 11/12/2026</p><span class="cnum">Z1B1457252 · Ref. 2130926B1203704</span></div>
+
+  <div class="shdr">💾 Datos</div>
+  <div class="data-box">
+    <p id="data-info">Los gastos, notas y cambios en los días se guardan en línea y se ven en todos los dispositivos que abran esta app.</p>
+    <div class="data-btns">
+      <button class="data-btn" onclick="exportData()">⬇️ Descargar backup</button>
+      <label class="data-btn" for="imp-file">⬆️ Importar backup (.json)</label>
+      <input type="file" id="imp-file" accept=".json,application/json" hidden onchange="importData(this)">
+    </div>
+    <div class="data-msg" id="data-msg" hidden></div>
+  </div>
+</section>
+
+<!-- DÍAS -->
+<section class="page" id="p-dias">
+  <div class="swrap">
+    <input class="srch" id="srch" placeholder="Buscar día, lugar, actividad…" oninput="renderDias()">
+    <div class="zfils" id="zfil"></div>
+  </div>
+  <div id="dlist"></div>
+</section>
+
+<!-- HOTELES -->
+<section class="page" id="p-hoteles">
+  <div class="h-srch-wrap">
+    <input class="srch" id="hsrch" placeholder="Buscar hotel, zona, fechas…" oninput="renderHoteles()">
+  </div>
+  <div id="hlist"></div>
+</section>
+
+<!-- GASTOS -->
+<section class="page" id="p-gastos">
+
+
+  <div class="add-form">
+    <h3 id="g-form-title">+ Nuevo gasto</h3>
+    <div class="edit-banner" id="g-edit-banner"><span>✏️ Estás modificando un gasto existente</span><button class="edit-cancel" onclick="cancelEditGasto()">Cancelar</button></div>
+    <div class="form-row">
+      <input class="fi" id="g-desc" placeholder="Descripción">
+      <div class="monto-wrap">
+        <input class="monto-input" id="g-monto" placeholder="Monto" type="number" step="0.01" min="0">
+        <button class="cur-tog usd" id="g-cur-btn" onclick="toggleGCur()">USD</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <select class="fsel" id="g-cat">
+        <option value="comida">🍜 Comida</option>
+        <option value="transporte">🚗 Transporte</option>
+        <option value="actividad">🎟 Actividad</option>
+        <option value="hotel">🏨 Hotel</option>
+        <option value="compras">🛍 Compras</option>
+        <option value="otro">💳 Otro</option>
+      </select>
+      <input class="fi" id="g-fecha" type="date">
+    </div>
+    <div class="form-full">
+      <select class="fsel" id="g-mp">
+        <option value="Efectivo Dani">💵 Efectivo Dani</option>
+        <option value="Efectivo Wally">💵 Efectivo Wally</option>
+        <option value="Débito Dani (S)">💳 Débito Dani (Santander)</option>
+        <option value="Crédito Visa Dani (S)">💳 Crédito Visa Dani (Santander)</option>
+        <option value="Débito Dani (M)">💳 Débito Dani (Macro)</option>
+        <option value="Crédito Visa Dani (M)">💳 Crédito Visa Dani (Macro)</option>
+        <option value="Crédito Visa Wally (S)">💳 Crédito Visa Wally (Santander)</option>
+        <option value="Débito Wally (M)">💳 Débito Wally (Macro)</option>
+        <option value="Crédito Visa Wally (M)">💳 Crédito Visa Wally (Macro)</option>
+      </select>
+    </div>
+    <div class="form-full">
+      <input class="fi" id="g-notas" placeholder="Nota (opcional)">
+    </div>
+
+    <div class="split-mode-row">
+      <span style="font-size:12px;color:var(--mu);align-self:center">División:</span>
+      <button class="sm-btn on" id="sm-comp" onclick="setSM('compartido')">50/50</button>
+      <button class="sm-btn" id="sm-dani" onclick="setSM('dani')">Solo Dani</button>
+      <button class="sm-btn" id="sm-wally" onclick="setSM('wally')">Solo Wally</button>
+      <button class="sm-btn" id="sm-custom" onclick="setSM('custom')">Custom</button>
+    </div>
+    <div class="split-fields" id="sf-custom">
+      <div class="sf-row">
+        <label>Dani</label>
+        <input type="number" id="sf-dani-pct" placeholder="%" min="0" max="100" oninput="onSFChange('pct','dani')">
+        <input type="number" id="sf-dani-mnt" placeholder="USD" step="0.01" oninput="onSFChange('mnt','dani')">
+      </div>
+      <div class="sf-row">
+        <label>Wally</label>
+        <input type="number" id="sf-wally-pct" placeholder="%" min="0" max="100" oninput="onSFChange('pct','wally')">
+        <input type="number" id="sf-wally-mnt" placeholder="USD" step="0.01" oninput="onSFChange('mnt','wally')">
+      </div>
+      <div class="sf-auto" id="sf-hint">Ingresá % o monto de uno y se calcula el otro</div>
+    </div>
+
+    <button class="add-g-btn" id="g-save-btn" onclick="addGasto()">Agregar gasto</button>
+  </div>
+
+  <div class="g-summary">
+    <div class="g-total-row">
+      <div class="g-total" id="g-total">$0</div>
+      <div class="g-total-sec" id="g-total-sec"></div>
+    </div>
+    <div class="g-sub">Total gastos registrados durante el viaje</div>
+    <div class="g-bar"><div class="g-fill" id="g-bar" style="width:0%"></div></div>
+    <div class="g-cats">
+      <div class="gcat"><div class="gv" id="gc-comida">$0</div><div class="gl">🍜 Comida</div></div>
+      <div class="gcat"><div class="gv" id="gc-transporte">$0</div><div class="gl">🚗 Transporte</div></div>
+      <div class="gcat"><div class="gv" id="gc-actividad">$0</div><div class="gl">🎟 Actividades</div></div>
+      <div class="gcat"><div class="gv" id="gc-otro">$0</div><div class="gl">💳 Otro</div></div>
+    </div>
+    <div class="split-row">
+      <div class="split-persona"><div class="sp-name">Le corresponde a Dani</div><div class="sp-monto" id="sp-dani">$0</div></div>
+      <div class="split-persona"><div class="sp-name">Le corresponde a Wally</div><div class="sp-monto" id="sp-wally">$0</div></div>
+    </div>
+    <div class="balance-card" id="balance-card">
+      <div class="balance-label">Balance entre ustedes</div>
+      <div class="balance-main settled" id="balance-main">Están a mano ✓</div>
+      <div class="balance-sub" id="balance-sub">Según quién pagó y cómo dividieron cada gasto.</div>
+    </div>
+  </div>
+
+  <div class="shdr">Gastos registrados</div>
+  <div id="glist"></div>
+</section>
+
+<!-- VUELOS -->
+<section class="page" id="p-vuelos">
+  <div class="ftabs">
+    <button class="ft on" onclick="showFT('ida',this)">↗ Ida</button>
+    <button class="ft" onclick="showFT('int',this)">🇮🇩 Internos</button>
+    <button class="ft" onclick="showFT('vta',this)">↙ Vuelta</button>
+    <button class="ft" onclick="showFT('eq',this)">🧳 Equipaje</button>
+  </div>
+  <div class="fp on" id="fp-ida">
+    <div class="al aok">✅ Emirates BZV4HW confirmado · Tickets: 176-2210889797/98</div>
+    <div class="flc"><div class="flr"><div class="fliat">COR</div><div class="flmid"><div class="flair">LATAM LA8282</div><div class="flarr">────✈────</div></div><div class="fliat">GRU</div></div><div class="flgrid"><div class="fk">Fecha</div><div class="fk">Horario</div><div class="fv">13 oct</div><div class="fv">17:25 → 20:30</div><div class="fk">Reserva</div><div class="fk">Equipaje</div><div class="fv">NVRUGM</div><div class="fv"><span class="tg twn">Solo carry-on ⚠️</span></div></div></div>
+    <div class="fsep">⏳ 5h en GRU T3</div>
+    <div class="flc"><div class="flr"><div class="fliat">GRU</div><div class="flmid"><div class="flair">Emirates EK262</div><div class="flarr">────✈────</div></div><div class="fliat">DXB</div></div><div class="flgrid"><div class="fk">Salida</div><div class="fk">Llegada</div><div class="fv">14 oct · 01:35</div><div class="fv">23:00</div><div class="fk">Avión</div><div class="fk">Bodega</div><div class="fv">A380-800</div><div class="fv"><span class="tg tok">2 × 23 kg ✓</span></div></div></div>
+    <div class="fsep">🇦🇪 Escala Dubai 5h · T3</div>
+    <div class="flc"><div class="flr"><div class="fliat">DXB</div><div class="flmid"><div class="flair">Emirates EK356</div><div class="flarr">────✈────</div></div><div class="fliat">CGK</div></div><div class="flgrid"><div class="fk">Salida</div><div class="fk">Llegada</div><div class="fv">15 oct · 04:05</div><div class="fv">15:40 · T3</div><div class="fk">Avión</div><div class="fk">Bodega</div><div class="fv">B777-300ER</div><div class="fv"><span class="tg tok">2 × 23 kg ✓</span></div></div></div>
+  </div>
+  <div class="fp" id="fp-int">
+    <div class="flc"><div class="flr"><div class="fliat">CGK</div><div class="flmid"><div class="flair">Garuda GA202</div><div class="flarr">────✈────</div></div><div class="fliat">YIA</div></div><div class="flgrid"><div class="fk">Fecha</div><div class="fk">Llegada</div><div class="fv">16 oct · 09:20</div><div class="fv">10:40</div><div class="fk">PNR</div><div class="fk">Bodega</div><div class="fv">FC8H3X</div><div class="fv">23 kg p/p</div></div><div class="al awn" style="margin-top:10px">⏰ Llegar a CGK T3 a las 07:20 como mínimo</div></div>
+    <div class="flc"><div class="flr"><div class="fliat">DPS</div><div class="flmid"><div class="flair">AirAsia QZ646</div><div class="flarr">────✈────</div></div><div class="fliat">LBJ</div></div><div class="flgrid"><div class="fk">Fecha</div><div class="fk">Llegada</div><div class="fv">26 oct · 11:40</div><div class="fv">13:00</div><div class="fk">Reserva</div><div class="fk">Bodega</div><div class="fv">PLYJPR</div><div class="fv">Dani 25kg · Wally 15kg</div></div></div>
+    <div class="flc"><div class="flr"><div class="fliat">LBJ</div><div class="flmid"><div class="flair">Wings Air IW1950</div><div class="flarr">────✈────</div></div><div class="fliat">LOP</div></div><div class="flgrid"><div class="fk">Fecha</div><div class="fk">Llegada</div><div class="fv">29 oct · 09:20</div><div class="fv">10:40</div><div class="fk">Reserva</div><div class="fk">Duración</div><div class="fv">1152-551-169</div><div class="fv">1h20 directo</div></div><div class="al awn" style="margin-top:10px">⚠️ Wings suele demorarse. Prever margen para traslado a Gili Air</div></div>
+  </div>
+  <div class="fp" id="fp-vta">
+    <div class="al adn">🚨 Check-in EK399 cierra 4/11 a las 20:55. Salir de Uluwatu antes de las 19:00.</div>
+    <div class="flc"><div class="flr"><div class="fliat">DPS</div><div class="flmid"><div class="flair">Emirates EK399</div><div class="flarr">────✈────</div></div><div class="fliat">DXB</div></div><div class="flgrid"><div class="fk">Salida</div><div class="fk">Check-in cierra</div><div class="fv">5 nov · 00:25 🌙</div><div class="fv">4 nov · 20:55 ⚠️</div><div class="fk">Llegada DXB</div><div class="fk">PNR</div><div class="fv">05:45</div><div class="fv">BZV4HW</div></div></div>
+    <div class="fsep">🇦🇪 Escala Dubai 3h 20m · T3</div>
+    <div class="flc"><div class="flr"><div class="fliat">DXB</div><div class="flmid"><div class="flair">Emirates EK261</div><div class="flarr">────✈────</div></div><div class="fliat">GRU</div></div><div class="flgrid"><div class="fk">Salida</div><div class="fk">Llegada</div><div class="fv">5 nov · 09:05</div><div class="fv">17:35 · T3 ⚠️</div><div class="fk">Avión</div><div class="fk">Bodega</div><div class="fv">A380-800</div><div class="fv"><span class="tg tok">2 × 23 kg ✓</span></div></div></div>
+    <div class="fsep">⏳ 2h 45m en GRU · cambio T3 → T2</div>
+    <div class="flc"><div class="flr"><div class="fliat">GRU</div><div class="flmid"><div class="flair">GOL G3 3009</div><div class="flarr">────✈────</div></div><div class="fliat">AEP</div></div><div class="flgrid"><div class="fk">Salida</div><div class="fk">Llegada</div><div class="fv">5 nov · 20:20</div><div class="fv">23:20 🏠</div><div class="fk">Reserva</div><div class="fk">Terminal</div><div class="fv">NWPENF</div><div class="fv">GRU T2 ⚠️</div></div></div>
+  </div>
+  <div class="fp" id="fp-eq">
+    <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">LATAM — COR→GRU</h3><div class="al adn">❌ Solo carry-on 12 kg + bolso personal. Sin bodega.</div></div>
+    <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Emirates — todos los tramos</h3><div class="flgrid"><div class="fk">Bodega</div><div class="fk">Cabina</div><div class="fv">2 piezas × 23 kg</div><div class="fv">hasta 10 kg</div></div></div>
+    <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">AirAsia QZ646 — DPS→LBJ</h3><div class="flgrid"><div class="fk">Dani</div><div class="fk">Wally</div><div class="fv">25 kg bodega · 7 kg cabina</div><div class="fv">15 kg bodega · 7 kg cabina</div></div></div>
+    <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Garuda GA202</h3><div class="flgrid"><div class="fk">Bodega</div><div class="fk">Cabina</div><div class="fv">23 kg p/p</div><div class="fv">7 kg total</div></div></div>
+    <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">GOL G3 3009 — GRU→AEP</h3><div class="flgrid"><div class="fk">Bodega</div><div class="fk">Reserva</div><div class="fv">1 valija incluida</div><div class="fv">NWPENF</div></div></div>
+  </div>
+</section>
+</main>
+
+<nav class="bnav">
+  <button class="nb on" onclick="go('home',this)"><span class="ni">🏠</span>Inicio</button>
+  <button class="nb" onclick="go('dias',this)"><span class="ni">🗓</span>Días</button>
+  <button class="nb" onclick="go('hoteles',this)"><span class="ni">🏨</span>Hoteles</button>
+  <button class="nb" onclick="go('gastos',this)"><span class="ni">💰</span>Gastos</button>
+  <button class="nb" onclick="go('vuelos',this)"><span class="ni">✈️</span>Vuelos</button>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ── STATIC DATA ───────────────────────────────────────
+const DIAS = [
+  {id:'d0',n:0,fecha:'jue 15 oct',zona:'JAVA',lugar:'Jakarta',act:'Llegada EK356 15:40 · Noche Jakarta',detalle:`15:40 · EK356 aterriza CGK Terminal 3\nTarde · Orchardz Hotel Bandara\nNo tomar tren nocturno — agotador tras ~28h de vuelo`,hotel:'Orchardz Hotel Bandara',hotelConf:'Reserva directa · USD 36,44 pagado'},
+  {id:'d1',n:1,fecha:'vie 16 oct',zona:'JAVA',lugar:'Yogyakarta',act:'Ciudad + Prambanan al atardecer (2hs)',detalle:`Mañana · Kraton + Taman Sari\nMediodía · Almuerzo vegano · Milas Restaurant\n16:30 · Prambanan — calcular ~2h (3 templos + secundarios)\nAtardecer · Torres contra el cielo naranja\n✅ Entrada comprada: V38570-AA89CDF-292`,hotel:'Prima In Hotel Malioboro (16-18 oct)',hotelConf:'Agoda 1052081814 · USD 80,94 · cobro 8/10',link:'https://ticket.injourneydestination.id/',linkTxt:'Prambanan ✅'},
+  {id:'d2',n:2,fecha:'sáb 17 oct',zona:'JAVA',lugar:'Yogyakarta',act:'🌅 Borobudur sunrise 04:00 ⭐',detalle:`04:00 · Salida hacia Borobudur (40km, ~50min)\n05:00 · Acceso sunrise — subir plataformas\n05:30 · Amanecer entre las stupas ⭐\n08:00 · Regreso\n🟡 Opcional: Templo Mendut (3km, 20-30min) si salen antes de 9:00\n09:30 · Desayuno · masaje o café\n✅ ENTRADA COMPRADA: V37644-A9E1F27-822`,hotel:'Prima In Hotel Malioboro',hotelConf:'Agoda 1052081814',urgente:true},
+  {id:'d3',n:3,fecha:'dom 18 oct',zona:'JAVA',lugar:'Yogyakarta → Malang',act:'🚆 Tren Ejecutivo 10:50 → llega 17:30',detalle:`09:30 · Desayuno · masaje o café\n10:50 · Tren Malioboro Ekspres 170B · Executive · asientos 6A y 6B\n17:30 · Llegada Malang — bajarse en MALANG (ML), no Kota Lama\n⚠️ Llegar 60min antes · llevar pasaporte`,hotel:'Kertanegara Premium Guest House',hotelConf:'Booking 5647675398 · IDR 400.000 · ~USD 23'},
+  {id:'d4',n:4,fecha:'lun 19 oct',zona:'JAVA',lugar:'Bromo → base Ijen',act:'⛰️ Bromo amanecer · Tour Smartine',detalle:`00:00 · Pickup hotel Malang (Smartine)\n00:00-03:00 · Drive a Cemara Lawang (~3hs)\n03:45-06:00 · Amanecer Bromo ⭐ · viewpoint Pananjakan\n06:30-08:30 · Hike al cráter activo (~45min)\n09:00-10:00 · Desayuno\n10:00-15:00 · Drive a Bondowoso\n15:00 · Check-in base Ijen\n💰 Saldo USD 259,70 en efectivo al pickup`,hotel:'Alojamiento coordinado por Smartine',hotelConf:'Incluido en tour PayPal 77595161L7273642B · USD 371 total',urgente:true},
+  {id:'d5',n:5,fecha:'mar 20 oct',zona:'BALI',lugar:'Ijen → Ubud',act:'🌋 Ijen 02:00 · blue fire · ferry a Bali',detalle:`00:00-02:00 · Wake-up · drive a Paltuding\n02:30-05:30 · Cumbre Kawah Ijen · blue fire 🔵🔥\n06:00-07:30 · Return hike\n07:30-08:30 · Desayuno y descanso\n08:30-09:30 · Drive al ferry · café y cascadas\n11:00 · Ferry Banyuwangi → Gilimanuk (~1h cruce)\nTarde · Transfer Gilimanuk → Ubud\n⚠️ Gilimanuk→Ubud: ~4-5hs reales`,hotel:'Arkamara Dijiwa Ubud — Suite Jungle (20-24 oct)',hotelConf:'Invoice #21872 · USD 401,17 pago en hotel · desayuno · floating breakfast · spa IDR 150k'},
+  {id:'d6',n:6,fecha:'mié 21 oct',zona:'BALI',lugar:'Ubud',act:'🐒 Monkey Forest 07:30 + Campuhan Ridge',detalle:`07:30 · Monkey Forest — temprano antes del calor\n09:30 · Ubud Palace + Saraswati Temple\n11:00 · Ubud Art Market (solo efectivo)\n13:00 · Almuerzo KAFE o Yellow Flower (vegano)\n15:00 · Descanso en la villa\n16:30 · Campuhan Ridge Walk — mejor hora, luz dorada\n19:00 · Opcional: Taman Dedari (cena romántica — reservar)`,hotel:'Arkamara Dijiwa Ubud',hotelConf:'Invoice #21872'},
+  {id:'d7',n:7,fecha:'jue 22 oct',zona:'BALI',lugar:'Ubud',act:'🌾 Tegalalang 07:30 + templos de agua',detalle:`07:30 · Tegalalang Rice Fields — antes de las 8:00 (Subak UNESCO) ~30.000 Rp\n10:00 · Pura Tirta Empul — rituales agua sagrada · llevar pareo\n12:00 · Gunung Kawi Sebatu — más tranquilo\n14:30 · Tukad Cepung Waterfall — cascada en cueva\n📅 Verificar que 22 oct no sea feriado indonesio`,hotel:'Arkamara Dijiwa Ubud',hotelConf:'Invoice #21872'},
+  {id:'d8',n:8,fecha:'vie 23 oct',zona:'BALI',lugar:'Ubud',act:'💧 Sekumpul — día completo',detalle:`07:00 · Salida con driver privado (~2hs hasta Sekumpul)\nMañana · Mejor cascada de Bali · bajada 40min entre selva\nCosto · ~$55 driver + $10 entrada\n⚠️ No combinar — consume todo el día`,hotel:'Arkamara Dijiwa Ubud',hotelConf:'Invoice #21872'},
+  {id:'d9',n:9,fecha:'sáb 24 oct',zona:'BALI',lugar:'Nusa Penida',act:'🏝 Kelingking 17:00 + lado oeste',detalle:`07:00 · Grab Ubud → Sanur (~40min)\n08:00 · Ferry Sanur → Nusa Penida (~30min, ~$12)\n09:00 · Check-in Crystal Bay/Toyapakeh — dejar valijas\n09:30 · Broken Beach\n10:00 · Angel's Billabong ⚠️ Consultar mareas\n11:30 · Crystal Bay — nadar y snorkel\n13:00 · Almuerzo Amok Sun & Cliff Club (120m sobre el océano)\n16:30 · Salida hacia Kelingking (~15min)\n17:00 · 🌅 Kelingking al atardecer\n🚫 Kelingking Beach (abajo) NO apta para nadar\n🌕 Luna casi llena — NO plancton`,hotel:'Akatara Hotel — King Room Pool View',hotelConf:'Agoda 1053935894 · USD 29,99 · desayuno incluido',link:'https://penidago.com',linkTxt:'Ticket Nusa Penida online (obligatorio)'},
+  {id:'d10',n:10,fecha:'dom 25 oct',zona:'BALI',lugar:'Nusa Penida → Sanur',act:'🌊 Atuh + Thousand Islands + Rumah Pohon',detalle:`08:00 · Desayuno tranquilo\n09:00 · Driver al lado este (~1hs, ruta norte costera)\n10:00 · Atuh Beach — formaciones rocosas\n11:30 · 🌊 Thousand Islands Viewpoint ⭐\n12:00 · Rumah Pohon Molenteng — tree house sobre el acantilado\n13:00 · Almuerzo warung local\n14:15 · Salida hacia Toyapakeh\n15:30 · Puerto — margen\n17:00 · Fast boat a Sanur\n⚠️ Diamond Beach cerrada desde 1/9/26\n⚠️ PURNAMA KELIMA — luna llena 99%`,hotel:'Semarandana Bedrooms and Pool — Sanur',hotelConf:'Booking 5983284756 · IDR 355.500 · desayuno incluido · sin prepago'},
+  {id:'d11',n:11,fecha:'lun 26 oct',zona:'FLORES',lugar:'Denpasar → Labuan Bajo',act:'✈️ AirAsia QZ646 11:40 → LBJ 13:00',detalle:`11:40 · Vuelo DPS → LBJ · AirAsia QZ646 · Reserva PLYJPR\n13:00 · Llegada Komodo Airport\n16:30-17:00 · Hotel + confirmar barco en agencias del puerto\n18:00 · Sunset desde mirador\n19:00 · Cena Ahimsa (vegana) · dormir temprano`,hotel:'Manta Manta Guesthouse (26-27 oct)',hotelConf:'Booking 6692.239.344 · IDR 300.000 · efectivo · check-in 14-20hs',link:'https://siora.id/',linkTxt:'SiORA — Komodo (via operador)'},
+  {id:'d12',n:12,fecha:'mar 27 oct',zona:'FLORES',lugar:'Komodo — liveaboard',act:'🚢 Manta Point · Kalong Island zorros ⭐',detalle:`07:00-09:30 · Pickup y traslado al puerto\n10:00-11:00 · Embarque en el phinisi\nMediodía-tarde · Snorkel: Sebayur/Kelor, Manta Point, Taka Makassar\nAtardecer · Kalong Island — zorros voladores 🦇\nNoche · Cena a bordo · dormir anclados cerca de Padar`,hotel:'Barco phinisi liveaboard',hotelConf:'Reserva URGENTE via operador SiORA',urgente:true},
+  {id:'d13',n:13,fecha:'mié 28 oct',zona:'FLORES',lugar:'Komodo → Labuan Bajo',act:'⭐ Amanecer Padar 05:15 + Pink Beach + dragones',detalle:`05:15 · Amanecer en Padar ⭐ — el momento estrella del liveaboard\nMañana · Pink Beach (arena rosada, snorkel)\nTrek dragones con ranger en Komodo o Rinca ⚠️ Ranger obligatorio\nMediodía · Última parada snorkel + almuerzo a bordo\n18:00-19:00 · Regreso Labuan Bajo y desembarque`,hotel:'Manta Manta Guesthouse Superior (28-29 oct)',hotelConf:'Booking 6968.811.050 · IDR 380.000 · NO REEMBOLSABLE · balcón/terraza'},
+  {id:'d14',n:14,fecha:'jue 29 oct',zona:'GILI',lugar:'LBJ → Lombok → Gili Air',act:'✈️ Wings IW1950 09:20 → Lombok + traslado',detalle:`09:20 · Wings Air IW1950 · LBJ → LOP · Gotogate 1152-551-169\n10:40 · Llegada Lombok (LOP)\n~1.5-2hs · Auto LOP sur → norte + lancha a Gili Air\n~14:00-15:00 · Llegada Gili Air\n⚠️ Wings suele demorarse — prever margen`,hotel:'Kaluku Gili Resort (29 oct - 1 nov)',hotelConf:'Booking 6168.201.938 · USD 157 · 3 noches · pool view · cobro 20/10'},
+  {id:'d15',n:15,fecha:'vie 30 oct',zona:'GILI',lugar:'Gili Air',act:'🤿 Tour snorkel 3 Gilis + bici + Kame Ramen',detalle:`08:00 · Tour snorkel 3 Gilis (~$15-20 p/p)\nIncluye: Turtle Point, Bask Nest (Gili Meno), corales (Gili T)\n13:00 · Almuerzo Warungan — el mejor warung de la isla\n15:00 · Vuelta en bici (~6km, ~1.5hs)\n16:30 · Hammock, playa, snorkel noreste\n18:00 · Sunset oeste — vista a Gili Meno y Bali\n19:30 · Cena Kame Ramen ⭐ — reservar sí o sí`,hotel:'Kaluku Gili Resort',hotelConf:'Booking 6168.201.938'},
+  {id:'d16',n:16,fecha:'sáb 31 oct',zona:'GILI',lugar:'Gili Air',act:'🌊 Día libre + 🟢 MEJOR NOCHE PLANCTON',detalle:`Mañana · Sin agenda — nadar, leer, hammock\n10:00 · Snorkel libre noreste — tortugas Turtle Point\n15:30 · Masaje balinés (~$15 60min)\n18:00 · Sunset playa oeste\n20:30-23:00 · 🟢 MEJOR NOCHE PLANCTON DEL VIAJE\nTécnica · Playa noreste oscura. Agitar agua → brillo azul-verde\n⚠️ Hari Raya Saraswati en Bali (no afecta Gili)`,hotel:'Kaluku Gili Resort',hotelConf:'Booking 6168.201.938'},
+  {id:'d17',n:17,fecha:'dom 1 nov',zona:'BALI',lugar:'Gili Air → Sidemen',act:'🚤 Fast boat → Padang Bai → Sidemen arrozales',detalle:`07:30 · Desayuno tranquilo\n08:30 · Check-out\n10:00 · Fast boat Gili Air → Padang Bai\n12:00-12:30 · Llegada Padang Bai + driver privado\n13:30-14:00 · Llegada Sidemen + check-in\n15:30 · 🌾 Caminata arrozales y pueblos\n17:30 · Pileta / descanso con vista Monte Agung\n18:00 · 🌅 Golden hour en el valle`,hotel:'Devani Resort Sidemen',hotelConf:'Agoda 1053170154 · USD 72,96 pagado · desayuno incluido'},
+  {id:'d18',n:18,fecha:'lun 2 nov',zona:'BALI',lugar:'Sidemen → Uluwatu',act:'🌅 Mañana rural + driver a Uluwatu',detalle:`07:30 · Desayuno con vista arrozales\n08:30 · Caminata corta por el valle\n10:00 · Pileta / ducha\n11:00 · Check-out\n12:30 · Driver privado Sidemen → Uluwatu (~3.5hs)\n16:00 · Llegada Uluwatu + check-in\n17:30 · 🌅 Sunset tranquilo\n⚠️ NO Templo Uluwatu ni Kecak este día — guardarlos para mañana`,hotel:'Mule Malu Tropical Stay — Pool View (2-4 nov)',hotelConf:'Booking 6249258442 · IDR 3.621.967 · 2 noches · desayuno · Upper Bingin'},
+  {id:'d19',n:19,fecha:'mar 3 nov',zona:'BALI',lugar:'Uluwatu',act:'🛕 Suluban + Balangan + Templo + Kecak + Jimbaran',detalle:`08:30 · Desayuno tranquilo\n09:30 · Suluban Beach — cueva de roca, visualmente único\n11:00 · Balangan Beach o Dreamland — baño y relax\n12:30 · Almuerzo The Cashew Tree / Drifter (vegano)\n14:00 · Pileta, ducha y descanso\n16:30 · Salida hacia Templo Uluwatu\n17:00 · 🛕 Templo Uluwatu — cuidado con monos\n18:00 · 🌅 Sunset sobre el océano Índico\n19:00 · 🔥 Kecak Dance\n19:30 · Salida Jimbaran · 20:00 Cena en la arena frente al mar`,hotel:'Mule Malu Tropical Stay',hotelConf:'Booking 6249258442'},
+  {id:'d20',n:20,fecha:'mié-jue 4-5 nov',zona:'REGRESO',lugar:'Uluwatu → DPS → Buenos Aires',act:'⚠️ Check-in EK399 cierra 4/11 20:55 · vuelo 00:25',detalle:`08:30 · Desayuno sin alarma\n10:30 · Playa o café — si hay ganas\n12:30 · Último almuerzo en Bali\n14:00 · Descanso · ducha · cerrar valijas\n18:00 · Cena temprana\n19:00-19:30 · 🚗 Traslado Uluwatu → DPS\n⚠️ 20:55 · CIERRE CHECK-IN EK399 — llegar antes\n5 nov 00:25 · ✈️ EK399 DPS → Dubai → GRU → AEP\n5 nov 23:20 · 🏠 Buenos Aires Aeroparque`,hotel:'Mule Malu Tropical Stay (hasta salida)',hotelConf:'Preguntar late checkout/day-use el 4/11',urgente:true},
+];
+
+const HOTELES = [
+  {nombre:'Orchardz Hotel Bandara',zona:'JAVA',lugar:'Jakarta',fechas:'15-16 oct · 1 noche',conf:'Reserva directa',costo:'USD 36,44 pagado',notas:'Superior King · desayuno 2 · shuttle · cancelable hasta 14/10',cancel:'Gratis hasta 14/10',maps:'https://maps.google.com/?q=Orchardz+Hotel+Bandara+Jakarta'},
+  {nombre:'Prima In Hotel Malioboro',zona:'JAVA',lugar:'Yogyakarta',fechas:'16-18 oct · 2 noches',conf:'Agoda 1052081814',costo:'USD 80,94 · cobro 8/10',notas:'Recepción lista para salida 4am Borobudur · cancelable hasta 11/10',cancel:'Gratis hasta 11/10',maps:'https://maps.google.com/?q=Prima+In+Hotel+Malioboro+Yogyakarta'},
+  {nombre:'Kertanegara Premium Guest House',zona:'JAVA',lugar:'Malang',fechas:'18-19 oct · 1 noche',conf:'Booking 5647675398',costo:'IDR 400.000 · ~USD 23',notas:'Pickup Smartine Bromo-Ijen desde acá a las 00:00 · cancelable hasta 12/10',cancel:'Gratis hasta 12/10',maps:'https://maps.google.com/?q=Kertanegara+Premium+Guest+House+Malang'},
+  {nombre:'Arkamara Dijiwa Ubud — Suite Jungle',zona:'BALI',lugar:'Ubud',fechas:'20-24 oct · 4 noches',conf:'Invoice #21872',costo:'IDR 7.054.872 · ~USD 401 · PAGO EN HOTEL',notas:'Desayuno diario · floating breakfast · spa IDR 150k · voucher restaurante IDR 100k · sesión fotos · shuttle 3x/día · CHEQUEAR 10/10',cancel:'Gratis hasta 13/10 13:00 · no-show 100%',maps:'https://maps.google.com/?q=Arkamara+Dijiwa+Ubud+Bali'},
+  {nombre:'Akatara Hotel — King Room Pool View',zona:'BALI',lugar:'Nusa Penida — Toyapakeh',fechas:'24-25 oct · 1 noche',conf:'Agoda 1053935894',costo:'USD 29,99 · pago posterior',notas:'Desayuno incluido · pedido vegano enviado · check-in hasta 22:00',cancel:'Gratis hasta 21/10',maps:'https://maps.google.com/?q=Akatara+Hotel+Nusa+Penida'},
+  {nombre:'Semarandana Bedrooms and Pool',zona:'BALI',lugar:'Sanur — Jl. Danau Tamblingan 60D',fechas:'25-26 oct · 1 noche',conf:'Booking 5983284756',costo:'IDR 355.500 · sin prepago',notas:'Desayuno incluido · paga durante la estancia',cancel:'Gratis hasta 23/10',maps:'https://maps.google.com/?q=Semarandana+Bedrooms+Pool+Sanur+Bali'},
+  {nombre:'Manta Manta Guesthouse',zona:'FLORES',lugar:'Labuan Bajo — cerca del puerto',fechas:'26-27 oct · 1 noche',conf:'Booking 6692.239.344',costo:'IDR 300.000 · solo efectivo · ~USD 17',notas:'Sin prepago · check-in 14:00-20:00 · pago en efectivo al llegar',cancel:'Gratis hasta 24/10',maps:'https://maps.google.com/?q=Manta+Manta+Guesthouse+Labuan+Bajo'},
+  {nombre:'Manta Manta Guesthouse — Superior',zona:'FLORES',lugar:'Labuan Bajo — balcón/terraza',fechas:'28-29 oct · 1 noche',conf:'Booking 6968.811.050',costo:'IDR 380.000 · ~USD 22',notas:'Tarifa NO REEMBOLSABLE · cobro anticipado · vista al mar/jardín',cancel:'NO REEMBOLSABLE',maps:'https://maps.google.com/?q=Manta+Manta+Guesthouse+Labuan+Bajo'},
+  {nombre:'Kaluku Gili Resort — Deluxe Pool View',zona:'GILI',lugar:'Gili Air',fechas:'29 oct - 1 nov · 3 noches',conf:'Booking 6168.201.938',costo:'IDR 2.757.807 · ~USD 157 · cobro 20/10',notas:'Sin comidas · terraza · piscina · planta baja',cancel:'Gratis hasta 21/10 · desde 22/10 100%',maps:'https://maps.google.com/?q=Kaluku+Gili+Resort+Gili+Air+Indonesia'},
+  {nombre:'Devani Resort Sidemen',zona:'BALI',lugar:'Sidemen — entre arrozales',fechas:'1-2 nov · 1 noche',conf:'Agoda 1053170154',costo:'USD 72,96 PAGADO',notas:'Desayuno incluido · pedido vegano enviado · vista Monte Agung',cancel:'Gratis hasta 25/10',maps:'https://maps.google.com/?q=Devani+Resort+Sidemen+Bali'},
+  {nombre:'Mule Malu Tropical Stay — Pool View',zona:'BALI',lugar:'Uluwatu — Upper Bingin',fechas:'2-4 nov · 2 noches',conf:'Booking 6249258442',costo:'IDR 3.621.967 · prepago 14 días antes',notas:'Desayuno incluido · check-out 06:30-11:30 · preguntar late checkout 4/11',cancel:'Gratis hasta 18/10 · desde 19/10 100%',maps:'https://maps.google.com/?q=Mule+Malu+Tropical+Stay+Uluwatu+Bali'},
+];
+
+const ZONE_COL = {JAVA:'#fb923c',BALI:'#34d399',FLORES:'#fbbf24',GILI:'#60a5fa',REGRESO:'#a78bfa'};
+const CAT_ICO = {comida:'🍜',transporte:'🚗',actividad:'🎟',hotel:'🏨',compras:'🛍',otro:'💳'};
+
+// ── RATES ─────────────────────────────────────────────
+const RATES = { ARS: 1350, IDR: 16200 }; // USD 1 = X
+let curDisplay = 'USD';
+let gCur = 'USD'; // currency of current gasto input
+
+function setCur(c) {
+  curDisplay = c;
+  ['usd','ars','idr'].forEach(x=>document.getElementById('cb-'+x)?.classList.remove('on'));
+  document.getElementById('cb-'+c.toLowerCase())?.classList.add('on');
+  recalcStats();
+  renderGastos();
+}
+function getRate(from) {
+  if(from===curDisplay) return 1;
+  const toUSD = from==='USD'?1:1/RATES[from];
+  const fromUSD = curDisplay==='USD'?1:RATES[curDisplay];
+  return toUSD * fromUSD;
+}
+function fmtAmt(usdAmt) {
+  if(curDisplay==='USD') return '$'+usdAmt.toFixed(2);
+  if(curDisplay==='ARS') {
+    const tc = parseFloat(document.getElementById('tc-ars')?.value)||1350;
+    return '$'+(usdAmt*tc).toLocaleString('es-AR',{maximumFractionDigits:0});
+  }
+  return 'Rp'+(usdAmt*RATES.IDR).toLocaleString('id-ID',{maximumFractionDigits:0});
+}
+
+function toUSD(amt, cur) {
+  if(cur==='USD') return amt;
+  return amt / RATES[cur];
+}
+
+// ── STORAGE ───────────────────────────────────────────
+// Con la base compartida (db) todo se sincroniza entre dispositivos y personas:
+//   dias/<id>    {detalle}          → programa del día editado
+//   notas/<id>   {dia,texto,ts}     → una nota por documento
+//   gastos/<id>  {...gasto,ts}      → un gasto por documento
+//   config/app   {tcArs}            → tipo de cambio ARS
+// Sin db (archivo abierto suelto) se cae a localStorage, solo en ese dispositivo.
+const LK='id26v2';
+const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LK))||{}}catch(e){return{}}};
+const lsSet=v=>{try{localStorage.setItem(LK,JSON.stringify(v))}catch(e){}};
+let db=null;
+let DETALLES={}, NOTAS=[], GASTOS=[], CONFIG={tcArs:1350};
+let DATA=[];
+function buildData(){DATA=DIAS.map(d=>({...d,detalle:DETALLES[d.id]??d.detalle}));}
+function notesOf(dia){return NOTAS.filter(n=>n.dia===dia).sort((a,b)=>(a.ts||0)-(b.ts||0));}
+function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG});}
+function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+async function dbWrite(fn){
+  if(!db){saveLocal();return true;}
+  try{await fn();return true;}
+  catch(err){
+    if(err&&err.code==='unavailable'){
+      await new Promise(r=>setTimeout(r,600+Math.random()*800));
+      try{await fn();return true;}catch(e2){err=e2;}
+    }
+    setSync('err','Sin guardar');
+    toast(err&&err.code==='invalid_argument'
+      ?'No tenés permiso para editar. Pedile a quien la creó acceso "Puede editar".'
+      :'No se pudo guardar. Revisá la conexión y probá de nuevo.');
+    return false;
+  }
+}
+const put=(col,id,data)=>dbWrite(()=>db.collection(col).doc(id).set(data));
+const del=(col,id)=>dbWrite(()=>db.collection(col).doc(id).delete());
+
+function setSync(cls,txt){const el=document.getElementById('sync');if(el){el.className='sync '+cls;el.textContent=txt;}}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true;},4000);}
+
+function applyConfig(){
+  const inp=document.getElementById('tc-ars');
+  if(inp&&document.activeElement!==inp) inp.value=CONFIG.tcArs||1350;
+}
+function saveTc(){
+  const v=parseFloat(document.getElementById('tc-ars').value);
+  if(!v||v<=0)return;
+  CONFIG={...CONFIG,tcArs:v};
+  put('config','app',CONFIG);
+}
+function refreshAll(){
+  buildData();
+  if(document.getElementById('p-dias').classList.contains('on')) renderDias();
+  renderGastos();recalcStats();
+}
+
+async function initStore(){
+  const local=lsGet();
+  DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=local.gastos||[];CONFIG=local.config||CONFIG;
+  applyConfig();refreshAll();
+  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
+  if(!db){
+    setSync('local','Solo este dispositivo');
+    const info=document.getElementById('data-info');
+    if(info) info.textContent='Esta copia no está conectada a la base compartida: los cambios quedan solo en este navegador. Abrí el link de la app para sincronizar.';
+    return;
+  }
+  DETALLES={};NOTAS=[];GASTOS=[];
+  setSync('','Sincronizando…');
+  const fail=err=>{setSync('err','Sin conexión');console.warn(err);};
+  const done=new Set();const ready=k=>{done.add(k);if(done.size===4)setSync('ok','Sincronizado');};
+  db.collection('dias').onSnapshot(sn=>{
+    DETALLES={};sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.detalle==='string')DETALLES[d.id]=v.detalle;});
+    buildData();if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('dias');
+  },fail);
+  db.collection('notas').onSnapshot(sn=>{
+    NOTAS=sn.docs.map(d=>({id:d.id,...d.data()}));
+    if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('notas');
+  },fail);
+  db.collection('gastos').onSnapshot(sn=>{
+    GASTOS=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    renderGastos();recalcStats();ready('gastos');
+  },fail);
+  db.doc('config/app').onSnapshot(sn=>{
+    if(sn.exists)CONFIG={...CONFIG,...sn.data()};
+    applyConfig();recalcStats();renderGastos();ready('config');
+  },fail);
+}
+
+// ── NAV ───────────────────────────────────────────────
+function go(p,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+  document.getElementById('p-'+p).classList.add('on');
+  if(btn) btn.classList.add('on');
+  if(p==='dias'){renderFiltros();renderDias();}
+  if(p==='hoteles') renderHoteles();
+  if(p==='gastos') renderGastos();
+  if(p==='home') recalcStats();
+}
+
+// ── HOME STATS ────────────────────────────────────────
+function recalcStats(){
+  const pagadoUSD = 4906.90+191.89+118.22+36.44+155.01+214.24+116.86+50.73+72.96+157+401.17;
+  document.getElementById('st-pagado').textContent = fmtAmt(pagadoUSD);
+  const totalUSD = GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  document.getElementById('st-gastos').textContent = fmtAmt(totalUSD);
+  const daniUSD = GASTOS.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
+  const wallyUSD = GASTOS.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
+  document.getElementById('st-dani').textContent = fmtAmt(daniUSD);
+  document.getElementById('st-wally').textContent = fmtAmt(wallyUSD);
+}
+
+// ── DÍAS ──────────────────────────────────────────────
+let curZona='ALL';
+function renderFiltros(){
+  const zonas=['ALL',...new Set(DIAS.map(d=>d.zona).filter(Boolean))];
+  document.getElementById('zfil').innerHTML=zonas.map(z=>`<button class="zf${z===curZona?' on':''}" style="${z===curZona&&z!=='ALL'?'background:'+ZONE_COL[z]+';border-color:'+ZONE_COL[z]+';color:#000':''}" onclick="setZona('${z}')">${z==='ALL'?'Todos':z}</button>`).join('');
+}
+function setZona(z){curZona=z;renderFiltros();renderDias();}
+function renderDias(){
+  const openIds=new Set([...document.querySelectorAll('.dc.op')].map(x=>x.id.slice(5)));
+  const drafts={};document.querySelectorAll('.nta').forEach(t=>{if(t.value)drafts[t.id]=t.value;});
+  const edits=[...document.querySelectorAll('.fedit.ed')].map(t=>[t.id.slice(3),t.value]);
+  const focusId=document.activeElement&&document.activeElement.id;
+  _renderDias();
+  openIds.forEach(id=>document.getElementById('card-'+id)?.classList.add('op'));
+  Object.entries(drafts).forEach(([k,v])=>{const t=document.getElementById(k);if(t)t.value=v;});
+  edits.forEach(([id,v])=>{const fe=document.getElementById('fe-'+id);if(fe){fe.value=v;startEd(id,true);}});
+  if(focusId){const f=document.getElementById(focusId);if(f&&f!==document.activeElement)f.focus({preventScroll:true});}
+}
+function _renderDias(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase();
+  const list=DATA.filter(d=>{
+    const ok=curZona==='ALL'||d.zona===curZona;
+    const hay=[d.lugar,d.act,d.detalle,d.fecha].join(' ').toLowerCase();
+    return ok&&(!q||hay.includes(q));
+  });
+  const el=document.getElementById('dlist');
+  if(!list.length){el.innerHTML='<div class="empty">Sin resultados</div>';return;}
+  el.innerHTML=list.map(d=>{
+    const col=ZONE_COL[d.zona]||'#7a849a';
+    const nc=notesOf(d.id).length;
+    return `<div class="dc" id="card-${d.id}">
+      <div class="dh" onclick="tog('${d.id}',event)">
+        <div class="dnum" style="color:${col};border-color:${col}33;background:${col}18">${d.n}</div>
+        <div class="dm">
+          <div class="dpl">${e(d.lugar)}</div>
+          <div class="ddt">${e(d.fecha)} · ${e(d.zona)}</div>
+          <div class="dac">${e(d.act)}</div>
+          <div class="dbdg">
+            ${d.urgente?'<span class="bdg bw">⚠️ Urgente</span>':''}
+            ${nc?`<span class="bdg bn">💬 ${nc}</span>`:''}
+            ${d.hotel?'<span class="bdg by">🏨</span>':''}
+          </div>
+        </div>
+        <div class="dchev">▾</div>
+      </div>
+      <div class="dbody">
+        <div style="margin-bottom:12px">
+          <span class="flbl">Programa del día</span>
+          <div class="fview" id="fv-${d.id}" onclick="startEd('${d.id}')">${e(d.detalle)}</div>
+          <textarea class="fedit" id="fe-${d.id}" rows="8">${e(d.detalle)}</textarea>
+          <div class="fbtns" id="fb-${d.id}">
+            <button class="sbtn" onclick="saveF('${d.id}')">Guardar</button>
+            <button class="cbtn" onclick="cancelEd('${d.id}')">Cancelar</button>
+          </div>
+        </div>
+        ${d.hotel?`<div class="hrow"><div style="font-size:22px;flex-shrink:0">🏨</div><div><div class="hname">${e(d.hotel)}</div><div class="hmeta">${e(d.hotelConf||'')}</div></div></div>`:''}
+        ${d.link?`<a class="lnk" href="${d.link}" target="_blank" rel="noopener">🔗 ${e(d.linkTxt||d.link)}</a>`:''}
+        <div class="notes-sec">
+          <div class="notes-hdr">💬 Notas</div>
+          <div id="nc-${d.id}">${renderNotes(d.id)}</div>
+          <div class="nadd">
+            <textarea class="nta" id="nta-${d.id}" placeholder="Agregar nota…" rows="2"></textarea>
+            <button class="nadd-btn" onclick="addNote('${d.id}')">+</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.fedit').forEach(ta=>{
+    ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';});
+  });
+}
+function tog(id,ev){if(ev&&ev.target.closest('button,a,textarea'))return;document.getElementById('card-'+id)?.classList.toggle('op');}
+function startEd(id,keep){
+  document.getElementById('fv-'+id)?.classList.add('ed');
+  const fe=document.getElementById('fe-'+id);
+  if(fe){fe.classList.add('ed');fe.style.height='auto';fe.style.height=fe.scrollHeight+'px';if(!keep)fe.focus();}
+  document.getElementById('fb-'+id)?.classList.add('ed');
+  document.getElementById('card-'+id)?.classList.add('op');
+}
+function cancelEd(id){
+  const d=DATA.find(x=>x.id===id);
+  ['fv','fe','fb'].forEach(p=>{document.getElementById(p+'-'+id)?.classList.remove('ed');});
+  if(d){const fe=document.getElementById('fe-'+id);if(fe)fe.value=d.detalle||'';}
+}
+function saveF(id){
+  const d=DATA.find(x=>x.id===id);if(!d)return;
+  const val=document.getElementById('fe-'+id).value;
+  DETALLES[id]=val;buildData();
+  ['fv','fe','fb'].forEach(p=>{document.getElementById(p+'-'+id)?.classList.remove('ed');});
+  renderDias();
+  put('dias',id,{detalle:val}).then(ok=>{if(ok)toast('Programa guardado');});
+}
+function renderNotes(id){return notesOf(id).map(n=>`<div class="note-item">${e(n.texto)}<button class="ndel" onclick="delNote('${n.id}',this)" title="Borrar nota">✕</button></div>`).join('');}
+function addNote(id){
+  const ta=document.getElementById('nta-'+id);if(!ta||!ta.value.trim())return;
+  const note={id:newId('n'),dia:id,texto:ta.value.trim(),ts:Date.now()};
+  ta.value='';
+  NOTAS=[...NOTAS,note];renderDias();
+  const {id:nid,...body}=note;put('notas',nid,body);
+}
+function delNote(nid,btn){
+  if(!btn.classList.contains('arm')){btn.classList.add('arm');btn.textContent='¿Borrar?';setTimeout(()=>{if(btn.isConnected){btn.classList.remove('arm');btn.textContent='✕';}},3000);return;}
+  NOTAS=NOTAS.filter(n=>n.id!==nid);renderDias();del('notas',nid);
+}
+
+// ── HOTELES ───────────────────────────────────────────
+function renderHoteles(){
+  const q=(document.getElementById('hsrch')?.value||'').toLowerCase();
+  const list=HOTELES.filter(h=>[h.nombre,h.zona,h.lugar,h.fechas,h.conf,h.notas].join(' ').toLowerCase().includes(q)||!q);
+  const el=document.getElementById('hlist');
+  if(!list.length){el.innerHTML='<div class="empty">Sin resultados</div>';return;}
+  el.innerHTML=list.map(h=>{
+    const col=ZONE_COL[h.zona]||'#7a849a';
+    const canCls=h.cancel.includes('NO REEMBOLSABLE')||h.cancel.includes('100%')?'bw':h.cancel.includes('Gratis')?'bo':'by';
+    return `<div class="hcard">
+      <div class="hcard-zona" style="background:${col}22;color:${col};border:1px solid ${col}44">${h.zona} · ${h.lugar}</div>
+      <h3>${e(h.nombre)}</h3>
+      <div class="hcard-sub">${e(h.fechas)}</div>
+      <span class="hcard-conf">${e(h.conf)} · ${e(h.costo)}</span>
+      <div class="hcard-det">${e(h.notas)}</div>
+      <div class="hcard-pills">
+        <span class="hpill bdg ${canCls}">${e(h.cancel)}</span>
+      </div>
+      <div class="maps-actions"><a class="maps-btn" href="${h.maps}" target="_blank" rel="noopener">📍 Google Maps</a><button class="maps-btn mapsme-btn" onclick="openMapsMe('${e(eJs(h.nombre))}','${e(eJs(h.lugar))}')">🗺️ MAPS.ME</button></div>
+    </div>`;
+  }).join('');
+}
+
+// ── MAPS.ME ──────────────────────────────────────────────
+// MAPS.ME admite enlaces profundos por coordenadas. Como este archivo guarda
+// los hoteles por nombre (no lat/lon), copiamos el nombre exacto y abrimos la app
+// para que la búsqueda funcione también con el mapa de Indonesia descargado.
+function openMapsMe(nombre,lugar){
+  const q=[nombre,lugar,'Indonesia'].filter(Boolean).join(', ');
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(q).then(()=>toast('Copiado: '+q)).catch(()=>toast(q));
+  else toast(q);
+  // Esquema oficial/histórico de MAPS.ME. Si el navegador no lo abre, cae al sitio.
+  const fallback=setTimeout(()=>{window.location.href='https://maps.me/app/';},1200);
+  window.addEventListener('pagehide',()=>clearTimeout(fallback),{once:true});
+  window.location.href='mapswithme://';
+}
+
+// ── GASTOS — currency toggle ───────────────────────────
+function toggleGCur(){
+  gCur=gCur==='USD'?'IDR':'USD';
+  const btn=document.getElementById('g-cur-btn');
+  if(btn){btn.textContent=gCur;btn.className='cur-tog '+(gCur==='USD'?'usd':'idr');}
+}
+
+// ── GASTOS — split mode ───────────────────────────────
+let splitMode='compartido';
+function setSM(m){
+  splitMode=m;
+  ['comp','dani','wally','custom'].forEach(x=>document.getElementById('sm-'+x)?.classList.remove('on'));
+  document.getElementById('sm-'+m)?.classList.add('on');
+  const sf=document.getElementById('sf-custom');
+  if(sf) sf.classList.toggle('show',m==='custom');
+}
+function onSFChange(type,persona){
+  const monto=parseFloat(document.getElementById('g-monto').value)||0;
+  const amtUSD=toUSD(monto,gCur);
+  if(type==='pct'){
+    const pct=parseFloat(document.getElementById('sf-'+persona+'-pct').value)||0;
+    const other=persona==='dani'?'wally':'dani';
+    document.getElementById('sf-'+persona+'-mnt').value=(amtUSD*pct/100).toFixed(2);
+    document.getElementById('sf-'+other+'-pct').value=(100-pct).toFixed(0);
+    document.getElementById('sf-'+other+'-mnt').value=(amtUSD*(100-pct)/100).toFixed(2);
+  } else {
+    const mnt=parseFloat(document.getElementById('sf-'+persona+'-mnt').value)||0;
+    const other=persona==='dani'?'wally':'dani';
+    const otherMnt=amtUSD-mnt;
+    document.getElementById('sf-'+persona+'-pct').value=amtUSD?(mnt/amtUSD*100).toFixed(0):'0';
+    document.getElementById('sf-'+other+'-mnt').value=otherMnt.toFixed(2);
+    document.getElementById('sf-'+other+'-pct').value=amtUSD?(otherMnt/amtUSD*100).toFixed(0):'0';
+  }
+}
+function calcSplit(amtUSD){
+  if(splitMode==='compartido') return{dani:amtUSD/2,wally:amtUSD/2};
+  if(splitMode==='dani') return{dani:amtUSD,wally:0};
+  if(splitMode==='wally') return{dani:0,wally:amtUSD};
+  // custom
+  const dm=parseFloat(document.getElementById('sf-dani-mnt').value)||0;
+  const wm=parseFloat(document.getElementById('sf-wally-mnt').value)||0;
+  return{dani:dm,wally:wm};
+}
+
+let editingGastoId=null;
+
+function addGasto(){
+  const desc=document.getElementById('g-desc').value.trim();
+  const monto=parseFloat(document.getElementById('g-monto').value);
+  if(!desc||isNaN(monto)||monto<=0)return;
+  const cat=document.getElementById('g-cat').value;
+  const fecha=document.getElementById('g-fecha').value;
+  const mp=document.getElementById('g-mp').value;
+  const notas=document.getElementById('g-notas').value.trim();
+  const amtUSD=toUSD(monto,gCur);
+  const {dani,wally}=calcSplit(amtUSD);
+  const payload={desc,monto,cur:gCur,cat,fecha,mp,notas,splitDani:dani,splitWally:wally,splitMode};
+  let g;
+  if(editingGastoId){
+    const old=GASTOS.find(x=>x.id===editingGastoId);
+    g={...(old||{ts:Date.now()}),...payload,id:editingGastoId};
+    GASTOS=GASTOS.map(x=>x.id===g.id?g:x);
+  }else{
+    g={id:newId('g'),ts:Date.now(),...payload};
+    GASTOS=[g,...GASTOS];
+  }
+  const wasEdit=!!editingGastoId;
+  resetGastoForm();renderGastos();recalcStats();
+  const {id,...body}=g;
+  put('gastos',id,body).then(ok=>{if(ok)toast(wasEdit?'Gasto modificado':'Gasto agregado');});
+}
+
+function resetGastoForm(){
+  editingGastoId=null;
+  document.getElementById('g-desc').value='';
+  document.getElementById('g-monto').value='';
+  document.getElementById('g-notas').value='';
+  document.getElementById('g-form-title').textContent='+ Nuevo gasto';
+  document.getElementById('g-save-btn').textContent='Agregar gasto';
+  document.getElementById('g-edit-banner').classList.remove('show');
+  setSM('compartido');
+  ['sf-dani-pct','sf-dani-mnt','sf-wally-pct','sf-wally-mnt'].forEach(id=>{const x=document.getElementById(id);if(x)x.value='';});
+}
+
+function editGasto(id){
+  const g=GASTOS.find(x=>x.id===id);if(!g)return;
+  editingGastoId=id;
+  document.getElementById('g-desc').value=g.desc||'';
+  document.getElementById('g-monto').value=g.monto||'';
+  document.getElementById('g-cat').value=g.cat||'otro';
+  document.getElementById('g-fecha').value=g.fecha||'';
+  document.getElementById('g-mp').value=g.mp||document.getElementById('g-mp').options[0].value;
+  document.getElementById('g-notas').value=g.notas||'';
+  gCur=g.cur||'USD';
+  const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'usd':'idr');
+  setSM(g.splitMode||'compartido');
+  if((g.splitMode||'compartido')==='custom'){
+    const total=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+    const d=parseFloat(g.splitDani||0),w=parseFloat(g.splitWally||0);
+    document.getElementById('sf-dani-mnt').value=d.toFixed(2);
+    document.getElementById('sf-wally-mnt').value=w.toFixed(2);
+    document.getElementById('sf-dani-pct').value=total?(d/total*100).toFixed(0):0;
+    document.getElementById('sf-wally-pct').value=total?(w/total*100).toFixed(0):0;
+  }
+  document.getElementById('g-form-title').textContent='✏️ Modificar gasto';
+  document.getElementById('g-save-btn').textContent='Guardar cambios';
+  document.getElementById('g-edit-banner').classList.add('show');
+  document.querySelector('.add-form')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cancelEditGasto(){resetGastoForm();}
+function delGasto(id,btn){
+  const g=GASTOS.find(x=>x.id===id);if(!g)return;
+  if(btn&&!btn.classList.contains('arm')){
+    btn.classList.add('arm');btn.textContent='¿Borrar?';
+    setTimeout(()=>{if(btn.isConnected){btn.classList.remove('arm');btn.textContent='🗑️';}},3000);
+    return;
+  }
+  GASTOS=GASTOS.filter(x=>x.id!==id);
+  if(editingGastoId===id) resetGastoForm();
+  renderGastos();recalcStats();
+  del('gastos',id).then(ok=>{if(ok)toast('Gasto eliminado');});
+}
+
+function renderGastos(){
+  const total=GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  document.getElementById('g-total').textContent=fmtAmt(total);
+  // secondary display
+  const secEl=document.getElementById('g-total-sec');
+  if(secEl) secEl.textContent=curDisplay!=='USD'?'≈ $'+total.toFixed(2)+' USD':'';
+  const cats={comida:0,transporte:0,actividad:0,otro:0};
+  GASTOS.forEach(g=>{
+    const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+    if(['hotel','compras','otro'].includes(g.cat)) cats.otro+=u;
+    else if(cats[g.cat]!==undefined) cats[g.cat]+=u;
+    else cats.otro+=u;
+  });
+  ['comida','transporte','actividad','otro'].forEach(c=>document.getElementById('gc-'+c).textContent=fmtAmt(cats[c]));
+  const dT=GASTOS.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
+  const wT=GASTOS.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
+  document.getElementById('sp-dani').textContent=fmtAmt(dT);
+  document.getElementById('sp-wally').textContent=fmtAmt(wT);
+
+  // Balance tipo Splitwise: lo que cada uno pagó menos lo que le correspondía consumir.
+  const paidDani=GASTOS.reduce((a,g)=>a+((g.mp||'').includes('Dani')?toUSD(parseFloat(g.monto||0),g.cur||'USD'):0),0);
+  const paidWally=GASTOS.reduce((a,g)=>a+((g.mp||'').includes('Wally')?toUSD(parseFloat(g.monto||0),g.cur||'USD'):0),0);
+  const netDani=paidDani-dT;
+  const bm=document.getElementById('balance-main');
+  const bs=document.getElementById('balance-sub');
+  if(bm){
+    const eps=.01;
+    if(Math.abs(netDani)<eps){
+      bm.textContent='Están a mano ✓';bm.classList.add('settled');
+    }else if(netDani>0){
+      bm.textContent='Wally le debe a Dani '+fmtAmt(netDani);bm.classList.remove('settled');
+    }else{
+      bm.textContent='Dani le debe a Wally '+fmtAmt(-netDani);bm.classList.remove('settled');
+    }
+  }
+  if(bs) bs.textContent='Pagó Dani '+fmtAmt(paidDani)+' · Pagó Wally '+fmtAmt(paidWally);
+  document.getElementById('g-bar').style.width=Math.min(100,total/800*100)+'%';
+  const el=document.getElementById('glist');
+  if(!GASTOS.length){el.innerHTML='<div class="empty">Registrá tu primer gasto arriba</div>';return;}
+  el.innerHTML=GASTOS.map(g=>{
+    const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+    const d=parseFloat(g.splitDani||0);
+    const w=parseFloat(g.splitWally||0);
+    const sm=g.splitMode||'compartido';
+    const smLabel=sm==='compartido'?'50/50':sm==='dani'?'Solo Dani':sm==='wally'?'Solo Wally':'Custom';
+    return `<div class="gi">
+      <div class="gi-top">
+        <div class="gi-ico">${CAT_ICO[g.cat]||'💳'}</div>
+        <div class="gi-info">
+          <div class="gi-desc">${e(g.desc)}</div>
+          <div class="gi-meta">${e(g.fecha)} · ${e(g.cat)}${g.mp?' · '+e(g.mp):''}${g.notas?' · '+e(g.notas):''}</div>
+          <div class="gi-meta">${e(g.monto)} ${e(g.cur||'USD')} · ${smLabel}</div>
+        </div>
+        <div class="gi-right">
+          <div class="gi-amt">${fmtAmt(u)}</div>
+          <div class="gi-actions"><button class="gi-edit" onclick="editGasto('${g.id}')" title="Modificar">✏️</button><button class="gi-del" onclick="delGasto('${g.id}',this)" title="Eliminar">🗑️</button></div>
+        </div>
+      </div>
+      ${d>0||w>0?`<div class="gi-split">
+        <div class="gi-sp"><div class="gsn">Dani</div><div class="gsv">${fmtAmt(d)}</div></div>
+        <div class="gi-sp"><div class="gsn">Wally</div><div class="gsv">${fmtAmt(w)}</div></div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── VUELOS ────────────────────────────────────────────
+function showFT(tab,btn){
+  document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ft').forEach(b=>b.classList.remove('on'));
+  document.getElementById('fp-'+tab).classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+
+// ── EXPORT ────────────────────────────────────────────
+function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
+async function exportData(){
+  const notes={};NOTAS.forEach(n=>{(notes[n.dia]=notes[n.dia]||[]).push(n.texto);});
+  const json=JSON.stringify({data:DATA,notes,gastos:GASTOS,config:CONFIG,at:new Date().toISOString()},null,2);
+  const filename='Indonesia2026_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  let dl=null;
+  try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){}
+  if(dl){
+    try{await dl.save({filename,data:json});dataMsg('Backup descargado.');}
+    catch(err){dataMsg(err&&err.code==='declined'?'Descarga cancelada.':'No se pudo descargar el backup.');}
+    return;
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+// Importa el backup JSON de la versión anterior (botón ⬇️). Es idempotente:
+// volver a importar el mismo archivo no duplica gastos ni notas.
+async function importData(input){
+  const f=input.files&&input.files[0];input.value='';if(!f)return;
+  let j;try{j=JSON.parse(await f.text());}catch(e){dataMsg('El archivo no es un backup válido (.json).');return;}
+  const gastos=Array.isArray(j.gastos)?j.gastos:[];
+  const dias=Array.isArray(j.data)?j.data:[];
+  const notes=j.notes&&typeof j.notes==='object'?j.notes:{};
+  let nG=0,nN=0,nD=0;dataMsg('Importando…');
+  for(const g of gastos){
+    if(!g||!g.desc)continue;
+    const id=String(g.id||newId('g')).replace(/[^A-Za-z0-9_.~:@+-]/g,'_');
+    const {id:_,...body}=g;if(!body.ts)body.ts=parseInt(String(g.id).replace(/\D/g,''))||Date.now();
+    GASTOS=[{id,...body},...GASTOS.filter(x=>x.id!==id)];
+    if(await put('gastos',id,body))nG++;
+  }
+  for(const d of dias){
+    const base=DIAS.find(x=>x.id===d.id);
+    if(!base||typeof d.detalle!=='string'||d.detalle===(DETALLES[d.id]??base.detalle))continue;
+    DETALLES[d.id]=d.detalle;
+    if(await put('dias',d.id,{detalle:d.detalle}))nD++;
+  }
+  for(const [dia,arr] of Object.entries(notes)){
+    if(!DIAS.some(x=>x.id===dia)||!Array.isArray(arr))continue;
+    for(let k=0;k<arr.length;k++){
+      const id='imp-'+dia+'-'+k;
+      const body={dia,texto:String(arr[k]),ts:Date.now()+k};
+      NOTAS=[...NOTAS.filter(n=>n.id!==id),{id,...body}];
+      if(await put('notas',id,body))nN++;
+    }
+  }
+  if(j.config&&j.config.tcArs){CONFIG={...CONFIG,tcArs:j.config.tcArs};applyConfig();put('config','app',CONFIG);}
+  GASTOS.sort((a,b)=>(b.ts||0)-(a.ts||0));refreshAll();
+  dataMsg(`Importado: ${nG} gastos, ${nN} notas, ${nD} días editados.`);
+}
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function eJs(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');}
+
+// ── INIT ──────────────────────────────────────────────
+document.getElementById('g-fecha').value=new Date().toISOString().split('T')[0];
+initStore();
+</script>
