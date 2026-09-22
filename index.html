@@ -29,6 +29,28 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .page.on{display:block}
 
 /* HOME */
+.hoy{background:var(--sf);border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.hoy-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hoy-lbl{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px}
+.hoy-dn{font-size:11px;color:var(--mu);white-space:nowrap}
+.hoy-place{font-size:18px;font-weight:800;line-height:1.25;margin-top:2px}
+.hoy-sec{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.hoy-k{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.hoy-t{font-size:15px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hoy-m{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-top:3px;font-variant-numeric:tabular-nums}
+.hoy-cd{color:var(--ac2);font-size:13px}
+.hoy-w{font-size:11px;color:#fde68a;margin-top:4px;line-height:1.4}
+.hoy-done{font-size:15px;font-weight:800;color:var(--gr)}
+.hoy-tom{font-size:13px;color:var(--mu);margin-top:4px;line-height:1.45}
+.hoy-tom b{color:var(--tx)}
+.hoy-tom .hoy-cd{color:var(--ac2)}
+.hoy-list{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:3px}
+.hoy-list li{display:flex;gap:8px;font-size:12px;color:var(--mu);min-width:0}
+.hoy-lt{flex-shrink:0;min-width:44px;font-variant-numeric:tabular-nums}
+.hoy-lx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hoy-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:wrap;margin-top:4px}
+.hoy-foot .maps-btn{margin-top:8px;padding:6px 10px}
+.hoy-more{border:none;background:none;color:var(--ac);font-size:12px;font-weight:600;padding:8px 0 0;margin-left:auto}
 .trip-hero{background:linear-gradient(135deg,#0f2847,#0a3d2e 50%,#1a1065);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
 .trip-hero::before{content:'🌏';position:absolute;right:-10px;top:-10px;font-size:100px;opacity:.07;transform:rotate(15deg)}
 .trip-hero h1{font-size:22px;font-weight:800;line-height:1.2}
@@ -383,6 +405,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <main>
 <!-- HOME -->
 <section class="page" id="p-home">
+  <div class="hoy" id="hoy" hidden aria-live="polite"></div>
   <div class="trip-hero">
     <h1>🌏 Indonesia<br>oct–nov 2026</h1>
     <div class="hm">13 oct COR → 5 nov AEP · 21 días</div>
@@ -806,7 +829,7 @@ const lsSet=v=>{try{localStorage.setItem(LK,JSON.stringify(v))}catch(e){}};
 let db=null;
 let DETALLES={}, NOTAS=[], GASTOS=[], CONFIG={tcArs:1350};
 let DATA=[];
-function buildData(){DATA=DIAS.map(d=>({...d,detalle:DETALLES[d.id]??d.detalle}));}
+function buildData(){DATA=DIAS.map(d=>({...d,detalle:DETALLES[d.id]??d.detalle}));renderHoy();}
 function notesOf(dia){return NOTAS.filter(n=>n.dia===dia).sort((a,b)=>(a.ts||0)-(b.ts||0));}
 function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS,docs:USERDOCS});}
 function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -899,7 +922,7 @@ function go(p,btn){
   if(p==='dias'){renderFiltros();renderDias();}
   if(p==='hoteles') renderHoteles();
   if(p==='gastos') renderGastos();
-  if(p==='home') recalcStats();
+  if(p==='home'){recalcStats();renderHoy();}
   if(p==='docs') renderDocs();
 }
 
@@ -1727,6 +1750,148 @@ async function delDoc(id,btn){
   if(await del('docs',id))toast('Documento borrado');
 }
 
+// ── HOY / AHORA / PRÓXIMO ─────────────────────────────
+// Vista derivada del itinerario (DATA, que ya incluye las ediciones de Días).
+// No guarda nada: se recalcula con la hora local del teléfono.
+const MES_IDX={oct:9,nov:10},TRIP_YEAR=2026;
+const ZONE_EMO={JAVA:'☕',BALI:'🌿',FLORES:'🐉',GILI:'🏝',REGRESO:'✈️'};
+// Franjas del día sin hora exacta: sirven para saber si ya pasaron, nunca para "Ahora".
+const PARTS={'mañana':[6,12],'mediodía':[12,14],'mediodia':[12,14],'tarde':[14,19],'atardecer':[17,19],'noche':[19,24],'mañana-tarde':[6,19],'mediodía-tarde':[12,19]};
+const TIME_RE=/^(?:([^\p{L}\p{N}~\s]+)\s*)?(?:(\d{1,2})\s+(oct|nov)\s+)?(~)?(\d{1,2})[:.](\d{2})(?:\s*[-–]\s*(~)?(\d{1,2})[:.](\d{2}))?\s*[·—]\s*(.+)$/iu;
+const LAST_ITEM_MIN=90; // la última actividad con hora, sin hora de fin, se da por "en curso" 90 min
+
+function dayDate(d){
+  const m=(d.fecha||'').match(/(\d{1,2})(?:-\d{1,2})?\s+(oct|nov)/i);
+  return m?new Date(TRIP_YEAR,MES_IDX[m[2].toLowerCase()],+m[1]):null;
+}
+const sameDay=(a,b)=>a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+const atTime=(base,h,mi)=>new Date(base.getFullYear(),base.getMonth(),base.getDate(),+h,+mi);
+const hhmm=dt=>String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+
+function parseAgenda(d){
+  const base=dayDate(d);if(!base)return [];
+  const items=[];
+  (d.detalle||'').split('\n').forEach(raw=>{
+    const t=raw.trim();if(!t)return;
+    const m=t.match(TIME_RE);
+    if(m){
+      const day=m[2]?new Date(TRIP_YEAR,MES_IDX[m[3].toLowerCase()],+m[2]):base;
+      const start=atTime(day,m[5],m[6]);
+      let end=m[8]?atTime(day,m[8],m[9]):null;
+      if(end&&end<=start)end=new Date(end.getTime()+864e5);
+      items.push({kind:'time',start,end,approx:!!(m[4]||m[7]),text:(m[1]?m[1]+' ':'')+m[10].trim(),notes:[]});
+      return;
+    }
+    const p=t.match(/^([\p{L}-]+)\s*·\s*(.+)$/u);
+    const win=p&&PARTS[p[1].toLowerCase()];
+    if(win){items.push({kind:'part',label:p[1],text:p[2].trim(),winEnd:atTime(base,win[1]===24?23:win[1],win[1]===24?59:0),notes:[]});return;}
+    if(items.length)items[items.length-1].notes.push(t);
+  });
+  return items;
+}
+function fmtCountdown(ms){
+  const min=Math.ceil(ms/6e4);if(min<60)return `En ${min} min`;
+  const h=Math.floor(min/60),r=min%60;return r?`En ${h} h ${r} min`:`En ${h} h`;
+}
+function itemTime(it){
+  if(it.kind==='part')return it.label;
+  const s=(it.approx?'~':'')+hhmm(it.start);
+  return it.end?`${s}–${hhmm(it.end)}`:s;
+}
+// Countdown solo con hora exacta y futura.
+function itemCountdown(it,now){return it.kind==='time'&&!it.approx&&it.start>now?fmtCountdown(it.start-now):'';}
+
+function hoyState(now){
+  let idx=DATA.findIndex(d=>sameDay(dayDate(d),now));
+  let items=idx>=0?parseAgenda(DATA[idx]):[],overflow=false;
+  if(idx<0){overflow=true; // p.ej. 5 nov: líneas "5 nov …" del último día
+    idx=DATA.findIndex(d=>parseAgenda(d).some(it=>it.kind==='time'&&sameDay(it.start,now)&&!sameDay(dayDate(d),now)));
+    if(idx<0)return null;
+    items=parseAgenda(DATA[idx]).filter(it=>it.kind==='time'&&sameDay(it.start,now));
+  }
+  const day=DATA[idx];
+  const timed=items.map((it,i)=>({it,i})).filter(x=>x.it.kind==='time');
+  let ahora=null,pos=-1;
+  timed.forEach((x,k)=>{
+    if(x.it.start<=now)pos=x.i;
+    if(x.it.approx||x.it.start>now)return;
+    const next=timed[k+1];
+    const end=x.it.end||(next?next.it.start:new Date(x.it.start.getTime()+LAST_ITEM_MIN*6e4));
+    if(now<end)ahora=x.it;
+  });
+  const pending=items.slice(pos+1).filter(it=>it!==ahora&&(it.kind==='time'?it.start>now:it.winEnd>now));
+  const next=DATA[idx+1]||null;
+  return {day,idx,items,overflow,ahora,proximo:pending[0]||null,siguientes:pending.slice(1,4),
+    tomorrow:next?{day:next,first:parseAgenda(next)[0]||null}:null};
+}
+
+// Acciones: solo las que tienen datos para ese día.
+function hotelOf(d){
+  const clean=s=>(s||'').replace(/\s*\(.*?\)\s*/g,'').trim().toLowerCase();
+  const h=clean(d.hotel);if(!h)return null;
+  const w3=s=>s.split(/\s+/).slice(0,3).join(' ');
+  return HOTELES.find(x=>{const n=clean(x.nombre);return n.startsWith(h)||h.startsWith(n);})
+      ||HOTELES.find(x=>w3(clean(x.nombre))===w3(h))||null;
+}
+function reservaOf(d){
+  const dt=dayDate(d);
+  if(dt){const tag=`${dt.getDate()} ${dt.getMonth()===9?'oct':'nov'}`;
+    const doc=DOCS.find(x=>(x.g==='vuelos'||x.g==='tours')&&new RegExp('(^|\\D)'+tag+'\\b').test(x.s||''));
+    if(doc)return {u:doc.u,t:doc.t};}
+  return d.link?{u:d.link,t:d.linkTxt||'Reserva'}:null;
+}
+// Destino del día (último tramo de la ruta que esté en Indonesia).
+function placeQuery(d){return (d.lugar||'').split('→').map(x=>x.replace(/—.*$/,'').trim()).filter(x=>x&&!/buenos aires/i.test(x)).pop()||'';}
+
+let hoyLastKey='';
+function renderHoy(){
+  const box=document.getElementById('hoy');if(!box)return;
+  const now=new Date();
+  const st=DATA.length?hoyState(now):null;
+  document.querySelector('.trip-hero')?.toggleAttribute('hidden',!!st);
+  if(!st){box.hidden=true;box.innerHTML='';hoyLastKey='';return;}
+  const {day}=st,col=ZONE_COL[day.zona]||'#7a849a';
+  const fecha=now.toLocaleDateString('es-AR',{weekday:'long'})+' '+now.getDate()+' '+now.toLocaleDateString('es-AR',{month:'long'});
+  const blk=(k,it)=>{
+    const cd=itemCountdown(it,now);
+    // Las notas después del último ítem son del día en general, no de esa actividad.
+    const warn=it!==st.items[st.items.length-1]&&it.notes.find(n=>n.startsWith('⚠️'));
+    return `<div class="hoy-sec"><div class="hoy-k">${k}</div><div class="hoy-t">${e(it.text)}</div>
+      <div class="hoy-m"><span>${e(itemTime(it))}</span>${cd?`<b class="hoy-cd">${cd}</b>`:''}</div>${warn?`<div class="hoy-w">${e(warn)}</div>`:''}</div>`;
+  };
+  let body='';
+  if(st.ahora)body+=blk('Ahora',st.ahora);
+  if(st.proximo)body+=blk(st.ahora?'Próximo':'Próximo en el plan',st.proximo);
+  if(!st.ahora&&!st.proximo){
+    body+=`<div class="hoy-sec"><div class="hoy-done">${st.items.length?'Por hoy, listo ✓':'Sin horarios cargados para hoy'}</div>`;
+    const tm=st.tomorrow;
+    if(tm){const f=tm.first,cd=f?itemCountdown(f,now):'';
+      body+=`<div class="hoy-tom">Mañana → <b>${e(tm.day.lugar)}</b>${f?` · ${e(itemTime(f))} ${e(f.text)}`:''}${cd?` <b class="hoy-cd">${cd}</b>`:''}</div>`;}
+    body+='</div>';
+  }
+  const list=st.siguientes.length?`<ul class="hoy-list">${st.siguientes.map(it=>`<li><span class="hoy-lt">${e(itemTime(it))}</span><span class="hoy-lx">${e(it.text)}</span></li>`).join('')}</ul>`:'';
+  // El día siguiente al último (5 nov) ya no hay hotel ni lugar al que ir.
+  const h=st.overflow?null:hotelOf(day),r=reservaOf(day),q=st.overflow?'':placeQuery(day);
+  const acts=[
+    q?`<a class="maps-btn" href="https://maps.google.com/?q=${encodeURIComponent(q+', Indonesia')}" target="_blank" rel="noopener">📍 Maps</a>`:'',
+    r?`<a class="maps-btn voucher-btn" href="${e(r.u)}" target="_blank" rel="noopener" title="${e(r.t)}">🎫 Reserva</a>`:'',
+    h?`<a class="maps-btn mapsme-btn" href="${e(h.maps)}" target="_blank" rel="noopener" title="${e(h.nombre)}">🏨 Hotel</a>`:'',
+  ].join('');
+  const html=`<div class="hoy-top"><span class="hoy-lbl">Hoy · ${e(fecha)}</span><span class="hoy-dn">Día ${day.n+1} de ${DATA.length}</span></div>
+    <div class="hoy-place" style="color:${col}">${ZONE_EMO[day.zona]||''} ${e(day.lugar)}</div>
+    ${body}${list}
+    <div class="hoy-foot">${acts?`<div class="maps-actions">${acts}</div>`:'<span></span>'}<button class="hoy-more" onclick="verDia('${day.id}')">Ver día completo →</button></div>`;
+  if(html!==hoyLastKey){box.innerHTML=html;hoyLastKey=html;}
+  box.hidden=false;box.style.borderLeftColor=col;
+}
+function verDia(id){
+  curZona='ALL';const s=document.getElementById('srch');if(s)s.value='';
+  go('dias',document.querySelector(`.nb[onclick*="'dias'"]`));
+  openDay(id);
+}
+setInterval(()=>{if(!document.hidden)renderHoy();},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHoy();});
+
 // ── EXPORT ────────────────────────────────────────────
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
@@ -1788,4 +1953,6 @@ document.getElementById('doc-g').innerHTML=DOC_GROUPS.map(([g,l])=>`<option valu
 document.getElementById('faltan-list').innerHTML=DOCS_FALTAN.map(x=>`<li>${e(x)}</li>`).join('');
 applyPanel('docadd');
 initStore();
+// Durante el viaje la app abre en Inicio (Hoy); fuera de fechas, en Gastos como siempre.
+if(hoyState(new Date()))go('home',document.querySelector(`.nb[onclick*="'home'"]`));
 </script>
