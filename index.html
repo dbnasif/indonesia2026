@@ -194,6 +194,65 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .mp-inline .mp-ic{width:18px;height:12px}
 .sf-err{font-size:11px;color:#fca5a5;margin-top:4px}
 .gi-sp .gsp{font-size:10px;color:var(--mu);margin-top:1px}
+.panel{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:12px}
+.panel-h{width:100%;display:flex;align-items:center;gap:10px;background:none;border:none;padding:13px 14px;text-align:left}
+.panel-h h3{font-size:14px;font-weight:700;flex:1}
+.panel-h .ph-sum{font-size:12px;color:var(--mu);font-weight:600;font-variant-numeric:tabular-nums}
+.panel-h .ph-chev{width:28px;height:28px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mu);transition:transform .2s}
+.panel.closed .ph-chev{transform:rotate(-90deg)}
+.panel-b{padding:0 14px 14px}
+.panel.closed .panel-b{display:none}
+/* deuda */
+.debt{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.debt-lbl{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.debt-main{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.debt-who{font-size:16px;font-weight:800}
+.debt-who .dn{color:#fca5a5}
+.debt-amt{font-size:22px;font-weight:800;color:#fca5a5;font-variant-numeric:tabular-nums}
+.debt.settled .debt-amt{color:var(--gr)}
+.dv{margin-top:12px}
+.dv-names{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--mu);margin-bottom:5px}
+.dv-names .deb{color:#fca5a5}
+.dv-track{position:relative;height:12px;background:var(--sf2);border-radius:99px;overflow:hidden}
+.dv-track::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--mu)}
+.dv-fill{position:absolute;top:0;bottom:0;background:var(--rd)}
+.dv-fill.l{right:50%;border-radius:99px 0 0 99px}
+.dv-fill.r{left:50%;border-radius:0 99px 99px 0}
+.debt-rows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.debt-p{background:var(--sf2);border-radius:var(--rs);padding:9px 10px;font-size:11px;color:var(--mu);line-height:1.6;font-variant-numeric:tabular-nums}
+.debt-p b{color:var(--tx);font-size:12px}
+/* gráfico apilado */
+.ch-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
+.ch-title{font-size:12px;font-weight:700;color:var(--mu)}
+.ch-rows{display:grid;grid-template-columns:44px 1fr auto;gap:10px 8px;align-items:center}
+.ch-name{font-size:12px;font-weight:700}
+.ch-bar{display:flex;gap:2px;height:22px;min-width:0}
+.ch-seg{height:100%;min-width:3px;border:none;padding:0;cursor:pointer}
+.ch-seg:last-child{border-radius:0 4px 4px 0}
+.ch-seg.hi{outline:2px solid var(--tx);outline-offset:1px}
+.ch-val{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.ch-empty{font-size:12px;color:var(--mu)}
+.ch-read{font-size:12px;color:var(--mu);margin-top:10px;min-height:18px;font-variant-numeric:tabular-nums}
+.ch-read b{color:var(--tx)}
+.ch-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.ch-li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);font-variant-numeric:tabular-nums}
+.ch-li i{width:10px;height:10px;border-radius:3px;display:block}
+.ch-li b{color:var(--tx);font-weight:600}
+/* tabla de gastos */
+.gt-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow-x:auto}
+.gt{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.gt th{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+.gt td{padding:9px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.gt tbody tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.gt tbody tr.editing td{background:rgba(59,130,246,.1)}
+.gt .num{text-align:right;white-space:nowrap}
+.gt .t-desc{font-weight:600;line-height:1.3}
+.gt .t-sub{font-size:10px;color:var(--mu);margin-top:2px;line-height:1.35}
+.gt .t-who{white-space:nowrap;display:flex;align-items:center;gap:4px}
+.gt .t-amt{font-weight:800;color:var(--gr)}
+.gt .t-act{display:flex;gap:4px;justify-content:flex-end}
+.gt .t-act button{min-width:30px;height:30px;font-size:12px}
+.gt tfoot td{font-weight:800;border-bottom:none;padding-top:10px;padding-bottom:10px}
 .add-g-btn{width:100%;border:none;background:var(--ac);color:#fff;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;margin-top:4px}
 
 /* gasto item */
@@ -288,7 +347,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="cur-manual">
       <span>USD 1 =</span>
-      <input type="number" id="tc-ars" value="1350" min="1" oninput="recalcStats();renderGastos()" onchange="saveTc()" placeholder="ARS">
+      <input type="text" inputmode="decimal" autocomplete="off" id="tc-ars" value="1350" oninput="recalcStats();renderGastos()" onchange="saveTc()" placeholder="ARS">
       <span>ARS</span>
     </div>
   </div>
@@ -347,13 +406,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="page" id="p-gastos">
 
 
-  <div class="add-form">
-    <h3 id="g-form-title">+ Nuevo gasto</h3>
+  <div class="debt settled" id="debt">
+    <div class="debt-lbl">Balance entre ustedes</div>
+    <div class="debt-main"><div class="debt-who" id="debt-who">Están a mano ✓</div><div class="debt-amt" id="debt-amt"></div></div>
+    <div class="dv" id="dv" aria-hidden="true">
+      <div class="dv-names"><span id="dv-dani">Dani</span><span id="dv-wally">Wally</span></div>
+      <div class="dv-track"><div class="dv-fill" id="dv-fill" style="width:0"></div></div>
+    </div>
+    <div class="debt-rows">
+      <div class="debt-p"><b>Dani</b><br>Pagó <span id="dp-dani-pay">$0</span><br>Le corresponde <span id="dp-dani-own">$0</span></div>
+      <div class="debt-p"><b>Wally</b><br>Pagó <span id="dp-wally-pay">$0</span><br>Le corresponde <span id="dp-wally-own">$0</span></div>
+    </div>
+  </div>
+
+  <section class="panel" id="pn-form">
+    <button class="panel-h" aria-expanded="true" aria-controls="pb-form" onclick="togglePanel('form')">
+      <h3 id="g-form-title">+ Nuevo gasto</h3><span class="ph-chev" aria-hidden="true">▾</span>
+    </button>
+    <div class="panel-b" id="pb-form">
     <div class="edit-banner" id="g-edit-banner"><span>✏️ Estás modificando un gasto existente</span><button class="edit-cancel" onclick="cancelEditGasto()">Cancelar</button></div>
     <div class="form-row">
       <input class="fi" id="g-desc" placeholder="Descripción">
       <div class="monto-wrap">
-        <input class="monto-input" id="g-monto" placeholder="Monto" type="number" step="0.01" min="0" oninput="refreshCustom();checkCustom('pf');checkCustom('sf')">
+        <input class="monto-input" id="g-monto" placeholder="Monto" type="text" inputmode="decimal" autocomplete="off" oninput="refreshCustom();checkCustom('pf');checkCustom('sf')">
         <button class="cur-tog usd" id="g-cur-btn" onclick="toggleGCur()">USD</button>
       </div>
     </div>
@@ -383,13 +458,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="split-fields" id="pf-custom">
         <div class="sf-row">
           <label>Dani</label>
-          <input type="number" id="pf-dani-pct" placeholder="%" min="0" max="100" oninput="onSFChange('pf','pct','dani')">
-          <input type="number" id="pf-dani-mnt" class="mnt-in" placeholder="USD" step="0.01" min="0" oninput="onSFChange('pf','mnt','dani')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="pf-dani-pct" placeholder="%" oninput="onSFChange('pf','pct','dani')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="pf-dani-mnt" class="mnt-in" placeholder="USD" oninput="onSFChange('pf','mnt','dani')">
         </div>
         <div class="sf-row">
           <label>Wally</label>
-          <input type="number" id="pf-wally-pct" placeholder="%" min="0" max="100" oninput="onSFChange('pf','pct','wally')">
-          <input type="number" id="pf-wally-mnt" class="mnt-in" placeholder="USD" step="0.01" min="0" oninput="onSFChange('pf','mnt','wally')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="pf-wally-pct" placeholder="%" oninput="onSFChange('pf','pct','wally')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="pf-wally-mnt" class="mnt-in" placeholder="USD" oninput="onSFChange('pf','mnt','wally')">
         </div>
         <div class="sf-auto">Ingresá % o monto de uno y se calcula el otro</div>
         <div class="sf-err" id="pf-err" hidden></div>
@@ -409,13 +484,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="split-fields" id="sf-custom">
         <div class="sf-row">
           <label>Dani</label>
-          <input type="number" id="sf-dani-pct" placeholder="%" min="0" max="100" oninput="onSFChange('sf','pct','dani')">
-          <input type="number" id="sf-dani-mnt" class="mnt-in" placeholder="USD" step="0.01" min="0" oninput="onSFChange('sf','mnt','dani')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="sf-dani-pct" placeholder="%" oninput="onSFChange('sf','pct','dani')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="sf-dani-mnt" class="mnt-in" placeholder="USD" oninput="onSFChange('sf','mnt','dani')">
         </div>
         <div class="sf-row">
           <label>Wally</label>
-          <input type="number" id="sf-wally-pct" placeholder="%" min="0" max="100" oninput="onSFChange('sf','pct','wally')">
-          <input type="number" id="sf-wally-mnt" class="mnt-in" placeholder="USD" step="0.01" min="0" oninput="onSFChange('sf','mnt','wally')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="sf-wally-pct" placeholder="%" oninput="onSFChange('sf','pct','wally')">
+          <input type="text" inputmode="decimal" autocomplete="off" id="sf-wally-mnt" class="mnt-in" placeholder="USD" oninput="onSFChange('sf','mnt','wally')">
         </div>
         <div class="sf-auto">Ingresá % o monto de uno y se calcula el otro</div>
         <div class="sf-err" id="sf-err" hidden></div>
@@ -423,34 +498,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
 
     <button class="add-g-btn" id="g-save-btn" onclick="addGasto()">Agregar gasto</button>
-  </div>
+    </div>
+  </section>
 
-  <div class="g-summary">
-    <div class="g-total-row">
-      <div class="g-total" id="g-total">$0</div>
-      <div class="g-total-sec" id="g-total-sec"></div>
+  <section class="panel" id="pn-sum">
+    <button class="panel-h" aria-expanded="true" aria-controls="pb-sum" onclick="togglePanel('sum')">
+      <h3>📊 Resumen de gastos</h3><span class="ph-sum" id="g-total-mini"></span><span class="ph-chev" aria-hidden="true">▾</span>
+    </button>
+    <div class="panel-b" id="pb-sum">
+      <div class="g-total-row">
+        <div class="g-total" id="g-total">$0</div>
+        <div class="g-total-sec" id="g-total-sec"></div>
+      </div>
+      <div class="g-sub">Total de gastos registrados durante el viaje</div>
+      <div class="ch-head">
+        <span class="ch-title">Por tipo de gasto · lo que le corresponde a cada uno</span>
+        <div class="cur-btns" role="group" aria-label="Moneda del gráfico">
+          <button class="cur-btn on" id="ch-usd" onclick="setChartCur('USD')">USD</button>
+          <button class="cur-btn" id="ch-idr" onclick="setChartCur('IDR')">IDR</button>
+        </div>
+      </div>
+      <div class="ch-rows" id="chart"></div>
+      <div class="ch-read" id="ch-read">Tocá una parte de la barra para ver el detalle.</div>
+      <div class="ch-leg" id="ch-leg"></div>
     </div>
-    <div class="g-sub">Total gastos registrados durante el viaje</div>
-    <div class="g-bar"><div class="g-fill" id="g-bar" style="width:0%"></div></div>
-    <div class="g-cats">
-      <div class="gcat"><div class="gv" id="gc-comida">$0</div><div class="gl">🍜 Comida</div></div>
-      <div class="gcat"><div class="gv" id="gc-transporte">$0</div><div class="gl">🚗 Transporte</div></div>
-      <div class="gcat"><div class="gv" id="gc-actividad">$0</div><div class="gl">🎟 Actividades</div></div>
-      <div class="gcat"><div class="gv" id="gc-otro">$0</div><div class="gl">💳 Otro</div></div>
-    </div>
-    <div class="split-row">
-      <div class="split-persona"><div class="sp-name">Le corresponde a Dani</div><div class="sp-monto" id="sp-dani">$0</div></div>
-      <div class="split-persona"><div class="sp-name">Le corresponde a Wally</div><div class="sp-monto" id="sp-wally">$0</div></div>
-    </div>
-    <div class="balance-card" id="balance-card">
-      <div class="balance-label">Balance entre ustedes</div>
-      <div class="balance-main settled" id="balance-main">Están a mano ✓</div>
-      <div class="balance-sub" id="balance-sub">Según quién pagó y cómo dividieron cada gasto.</div>
-    </div>
-  </div>
+  </section>
 
   <div class="shdr">Gastos registrados</div>
   <div id="glist"></div>
+
 </section>
 
 <!-- VUELOS -->
@@ -565,7 +641,7 @@ function getRate(from) {
 function fmtAmt(usdAmt) {
   if(curDisplay==='USD') return '$'+usdAmt.toFixed(2);
   if(curDisplay==='ARS') {
-    const tc = parseFloat(document.getElementById('tc-ars')?.value)||1350;
+    const tc = pnum(document.getElementById('tc-ars')?.value)||1350;
     return '$'+(usdAmt*tc).toLocaleString('es-AR',{maximumFractionDigits:0});
   }
   return 'Rp'+(usdAmt*RATES.IDR).toLocaleString('id-ID',{maximumFractionDigits:0});
@@ -621,7 +697,7 @@ function applyConfig(){
   if(inp&&document.activeElement!==inp) inp.value=CONFIG.tcArs||1350;
 }
 function saveTc(){
-  const v=parseFloat(document.getElementById('tc-ars').value);
+  const v=pnum(document.getElementById('tc-ars').value);
   if(!v||v<=0)return;
   CONFIG={...CONFIG,tcArs:v};
   put('config','app',CONFIG);
@@ -833,12 +909,12 @@ function openMapsMe(nombre,lugar){
 }
 
 // ── GASTOS — métodos de pago ──────────────────────────
-// TC = tarjeta de crédito · DB = tarjeta de débito.
+// TC = tarjeta de crédito · TB = tarjeta de débito.
 // Tarjeta roja = Santander · tarjeta azul = Macro.
 const BANKS={s:{name:'Santander',col:'#ec0000'},m:{name:'Macro',col:'#2f6fe4'}};
 const MP={
-  dani:[{k:'efectivo',t:'Efectivo'},{k:'db-s',t:'DB',bank:'s'},{k:'tc-s',t:'TC Visa',bank:'s'},{k:'db-m',t:'DB',bank:'m'},{k:'tc-m',t:'TC Visa',bank:'m'}],
-  wally:[{k:'efectivo',t:'Efectivo'},{k:'tc-s',t:'TC Visa',bank:'s'},{k:'db-m',t:'DB',bank:'m'},{k:'tc-m',t:'TC Visa',bank:'m'}],
+  dani:[{k:'efectivo',t:'Efectivo'},{k:'db-s',t:'TB',bank:'s'},{k:'tc-s',t:'TC Visa',bank:'s'},{k:'db-m',t:'TB',bank:'m'},{k:'tc-m',t:'TC Visa',bank:'m'}],
+  wally:[{k:'efectivo',t:'Efectivo'},{k:'tc-s',t:'TC Visa',bank:'s'},{k:'db-m',t:'TB',bank:'m'},{k:'tc-m',t:'TC Visa',bank:'m'}],
 };
 // Valores guardados por la versión anterior (un solo "mp" con el nombre adentro).
 const LEGACY_MP={
@@ -909,19 +985,30 @@ function setSM(m){
   document.getElementById('sf-custom').classList.toggle('show',m==='custom');
   checkCustom('sf');
 }
+// Acepta "12,50", "12.50", "150.000" y "1.500,75" (formato argentino).
+function pnum(v){
+  let t=String(v??'').trim().replace(/\s/g,'');
+  if(!t)return NaN;
+  const commas=(t.match(/,/g)||[]).length;
+  if(t.includes(',')&&t.includes('.')) t=t.replace(/\./g,'').replace(',','.');
+  else if(commas>1) t=t.replace(/,/g,'');
+  else if(commas===1) t=t.replace(',','.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,'');
+  return parseFloat(t);
+}
 function fval(id){return document.getElementById(id).value;}
 function fset(id,v){document.getElementById(id).value=v;}
 // Montos de la división manual en la moneda del gasto (USD o IDR).
 function onSFChange(grp,type,persona){
-  const monto=parseFloat(fval('g-monto'))||0;
+  const monto=pnum(fval('g-monto'))||0;
   const other=persona==='dani'?'wally':'dani';
   if(type==='pct'){
-    const pct=Math.min(100,Math.max(0,parseFloat(fval(`${grp}-${persona}-pct`))||0));
+    const pct=Math.min(100,Math.max(0,pnum(fval(`${grp}-${persona}-pct`))||0));
     fset(`${grp}-${persona}-mnt`,roundCur(monto*pct/100,gCur));
     fset(`${grp}-${other}-pct`,+(100-pct).toFixed(1));
     fset(`${grp}-${other}-mnt`,roundCur(monto*(100-pct)/100,gCur));
   }else{
-    const mnt=parseFloat(fval(`${grp}-${persona}-mnt`))||0;
+    const mnt=pnum(fval(`${grp}-${persona}-mnt`))||0;
     const rest=Math.max(0,monto-mnt);
     fset(`${grp}-${persona}-pct`,monto?+(mnt/monto*100).toFixed(1):0);
     fset(`${grp}-${other}-mnt`,roundCur(rest,gCur));
@@ -936,8 +1023,8 @@ function refreshCustom(){
 function customErr(grp){
   const mode=grp==='pf'?payMode:splitMode;
   if(mode!=='custom')return '';
-  const monto=parseFloat(fval('g-monto'))||0;
-  const d=parseFloat(fval(`${grp}-dani-mnt`)),w=parseFloat(fval(`${grp}-wally-mnt`));
+  const monto=pnum(fval('g-monto'))||0;
+  const d=pnum(fval(`${grp}-dani-mnt`)),w=pnum(fval(`${grp}-wally-mnt`));
   if(isNaN(d)||isNaN(w))return 'Completá la división manual.';
   if(d<0||w<0)return 'Los montos no pueden ser negativos.';
   const tol=gCur==='USD'?0.01:1;
@@ -946,7 +1033,7 @@ function customErr(grp){
 }
 function checkCustom(grp){
   const el=document.getElementById(grp+'-err');if(!el)return;
-  const monto=parseFloat(fval('g-monto'));
+  const monto=pnum(fval('g-monto'));
   const msg=isNaN(monto)?'':customErr(grp);
   el.textContent=msg;el.hidden=!msg;
 }
@@ -954,7 +1041,7 @@ function calcShare(mode,grp,amtUSD){
   if(mode==='compartido') return{dani:amtUSD/2,wally:amtUSD/2};
   if(mode==='dani') return{dani:amtUSD,wally:0};
   if(mode==='wally') return{dani:0,wally:amtUSD};
-  return{dani:toUSD(parseFloat(fval(`${grp}-dani-mnt`))||0,gCur),wally:toUSD(parseFloat(fval(`${grp}-wally-mnt`))||0,gCur)};
+  return{dani:toUSD(pnum(fval(`${grp}-dani-mnt`))||0,gCur),wally:toUSD(pnum(fval(`${grp}-wally-mnt`))||0,gCur)};
 }
 function fillCustom(grp,dUSD,wUSD,cur){
   const d=fromUSD(dUSD,cur),w=fromUSD(wUSD,cur),t=d+w;
@@ -976,7 +1063,7 @@ let editingGastoId=null;
 
 function addGasto(){
   const desc=document.getElementById('g-desc').value.trim();
-  const monto=parseFloat(fval('g-monto'));
+  const monto=pnum(fval('g-monto'));
   if(!desc){toast('Poné una descripción.');document.getElementById('g-desc').focus();return;}
   if(isNaN(monto)||monto<=0){toast('Poné un monto mayor a 0.');document.getElementById('g-monto').focus();return;}
   const errP=customErr('pf'),errS=customErr('sf');
@@ -1028,14 +1115,15 @@ function editGasto(id){
   gCur=g.cur||'USD';
   const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'usd':'idr');
   document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
-  mpSel.dani=g.mpDani||'efectivo';mpSel.wally=g.mpWally||'efectivo';renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
+  mpSel.dani=g.mpDani||'efectivo';mpSel.wally=g.mpWally||'efectivo';renderDD('dani');renderDD('wally');
   fillCustom('pf',parseFloat(g.payDani||0),parseFloat(g.payWally||0),gCur);
   fillCustom('sf',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0),gCur);
   setPM(g.payMode||'dani');setSM(g.splitMode||'compartido');
   document.getElementById('g-form-title').textContent='✏️ Modificar gasto';
   document.getElementById('g-save-btn').textContent='Guardar cambios';
   document.getElementById('g-edit-banner').classList.add('show');
-  document.querySelector('.add-form')?.scrollIntoView({behavior:'smooth',block:'start'});
+  togglePanel('form',true);renderGastos();
+  document.getElementById('pn-form')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function cancelEditGasto(){resetGastoForm();}
 function delGasto(id,btn){
@@ -1051,70 +1139,131 @@ function delGasto(id,btn){
   del('gastos',id).then(ok=>{if(ok)toast('Gasto eliminado');});
 }
 
-const MODE_LBL={compartido:'50/50',dani:'Dani',wally:'Wally',custom:'División manual'};
-function payLine(g){
-  const d=parseFloat(g.payDani||0),w=parseFloat(g.payWally||0);
-  if(g.payMode==='dani') return 'Dani · '+mpInline('dani',g.mpDani);
-  if(g.payMode==='wally') return 'Wally · '+mpInline('wally',g.mpWally);
-  return `Dani ${fmtAmt(d)} ${mpInline('dani',g.mpDani)} + Wally ${fmtAmt(w)} ${mpInline('wally',g.mpWally)}`;
+// ── GASTOS — paneles plegables (se recuerda por dispositivo) ──
+const UIK='id26ui';
+let UI=(()=>{try{return JSON.parse(localStorage.getItem(UIK))||{}}catch(e){return{}}})();
+function applyPanel(k){
+  const open=UI[k]!==false;
+  document.getElementById('pn-'+k)?.classList.toggle('closed',!open);
+  document.querySelector('#pn-'+k+' .panel-h')?.setAttribute('aria-expanded',String(open));
+}
+function togglePanel(k,force){
+  UI[k]=force!==undefined?force:UI[k]===false;
+  try{localStorage.setItem(UIK,JSON.stringify(UI))}catch(e){}
+  applyPanel(k);
+}
+
+// ── GASTOS — gráfico apilado por tipo ─────────────────
+const CATS=[
+  ['comida','🍜 Comida','#3987e5'],['transporte','🚗 Transporte','#d95926'],['actividad','🎟 Actividad','#199e70'],
+  ['hotel','🏨 Hotel','#c98500'],['compras','🛍 Compras','#d55181'],['otro','💳 Otro','#008300'],
+];
+let chartCur='USD';
+function setChartCur(c){
+  chartCur=c;
+  document.getElementById('ch-usd').classList.toggle('on',c==='USD');
+  document.getElementById('ch-idr').classList.toggle('on',c==='IDR');
+  renderGastos();
+}
+function fmtIn(usd,cur){
+  return cur==='IDR'?'Rp '+Math.round(usd*RATES.IDR).toLocaleString('id-ID'):'$'+usd.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function catOf(g){return CATS.some(c=>c[0]===g.cat)?g.cat:'otro';}
+function renderChart(){
+  const rows=[['Wally',{}],['Dani',{}],['Total',{}]];
+  CATS.forEach(([k])=>rows.forEach(r=>r[1][k]=0));
+  GASTOS.forEach(g=>{
+    const k=catOf(g),d=parseFloat(g.splitDani||0),w=parseFloat(g.splitWally||0);
+    rows[0][1][k]+=w;rows[1][1][k]+=d;rows[2][1][k]+=d+w;
+  });
+  const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+  const max=Math.max(...rows.map(r=>sum(r[1])),0);
+  const el=document.getElementById('chart');
+  if(!max){el.innerHTML='<div class="ch-empty" style="grid-column:1/-1">Todavía no hay gastos para graficar.</div>';document.getElementById('ch-leg').innerHTML='';return;}
+  el.innerHTML=rows.map(([name,v])=>{
+    const t=sum(v);
+    const segs=CATS.filter(([k])=>v[k]>0).map(([k,lbl,col])=>
+      `<button class="ch-seg" style="flex:${v[k]} 1 0;background:${col}" data-p="${name}" data-k="${k}" data-v="${v[k]}" data-t="${t}" aria-label="${name}, ${lbl}: ${fmtIn(v[k],chartCur)}"></button>`).join('');
+    return `<div class="ch-name">${name}</div><div style="min-width:0"><div class="ch-bar" style="width:${(t/max*100).toFixed(2)}%">${segs}</div></div><div class="ch-val">${fmtIn(t,chartCur)}</div>`;
+  }).join('');
+  document.getElementById('ch-leg').innerHTML=CATS.filter(([k])=>rows[2][1][k]>0).map(([k,lbl,col])=>
+    `<span class="ch-li"><i style="background:${col}"></i>${lbl} <b>${fmtIn(rows[2][1][k],chartCur)}</b></span>`).join('');
+}
+function chartRead(seg){
+  document.querySelectorAll('.ch-seg.hi').forEach(x=>x.classList.remove('hi'));
+  const r=document.getElementById('ch-read');
+  if(!seg){r.textContent='Tocá una parte de la barra para ver el detalle.';return;}
+  seg.classList.add('hi');
+  const c=CATS.find(x=>x[0]===seg.dataset.k),v=+seg.dataset.v,t=+seg.dataset.t;
+  r.innerHTML=`<b>${seg.dataset.p}</b> · ${c[1]}: <b>${fmtIn(v,chartCur)}</b> (${Math.round(v/t*100)}% de ${seg.dataset.p==='Total'?'el total':seg.dataset.p})`;
+}
+document.addEventListener('pointerover',ev=>{const s=ev.target.closest&&ev.target.closest('.ch-seg');if(s)chartRead(s);});
+document.addEventListener('focusin',ev=>{const s=ev.target.closest&&ev.target.closest('.ch-seg');if(s)chartRead(s);});
+document.addEventListener('click',ev=>{const s=ev.target.closest&&ev.target.closest('.ch-seg');if(s)chartRead(s);});
+
+// ── GASTOS — deuda, resumen y tabla ────────────────────
+const MODE_LBL={compartido:'50/50',dani:'Dani',wally:'Wally',custom:'Manual'};
+function whoCell(mode,d,w,mpD,mpW){
+  if(mode==='dani') return `<div class="t-who">Dani ${mpD?mpIcon(mpOpt('dani',mpD)):''}</div>`;
+  if(mode==='wally') return `<div class="t-who">Wally ${mpW?mpIcon(mpOpt('wally',mpW)):''}</div>`;
+  const icons=(mpD?mpIcon(mpOpt('dani',mpD)):'')+(mpW?mpIcon(mpOpt('wally',mpW)):'');
+  const sub=mode==='custom'?`<div class="t-sub">D ${fmtAmt(d)}<br>W ${fmtAmt(w)}</div>`:'';
+  return `<div class="t-who">${MODE_LBL[mode]} ${icons}</div>${sub}`;
+}
+function renderDebt(total,paidD,paidW,dT,wT){
+  const net=paidD-dT,amt=Math.abs(net),box=document.getElementById('debt');
+  ['dani-pay','dani-own','wally-pay','wally-own'].forEach((k,i)=>document.getElementById('dp-'+k).textContent=fmtAmt([paidD,dT,paidW,wT][i]));
+  const fill=document.getElementById('dv-fill');
+  const dvD=document.getElementById('dv-dani'),dvW=document.getElementById('dv-wally');
+  dvD.classList.remove('deb');dvW.classList.remove('deb');
+  if(amt<.01){
+    box.classList.add('settled');
+    document.getElementById('debt-who').textContent='Están a mano ✓';
+    document.getElementById('debt-amt').textContent='';
+    fill.style.width='0';return;
+  }
+  box.classList.remove('settled');
+  const debtor=net<0?'Dani':'Wally',creditor=net<0?'Wally':'Dani';
+  document.getElementById('debt-who').innerHTML=`<span class="dn">${debtor}</span> le debe a ${creditor}`;
+  document.getElementById('debt-amt').textContent=fmtAmt(amt);
+  (net<0?dvD:dvW).classList.add('deb');
+  // Escala: la mitad de la barra = la mitad del gasto total del viaje.
+  fill.className='dv-fill '+(net<0?'l':'r');
+  fill.style.width=(Math.min(1,amt/(total/2||1))*50).toFixed(2)+'%';
 }
 
 function renderGastos(){
   const total=GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('g-total').textContent=fmtAmt(total);
+  document.getElementById('g-total-mini').textContent=fmtAmt(total);
   const secEl=document.getElementById('g-total-sec');
   if(secEl) secEl.textContent=curDisplay!=='USD'?'≈ $'+total.toFixed(2)+' USD':'';
-  const cats={comida:0,transporte:0,actividad:0,otro:0};
-  GASTOS.forEach(g=>{
-    const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
-    if(cats[g.cat]!==undefined&&g.cat!=='otro') cats[g.cat]+=u; else cats.otro+=u;
-  });
-  ['comida','transporte','actividad','otro'].forEach(c=>document.getElementById('gc-'+c).textContent=fmtAmt(cats[c]));
   const dT=GASTOS.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
   const wT=GASTOS.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
-  document.getElementById('sp-dani').textContent=fmtAmt(dT);
-  document.getElementById('sp-wally').textContent=fmtAmt(wT);
+  const paidD=GASTOS.reduce((a,g)=>a+parseFloat(g.payDani||0),0);
+  const paidW=GASTOS.reduce((a,g)=>a+parseFloat(g.payWally||0),0);
+  renderDebt(total,paidD,paidW,dT,wT);
+  renderChart();
 
-  // Balance tipo Splitwise: lo que cada uno pagó menos lo que le correspondía.
-  const paidDani=GASTOS.reduce((a,g)=>a+parseFloat(g.payDani||0),0);
-  const paidWally=GASTOS.reduce((a,g)=>a+parseFloat(g.payWally||0),0);
-  const netDani=paidDani-dT;
-  const bm=document.getElementById('balance-main');
-  const bs=document.getElementById('balance-sub');
-  if(bm){
-    if(Math.abs(netDani)<.01){bm.textContent='Están a mano ✓';bm.classList.add('settled');}
-    else if(netDani>0){bm.textContent='Wally le debe a Dani '+fmtAmt(netDani);bm.classList.remove('settled');}
-    else{bm.textContent='Dani le debe a Wally '+fmtAmt(-netDani);bm.classList.remove('settled');}
-  }
-  if(bs) bs.textContent='Pagó Dani '+fmtAmt(paidDani)+' · Pagó Wally '+fmtAmt(paidWally);
-  document.getElementById('g-bar').style.width=Math.min(100,total/800*100)+'%';
   const el=document.getElementById('glist');
   if(!GASTOS.length){el.innerHTML='<div class="empty">Registrá tu primer gasto arriba</div>';return;}
-  el.innerHTML=GASTOS.map(g=>{
-    const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
-    const d=parseFloat(g.splitDani||0),w=parseFloat(g.splitWally||0);
-    const pd=parseFloat(g.payDani||0),pw=parseFloat(g.payWally||0);
-    return `<div class="gi">
-      <div class="gi-top">
-        <div class="gi-ico">${CAT_ICO[g.cat]||'💳'}</div>
-        <div class="gi-info">
-          <div class="gi-desc">${e(g.desc)}</div>
-          <div class="gi-meta">${[g.fecha,g.cat,g.monto+' '+(g.cur||'USD'),g.notas].filter(Boolean).map(e).join(' · ')}</div>
-          <div class="gi-meta">💸 Pagó: ${payLine(g)}</div>
-          <div class="gi-meta">🎯 Para: ${MODE_LBL[g.splitMode||'compartido']}</div>
-        </div>
-        <div class="gi-right">
-          <div class="gi-amt">${fmtAmt(u)}</div>
-          <div class="gi-actions"><button class="gi-edit" onclick="editGasto('${g.id}')" title="Modificar">✏️</button><button class="gi-del" onclick="delGasto('${g.id}',this)" title="Eliminar">🗑️</button></div>
-        </div>
-      </div>
-      <div class="gi-split">
-        <div class="gi-sp"><div class="gsn">Dani</div><div class="gsv">${fmtAmt(d)}</div><div class="gsp">pagó ${fmtAmt(pd)}</div></div>
-        <div class="gi-sp"><div class="gsn">Wally</div><div class="gsv">${fmtAmt(w)}</div><div class="gsp">pagó ${fmtAmt(pw)}</div></div>
-      </div>
-    </div>`;
-  }).join('');
+  el.innerHTML=`<div class="gt-wrap"><table class="gt">
+    <thead><tr><th>Gasto</th><th>Pagó</th><th>Para</th><th class="num">Monto</th><th><span hidden>Acciones</span></th></tr></thead>
+    <tbody>${GASTOS.map(g=>{
+      const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+      const cur=g.cur||'USD';
+      const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.notas].filter(Boolean).map(e).join(' · ');
+      return `<tr class="${g.id===editingGastoId?'editing':''}">
+        <td><div class="t-desc">${CAT_ICO[g.cat]||'💳'} ${e(g.desc)}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
+        <td>${whoCell(g.payMode||'dani',parseFloat(g.payDani||0),parseFloat(g.payWally||0),g.mpDani,g.mpWally)}</td>
+        <td>${whoCell(g.splitMode||'compartido',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0))}</td>
+        <td class="num"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(g.monto)} ${e(cur)}</div>`:''}</td>
+        <td><div class="t-act"><button class="gi-edit" onclick="editGasto('${g.id}')" title="Modificar" aria-label="Modificar ${e(g.desc)}">✏️</button><button class="gi-del" onclick="delGasto('${g.id}',this)" title="Eliminar" aria-label="Eliminar ${e(g.desc)}">🗑️</button></div></td>
+      </tr>`;}).join('')}</tbody>
+    <tfoot><tr><td colspan="3">Total · ${GASTOS.length} gasto${GASTOS.length===1?'':'s'}</td><td class="num">${fmtAmt(total)}</td><td></td></tr></tfoot>
+  </table></div>`;
 }
+applyPanel('form');applyPanel('sum');
 renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
 
 // ── VUELOS ────────────────────────────────────────────
