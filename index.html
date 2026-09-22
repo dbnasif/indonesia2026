@@ -331,6 +331,29 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .tbd{background:rgba(239,68,68,.15);color:#fca5a5}
 
 .empty{text-align:center;padding:40px;color:var(--mu);font-size:14px}
+/* DOCUMENTOS */
+.sos{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:14px;margin-bottom:4px}
+.sos-h{font-size:13px;font-weight:800;color:#fca5a5;margin-bottom:10px}
+.sos-grid{display:grid;grid-template-columns:1fr;gap:2px}
+.sos-k{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+.sos-v{font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.sos-cp{padding:4px 9px;font-size:11px}
+.sos-note{font-size:11px;color:var(--mu);margin-top:10px;line-height:1.5}
+.doc-folder{margin-bottom:4px;width:100%;justify-content:center}
+.doc-grp{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.doc-row{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bd);padding-right:8px}
+.doc-row:last-child{border-bottom:none}
+.doc-link{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:11px 12px;color:var(--tx)}
+.doc-link:active{background:var(--sf2)}
+.doc-ic{font-size:18px;flex-shrink:0}
+.doc-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.doc-t{font-size:13px;font-weight:600;line-height:1.3}
+.doc-s{font-size:11px;color:var(--mu);margin-top:2px}
+.doc-go{color:var(--ac2);font-size:13px;flex-shrink:0}
+.faltan{margin-top:14px;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.25);border-radius:var(--r);padding:12px 14px}
+.faltan-h{font-size:12px;font-weight:700;color:#fde68a;margin-bottom:6px}
+.faltan ul{padding-left:18px;font-size:12px;color:var(--mu);line-height:1.7}
+.voucher-btn{color:#fde68a;background:rgba(234,179,8,.08);border-color:rgba(234,179,8,.28)}
 
 /* SYNC + DATOS */
 .sync{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--mu);border:1px solid var(--bd);background:var(--sf2);border-radius:99px;padding:5px 10px;white-space:nowrap}
@@ -638,6 +661,52 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">GOL G3 3009 — GRU→AEP</h3><div class="flgrid"><div class="fk">Bodega</div><div class="fk">Reserva</div><div class="fv">1 valija incluida</div><div class="fv">NWPENF</div></div></div>
   </div>
 </section>
+<!-- DOCUMENTOS -->
+<section class="page" id="p-docs">
+  <div class="sos">
+    <div class="sos-h">🚑 Emergencia médica · asistencia Visa</div>
+    <div class="sos-grid">
+      <span class="sos-k">Llamada por cobrar (desde cualquier país)</span>
+      <span class="sos-v"><b>+1 (303) 967-1098</b><button class="data-btn sos-cp" onclick="copyTxt('+13039671098',this)">Copiar</button></span>
+      <span class="sos-k">N° de certificado</span>
+      <span class="sos-v"><b>16011-0001-69-2610358691</b><button class="data-btn sos-cp" onclick="copyTxt('16011-0001-69-2610358691',this)">Copiar</button></span>
+      <span class="sos-k">Referencia</span><span class="sos-v"><b>CER-7462257</b></span>
+      <span class="sos-k">Vigencia</span><span class="sos-v">Viaje 13/10 → 5/11 · certificado hasta 12/12/2026</span>
+      <span class="sos-k">Otros canales</span><span class="sos-v">Chat o videollamada con médico en la app Visa Benefits · visa.com/benefitsportal</span>
+    </div>
+    <div class="sos-note">Avisar al centro de asistencia de inmediato o dentro de los 30 días del incidente.</div>
+  </div>
+
+  <div class="h-srch-wrap">
+    <input class="srch" id="dsrch" placeholder="Buscar documento…" oninput="renderDocs()">
+  </div>
+  <a class="data-btn doc-folder" href="https://drive.google.com/drive/folders/1Rq439x6ajjI4Gdzz9_j6_scAJ86hum1A" target="_blank" rel="noopener">📁 Abrir la carpeta completa en Drive ↗</a>
+  <div id="docs-list"></div>
+
+  <div class="faltan">
+    <div class="faltan-h">⚠️ Reservas sin respaldo en la carpeta</div>
+    <ul id="faltan-list"></ul>
+  </div>
+
+  <section class="panel" id="pn-docadd" style="margin-top:14px">
+    <button class="panel-h" aria-expanded="true" aria-controls="pb-docadd" onclick="togglePanel('docadd')">
+      <h3>＋ Agregar un link</h3><span class="ph-chev" aria-hidden="true">▾</span>
+    </button>
+    <div class="panel-b" id="pb-docadd">
+      <div class="form-full"><input class="fi" id="doc-t" placeholder="Nombre (ej: Voucher Mule Malu)"></div>
+      <div class="form-full"><input class="fi" id="doc-u" type="url" inputmode="url" placeholder="https://drive.google.com/…"></div>
+      <div class="form-row">
+        <select class="fsel" id="doc-g" aria-label="Grupo"></select>
+        <input class="fi" id="doc-n" placeholder="Detalle (opcional)">
+      </div>
+      <div class="data-msg" id="doc-msg" hidden style="color:#fca5a5"></div>
+      <div style="display:flex;gap:8px">
+        <button class="add-g-btn" id="doc-save" onclick="saveDoc()">Agregar documento</button>
+        <button class="cbtn" id="doc-cancel" onclick="resetDocForm()" hidden>Cancelar</button>
+      </div>
+    </div>
+  </section>
+</section>
 </main>
 
 <nav class="bnav">
@@ -646,6 +715,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <button class="nb" onclick="go('dias',this)"><span class="ni">🗓</span>Itinerario</button>
   <button class="nb" onclick="go('hoteles',this)"><span class="ni">🏨</span>Hoteles</button>
   <button class="nb" onclick="go('vuelos',this)"><span class="ni">✈️</span>Vuelos</button>
+  <button class="nb" onclick="go('docs',this)"><span class="ni">📎</span>Docs</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 
@@ -738,7 +808,7 @@ let DETALLES={}, NOTAS=[], GASTOS=[], CONFIG={tcArs:1350};
 let DATA=[];
 function buildData(){DATA=DIAS.map(d=>({...d,detalle:DETALLES[d.id]??d.detalle}));}
 function notesOf(dia){return NOTAS.filter(n=>n.dia===dia).sort((a,b)=>(a.ts||0)-(b.ts||0));}
-function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS});}
+function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS,docs:USERDOCS});}
 function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
 async function dbWrite(fn){
@@ -781,7 +851,7 @@ function refreshAll(){
 
 async function initStore(){
   const local=lsGet();
-  DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();
+  DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();USERDOCS=local.docs||[];
   applyConfig();refreshAll();
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
   if(!db){
@@ -790,10 +860,10 @@ async function initStore(){
     if(info) info.textContent='Esta copia no está conectada a la base compartida: los cambios quedan solo en este navegador. Abrí el link de la app para sincronizar.';
     return;
   }
-  DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};
+  DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};USERDOCS=[];
   setSync('','Sincronizando…');
   const fail=err=>{setSync('err','Sin conexión');console.warn(err);};
-  const done=new Set();const ready=k=>{done.add(k);if(done.size===5)setSync('ok','Sincronizado');};
+  const done=new Set();const ready=k=>{done.add(k);if(done.size===6)setSync('ok','Sincronizado');};
   db.collection('dias').onSnapshot(sn=>{
     DETALLES={};sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.detalle==='string')DETALLES[d.id]=v.detalle;});
     buildData();if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('dias');
@@ -809,6 +879,10 @@ async function initStore(){
   db.collection('categorias').onSnapshot(sn=>{
     CATDOCS={};sn.docs.forEach(d=>{CATDOCS[d.id]=d.data();});
     refreshCats();renderGastos();ready('categorias');
+  },fail);
+  db.collection('docs').onSnapshot(sn=>{
+    USERDOCS=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ts||0)-(b.ts||0));
+    renderDocs();ready('docs');
   },fail);
   db.doc('config/app').onSnapshot(sn=>{
     if(sn.exists)CONFIG={...CONFIG,...sn.data()};
@@ -826,6 +900,7 @@ function go(p,btn){
   if(p==='hoteles') renderHoteles();
   if(p==='gastos') renderGastos();
   if(p==='home') recalcStats();
+  if(p==='docs') renderDocs();
 }
 
 // ── HOME STATS ────────────────────────────────────────
@@ -990,7 +1065,7 @@ function renderHoteles(){
       <div class="hcard-pills">
         <span class="hpill bdg ${canCls}">${e(h.cancel)}</span>
       </div>
-      <div class="maps-actions"><a class="maps-btn" href="${h.maps}" target="_blank" rel="noopener">📍 Google Maps</a><button class="maps-btn mapsme-btn" onclick="openMapsMe('${e(eJs(h.nombre))}','${e(eJs(h.lugar))}')">🗺️ MAPS.ME</button></div>
+      <div class="maps-actions">${hotelDoc(h.nombre)?`<a class="maps-btn voucher-btn" href="${hotelDoc(h.nombre).u}" target="_blank" rel="noopener">📄 Voucher</a>`:''}<a class="maps-btn" href="${h.maps}" target="_blank" rel="noopener">📍 Google Maps</a><button class="maps-btn mapsme-btn" onclick="openMapsMe('${e(eJs(h.nombre))}','${e(eJs(h.lugar))}')">🗺️ MAPS.ME</button></div>
     </div>`;
   }).join('');
 }
@@ -1551,6 +1626,107 @@ function showFT(tab,btn){
   if(btn) btn.classList.add('on');
 }
 
+// ── DOCUMENTOS ────────────────────────────────────────
+// Respaldos en la carpeta de Drive del viaje. Los links abren Drive: solo
+// funcionan para cuentas con acceso a esa carpeta. Los que agreguen desde la
+// app se guardan en docs/<id>.
+const DRIVE_FOLDER='https://drive.google.com/drive/folders/1Rq439x6ajjI4Gdzz9_j6_scAJ86hum1A';
+const dvf=id=>'https://drive.google.com/file/d/'+id+'/view';
+const DOC_GROUPS=[
+  ['seguro','🛡️ Seguro / asistencia al viajero'],['identidad','🛂 Pasaportes y visas'],['vuelos','✈️ Vuelos y trenes'],
+  ['hospedaje','🏨 Hospedaje'],['tours','🗺️ Tours y actividades'],['planillas','📊 Planillas'],['otros','📎 Otros'],
+];
+const DOCS=[
+  {g:'seguro',t:'Certificado de asistencia al viajero (ES)',s:'Visa Signature · Daniela y Augusto · 13/10 → 5/11',u:dvf('1SboGVZB8WwGeDU4V-wJ-Ydywr7RrrR2W')},
+  {g:'seguro',t:'Travel Certificate (EN)',s:'Misma cobertura, en inglés',u:dvf('1E_6cB-YGObwO0w9xXP9Ame45TMjauow8')},
+  {g:'identidad',t:'Pasaporte · Daniela Nasif',u:dvf('1NQJ5kZ42Z95QY8AYUwPcWLv7XXSRgOzz')},
+  {g:'identidad',t:'Pasaporte · Augusto Traghetti',u:dvf('1NGJO4ujB3bU--QMYWEwUtWnWr3C5igkO')},
+  {g:'identidad',t:'e-VOA · Daniela Nasif',s:'Z1B1457312',u:dvf('17w2HBb8BRyrKeffbFuOj0Z8iEF2HYgkf')},
+  {g:'identidad',t:'e-VOA · Augusto Traghetti',s:'Z1B1457252',u:dvf('1HmtTxZRRAHWRI21IBNfaCGS06uwPxJ3d')},
+  {g:'identidad',t:'Comprobante de pago e-VOA · Daniela',s:'Ref. 2130926B1203917',u:dvf('14jKNMxYsUqwLh-4vfO7yE35QWkYRNtOk')},
+  {g:'vuelos',t:'Emirates · ticket Daniela',s:'PNR BZV4HW',u:dvf('1NBQ5Pk9xVmhF5BJ_Q4yMrkpOjkgbW8GU')},
+  {g:'vuelos',t:'Emirates · ticket Augusto',s:'PNR BZV4HW',u:dvf('1N94r-5XcBZXZ1UHrxPE97IuCYjv4ur2b')},
+  {g:'vuelos',t:'Garuda GA202 · Jakarta → Yogyakarta',s:'16 oct · PNR FC8H3X',u:dvf('1IhwslJpwAd_mSn02vsqr75BbCKiRFVOH')},
+  {g:'vuelos',t:'Tren Malioboro Ekspres · Yogyakarta → Malang',s:'18 oct · YJD9C4C',u:dvf('1-uxXWxqfo1BwAuRMNM4zBJouW9zqiFsE')},
+  {g:'vuelos',t:'AirAsia QZ646 · Denpasar → Labuan Bajo',s:'26 oct · PLYJPR',u:dvf('1MD5vf0e_jdCk1lYj-E7z9NXr8fESi77Y')},
+  {g:'vuelos',t:'Wings Air IW1950 · Labuan Bajo → Lombok',s:'29 oct · 1152-551-169',u:dvf('1fSuR9JRDZMhMxLwh07OlLb_DetyOj3fg')},
+  {g:'hospedaje',h:'Orchardz',t:'Orchardz Hotel Bandara · Jakarta',s:'15–16 oct',u:dvf('1N7LGJf7CIFafHSQC1fDfuXbu0C_q0vXp')},
+  {g:'hospedaje',h:'Prima In',t:'Prima In Hotel Malioboro · Yogyakarta',s:'16–18 oct · Agoda 1052081814',u:dvf('1X4WsBHaBhtkdRoqNj-o7D9cfUYcieuAF')},
+  {g:'hospedaje',h:'Kertanegara',t:'Kertanegara Guest House · Malang',s:'18–19 oct',u:dvf('1Ppe7Orqpz5f6UDA4YLzk-UqQt2xJBr2P')},
+  {g:'hospedaje',h:'Arkamara',t:'Arkamara Dijiwa · Ubud',s:'20–24 oct · Invoice #21872',u:dvf('1-5fabo1UWtEIDg2AoHP1jsFyEti5FFDs')},
+  {g:'hospedaje',h:'Akatara',t:'Akatara Hotel · Nusa Penida (confirmación)',s:'24–25 oct · Agoda 1053935894',u:dvf('1H7wKlDw4e03j1zjIi-Rx_0Wk5Dne7G0U')},
+  {g:'hospedaje',t:'Akatara Hotel · mail de confirmación',s:'24–25 oct',u:dvf('1aAfLwsygcQa0l4ir8qyc1RfYecPFySkS')},
+  {g:'hospedaje',h:'Manta Manta Guesthouse$',t:'Manta Manta · Labuan Bajo',s:'26–27 oct · 6692.239.344',u:dvf('1HEBw_K1Pw3KKuriHKV_tmW5mkKWda9M1')},
+  {g:'hospedaje',h:'Manta Manta Guesthouse — Superior',t:'Manta Manta Superior · Labuan Bajo',s:'28–29 oct · 6968.811.050',u:dvf('15260r4viy6zAwVZen7HarsQl7JiiPeJs')},
+  {g:'hospedaje',h:'Kaluku',t:'Kaluku Gili Resort · Gili Air',s:'29 oct – 1 nov · 6168.201.938',u:dvf('1Fg_j8kvrR3QLPOcPsrIgs96IDbjNCEnf')},
+  {g:'hospedaje',h:'Devani',t:'Devani Resort · Sidemen',s:'1–2 nov · Agoda 1053170154',u:dvf('1lAe3yVxyekCFrRPo5BTdQijSDl3jCjAX')},
+  {g:'planillas',t:'Indonesia 2026 · Planner Maestro',s:'Google Sheets',u:'https://docs.google.com/spreadsheets/d/1fFQz6AlwPAk2Ku72LUPX0z4G8eQ1sYTwMvL_maMxzBA/edit'},
+  {g:'planillas',t:'Indonesia 2026',s:'Google Sheets (versión anterior)',u:'https://docs.google.com/spreadsheets/d/1Yysvav8yWvRyMKq6Gz0wGR0lXanVHLZd4lO_2xDoWaA/edit'},
+  {g:'planillas',t:'Travel Planner Mobile',s:'Excel con macros (.xlsm)',u:dvf('19FJcTO1ektX-4dE5DDQ_ajg5oRqB9jC5')},
+];
+// Reservas confirmadas sin respaldo en la carpeta (al 22/09).
+const DOCS_FALTAN=['Semarandana · Sanur (25–26 oct)','Mule Malu · Uluwatu (2–4 nov)','Tour Smartine Bromo + Ijen (19–20 oct)','Dahayu · Komodo liveaboard (27–28 oct)','Entrada Borobudur Sunrise (17 oct)','Entrada Prambanan (16 oct)','LATAM LA8282 · Córdoba → São Paulo','GOL G3 3009 · São Paulo → Aeroparque'];
+
+let USERDOCS=[];
+function hotelDoc(nombre){return DOCS.find(d=>d.h&&(d.h.endsWith('$')?nombre===d.h.slice(0,-1):nombre.startsWith(d.h)));}
+function docRow(d,custom){
+  return `<div class="doc-row">
+    <a class="doc-link" href="${e(d.u)}" target="_blank" rel="noopener">
+      <span class="doc-ic" aria-hidden="true">${/spreadsheets/.test(d.u)?'📊':/\.xlsm|19FJcTO1/.test(d.u)?'📗':'📄'}</span>
+      <span class="doc-tx"><span class="doc-t">${e(d.t)}</span>${d.s?`<span class="doc-s">${e(d.s)}</span>`:''}</span>
+      <span class="doc-go" aria-hidden="true">↗</span>
+    </a>
+    ${custom?`<button class="ce-btn" onclick="editDoc('${d.id}')" aria-label="Modificar ${e(d.t)}">✏️</button><button class="ce-btn" onclick="delDoc('${d.id}',this)" aria-label="Borrar ${e(d.t)}">🗑</button>`:''}
+  </div>`;
+}
+function renderDocs(){
+  const el=document.getElementById('docs-list');if(!el)return;
+  const q=(document.getElementById('dsrch')?.value||'').toLowerCase();
+  const all=[...DOCS.map(d=>({...d,custom:false})),...USERDOCS.map(d=>({id:d.id,g:d.grupo||'otros',t:d.titulo,s:d.nota,u:d.url,custom:true}))];
+  const hit=d=>!q||[d.t,d.s].join(' ').toLowerCase().includes(q);
+  el.innerHTML=DOC_GROUPS.map(([g,lbl])=>{
+    const ds=all.filter(d=>d.g===g&&hit(d));
+    if(!ds.length)return '';
+    return `<div class="shdr">${lbl}</div><div class="doc-grp">${ds.map(d=>docRow(d,d.custom)).join('')}</div>`;
+  }).join('')||'<div class="empty">Sin resultados</div>';
+}
+function copyTxt(txt,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent='Copiado ✓';setTimeout(()=>btn.textContent=o,1500);};
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(txt).then(done).catch(()=>toast(txt));
+  else toast(txt);
+}
+let editingDocId=null;
+function docMsg(t){const m=document.getElementById('doc-msg');if(m){m.textContent=t;m.hidden=!t;}}
+async function saveDoc(){
+  const titulo=fval('doc-t').trim(),url=fval('doc-u').trim(),grupo=fval('doc-g'),nota=fval('doc-n').trim();
+  if(!titulo){docMsg('Poné un nombre para el documento.');return;}
+  if(!/^https:\/\/\S+$/.test(url)){docMsg('El link tiene que empezar con https://');return;}
+  const id=editingDocId||newId('doc');
+  const old=USERDOCS.find(d=>d.id===id);
+  const body={titulo,url,grupo,nota,ts:old?.ts||Date.now(),upd:Date.now()};
+  USERDOCS=[...USERDOCS.filter(d=>d.id!==id),{id,...body}];
+  resetDocForm();renderDocs();
+  if(await put('docs',id,body))toast(old?'Documento modificado':'Documento agregado');
+}
+function editDoc(id){
+  const d=USERDOCS.find(x=>x.id===id);if(!d)return;
+  editingDocId=id;fset('doc-t',d.titulo);fset('doc-u',d.url);fset('doc-g',d.grupo||'otros');fset('doc-n',d.nota||'');
+  document.getElementById('doc-save').textContent='Guardar cambios';document.getElementById('doc-cancel').hidden=false;
+  togglePanel('docadd',true);document.getElementById('pn-docadd').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resetDocForm(){
+  editingDocId=null;['doc-t','doc-u','doc-n'].forEach(i=>fset(i,''));fset('doc-g','otros');docMsg('');
+  document.getElementById('doc-save').textContent='Agregar documento';document.getElementById('doc-cancel').hidden=true;
+}
+async function delDoc(id,btn){
+  if(!btn.classList.contains('arm')){
+    btn.classList.add('arm');btn.textContent='¿Borrar?';
+    setTimeout(()=>{if(btn.isConnected){btn.classList.remove('arm');btn.textContent='🗑';}},3000);return;
+  }
+  USERDOCS=USERDOCS.filter(d=>d.id!==id);if(editingDocId===id)resetDocForm();renderDocs();
+  if(await del('docs',id))toast('Documento borrado');
+}
+
 // ── EXPORT ────────────────────────────────────────────
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
@@ -1608,5 +1784,8 @@ function eJs(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").r
 // ── INIT ──────────────────────────────────────────────
 document.getElementById('g-fecha').value=new Date().toISOString().split('T')[0];
 renderCatSelect();autoEtapa();applyItView();
+document.getElementById('doc-g').innerHTML=DOC_GROUPS.map(([g,l])=>`<option value="${g}">${l}</option>`).join('');fset('doc-g','otros');
+document.getElementById('faltan-list').innerHTML=DOCS_FALTAN.map(x=>`<li>${e(x)}</li>`).join('');
+applyPanel('docadd');
 initStore();
 </script>
