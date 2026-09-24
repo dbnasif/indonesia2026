@@ -353,6 +353,42 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .tbd{background:rgba(239,68,68,.15);color:#fca5a5}
 
 .empty{text-align:center;padding:40px;color:var(--mu);font-size:14px}
+/* PRECIOS */
+.pc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.pc-h{font-size:14px;font-weight:800;margin-bottom:10px}
+.pc-out{margin-top:10px;min-height:22px}
+.pc-hint{font-size:12px;color:var(--mu)}
+.pc-verdict{font-size:17px;font-weight:800}
+.pc-verdict.ok{color:var(--gr)}.pc-verdict.warn{color:var(--yw)}.pc-verdict.bad{color:var(--rd)}
+.pc-scale{position:relative;height:10px;background:var(--sf2);border-radius:99px;margin:10px 0 6px}
+.pc-range{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.45);border-radius:99px}
+.pc-mark{position:absolute;top:-4px;width:4px;height:18px;margin-left:-2px;border-radius:2px;background:var(--tx)}
+.pc-mark.warn{background:var(--yw)}.pc-mark.bad{background:var(--rd)}
+.pc-meta{font-size:12px;color:var(--mu)}
+.pr-tips{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--mu);margin:0 2px 12px}
+.pr-tips b{color:var(--tx)}
+.pr-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px 6px;margin-bottom:10px}
+.pr-h{font-size:13px;font-weight:800;margin-bottom:6px}
+.pr-row{padding:8px 0;border-top:1px solid var(--bd)}
+.pr-h+.pr-row{border-top:none}
+.pr-top{display:flex;align-items:center;gap:8px}
+.pr-e{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.pr-n{flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.3}
+.pr-v{flex-shrink:0;display:flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
+.pr-dash{color:var(--mu);font-size:12px}
+.pr-bar{position:relative;height:5px;background:var(--sf2);border-radius:99px;margin:6px 0 0 30px}
+.pr-bar span{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:99px}
+.pr-tip{font-size:11px;color:var(--mu);margin:4px 0 0 30px;line-height:1.4}
+.pr-paid{font-size:11px;color:#86efac;padding:8px 0;border-top:1px dashed var(--bd);line-height:1.8}
+.pr-src{font-size:11px;color:var(--mu);text-align:center;margin:6px 0 10px;line-height:1.5}
+.idr{border:1px solid transparent;background:none;color:var(--tx);font-size:13px;font-weight:700;padding:3px 5px;border-radius:5px;font-variant-numeric:tabular-nums;text-decoration:underline dotted var(--mu);text-underline-offset:3px}
+.idr.on,.idr:hover{background:rgba(6,182,212,.14);border-color:rgba(6,182,212,.4);text-decoration:none}
+.pr-paid .idr,.pc-meta .idr{font-size:12px;color:inherit}
+.idr-pop{position:fixed;z-index:80;background:var(--sf2);border:1px solid rgba(6,182,212,.5);border-radius:var(--rs);padding:8px 11px;box-shadow:0 10px 28px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px;font-size:12px;font-variant-numeric:tabular-nums;pointer-events:none}
+.idr-pop b{font-size:12px;color:var(--mu);font-weight:600}
+.idr-pop span{font-size:15px;font-weight:800;color:var(--ac2)}
+.idr-pop .ip-ars{font-size:11px;font-weight:600;color:var(--mu)}
+.nb{min-width:0}
 /* DOCUMENTOS */
 .sos{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:14px;margin-bottom:4px}
 .sos-h{font-size:13px;font-weight:800;color:#fca5a5;margin-bottom:10px}
@@ -684,6 +720,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="flc"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">GOL G3 3009 — GRU→AEP</h3><div class="flgrid"><div class="fk">Bodega</div><div class="fk">Reserva</div><div class="fv">1 valija incluida</div><div class="fv">NWPENF</div></div></div>
   </div>
 </section>
+<!-- PRECIOS -->
+<section class="page" id="p-precios">
+  <div class="swrap">
+    <div class="zfils" id="pz-chips" style="margin-top:0"></div>
+  </div>
+  <div class="pc">
+    <div class="pc-h">🤔 ¿Es caro?</div>
+    <div class="form-row" style="margin-bottom:0">
+      <select class="fsel" id="pc-item" onchange="checkPrecio()" aria-label="Qué estás pagando"></select>
+      <input class="fi" id="pc-amt" type="text" inputmode="decimal" autocomplete="off" placeholder="Precio en IDR" oninput="checkPrecio()" aria-label="Precio en rupias">
+    </div>
+    <div id="pc-out" class="pc-out" aria-live="polite"></div>
+  </div>
+  <div class="pr-tips">
+    <span>💡 <b>"++"</b> en el menú = <b>+21%</b></span>
+    <span>🤝 Regateo: ofrecé <b>40–50%</b></span>
+    <span>👆 Tocá un monto para ver <b>USD</b></span>
+  </div>
+  <div id="precios-body"></div>
+  <p class="pr-src">Rangos de referencia armados con guías y blogs de viaje de 2026 (±30%). Tipo de cambio: USD 1 = IDR 16.200.</p>
+</section>
+<div class="idr-pop" id="idr-pop" hidden role="status"></div>
+
 <!-- DOCUMENTOS -->
 <section class="page" id="p-docs">
   <div class="sos">
@@ -739,6 +798,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <button class="nb" onclick="go('hoteles',this)"><span class="ni">🏨</span>Hoteles</button>
   <button class="nb" onclick="go('vuelos',this)"><span class="ni">✈️</span>Vuelos</button>
   <button class="nb" onclick="go('docs',this)"><span class="ni">📎</span>Docs</button>
+  <button class="nb" onclick="go('precios',this)"><span class="ni">💲</span>Precios</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 
@@ -924,6 +984,7 @@ function go(p,btn){
   if(p==='gastos') renderGastos();
   if(p==='home'){recalcStats();renderHoy();}
   if(p==='docs') renderDocs();
+  if(p==='precios') renderPrecios();
 }
 
 // ── HOME STATS ────────────────────────────────────────
@@ -1891,6 +1952,129 @@ function verDia(id){
 }
 setInterval(()=>{if(!document.hidden)renderHoy();},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHoy();});
+
+// ── PRECIOS DE REFERENCIA ─────────────────────────────
+// Rangos en miles de IDR (guías y blogs de viaje 2026, ±30%). null = no aplica en esa zona.
+const PZ=[['java','☕ Java'],['ubud','🌿 Ubud · Sanur · Sidemen'],['penida','🏝 Nusa Penida'],['uluwatu','🌊 Uluwatu'],['lbj','🐉 Labuan Bajo'],['gili','🐢 Gili Air']];
+const PZ_KEYS=PZ.map(z=>z[0]);
+const pAll=r=>Object.fromEntries(PZ_KEYS.map(k=>[k,r]));
+const pBali=(r,extra={})=>({java:null,ubud:r,penida:r,uluwatu:r,lbj:null,gili:null,...extra});
+const PRECIOS=[
+ {cat:'comida',t:'Comida y bebida',ic:'🍜',items:[
+  {n:'Almuerzo en warung',e:'🍛',z:{java:[15,35],ubud:[25,50],penida:[25,40],uluwatu:[35,60],lbj:[15,50],gili:[35,60]},tip:'Plato de nasi goreng, mie o nasi campur con bebida.'},
+  {n:'Plato en café o resto turístico',e:'🍽️',z:{java:[50,100],ubud:[70,150],penida:[70,130],uluwatu:[90,180],lbj:[75,200],gili:[70,150]},tip:'Revisá si el menú dice "++": suma ~21%.'},
+  {n:'Café de barista',e:'☕',z:{java:[20,35],ubud:[35,55],penida:[30,45],uluwatu:[40,65],lbj:[30,50],gili:[35,50]},tip:'Latte o flat white.'},
+  {n:'Kopi en warung',e:'🫖',z:{java:[5,10],ubud:[5,15],penida:[5,15],uluwatu:[10,15],lbj:[5,15],gili:[10,15]}},
+  {n:'Merienda: smoothie bowl o jugo',e:'🥤',z:{java:[20,40],ubud:[55,90],penida:[50,80],uluwatu:[60,110],lbj:[40,80],gili:[50,85]}},
+  {n:'Bintang grande en bar',e:'🍺',z:{java:[40,55],ubud:[45,60],penida:[45,60],uluwatu:[55,80],lbj:[50,70],gili:[50,70]}},
+  {n:'Bintang grande en minimercado',e:'🏪',z:pAll([30,40]),tip:'Indomaret / Alfamart.'},
+  {n:'Agua 1,5 L en minimercado',e:'💧',z:pAll([5,8])},
+  {n:'Cena para 2 con bebidas',e:'🍷',z:{java:[150,300],ubud:[300,600],penida:[250,500],uluwatu:[400,800],lbj:[300,600],gili:[300,600]},tip:'Lugar de rango medio.'},
+ ]},
+ {cat:'masajes',t:'Masajes (60 min)',ic:'💆',items:[
+  {n:'Masaje local',e:'💆',z:{java:[100,200],ubud:[150,265],penida:[130,230],uluwatu:[150,230],lbj:[150,250],gili:[130,200]},tip:'Balinés en local de calle.'},
+  {n:'Spa de rango medio',e:'🌸',z:{...pAll([265,500]),uluwatu:[300,700]}},
+  {n:'Spa de lujo o de acantilado',e:'✨',z:{...pAll(null),ubud:[1000,3000],uluwatu:[1000,3000]}},
+ ]},
+ {cat:'transporte',t:'Transporte',ic:'🚗',items:[
+  {n:'Grab corto dentro del pueblo',e:'📱',z:{...pBali([20,50]),java:[15,40]}},
+  {n:'Aeropuerto DPS → Ubud (Grab)',e:'✈️',z:{...pAll(null),ubud:[200,320]},tip:'Sube en hora pico.'},
+  {n:'Aeropuerto DPS → Ubud (auto privado)',e:'🚐',z:{...pAll(null),ubud:[550,700]}},
+  {n:'Chofer privado día completo',e:'🧑‍✈️',z:{...pBali([600,900]),penida:[500,700],java:[500,800]},tip:'10–12 h, auto y nafta incluidos.'},
+  {n:'Scooter por día',e:'🛵',z:{java:[70,100],ubud:[80,150],penida:[100,200],uluwatu:[80,150],lbj:[80,150],gili:null},tip:'En Gili no hay motos.'},
+  {n:'Bici por día',e:'🚲',z:{...pAll(null),gili:[50,70]}},
+ ]},
+ {cat:'hoteles',t:'Hoteles (doble por noche)',ic:'🏨',items:[
+  {n:'Guesthouse',e:'🛏️',z:{java:[250,450],ubud:[350,650],penida:[300,600],uluwatu:[500,800],lbj:[300,600],gili:[400,700]}},
+  {n:'Hotel de rango medio',e:'🏨',z:{java:[600,1200],ubud:[1400,2400],penida:[700,1500],uluwatu:[1200,2500],lbj:[800,1500],gili:[800,1500]}},
+ ]},
+ {cat:'souvenirs',t:'Souvenirs (regateando)',ic:'🛍',items:[
+  {n:'Sarong de algodón estampado',e:'🧣',z:pAll([60,120]),tip:'Caro si pasa de 200k.'},
+  {n:'Batik tulis (pintado a mano)',e:'🎨',z:pAll([300,800]),tip:'El mejor lugar es Yogyakarta.'},
+  {n:'Tallado en madera chico',e:'🪵',z:pAll([50,400])},
+  {n:'Tallado en madera mediano',e:'🗿',z:pAll([400,1500])},
+  {n:'Café local 250 g (Flores / Kintamani)',e:'🫘',z:pAll([50,120]),tip:'Estimado. El de Flores, compralo en Labuan Bajo. Evitá el kopi luwak.'},
+ ]},
+ {cat:'otros',t:'Actividades y otros',ic:'🎟',items:[
+  {n:'Entrada Bromo (extranjero)',e:'🌋',z:{...pAll(null),java:[220,320]},tip:'220k de lunes a viernes, 320k fin de semana.'},
+  {n:'Entrada Ijen',e:'🔵',z:{...pAll(null),java:[150,250]}},
+  {n:'Tour snorkel 3 Gilis',e:'🤿',z:{...pAll(null),gili:[150,300]},tip:'Por persona.'},
+  {n:'Chip Telkomsel turista',e:'📶',z:{...pAll([70,80]),ubud:[70,150],uluwatu:[70,150],penida:[70,150]},tip:'150k en el aeropuerto de Bali; 70–80k fuera de Bali.'},
+  {n:'Lavandería por kg',e:'🧺',z:pAll([10,20]),tip:'Estimado.'},
+  {n:'Tasa turística de Bali',e:'🧾',z:pBali([150,150]),tip:'Por persona, una vez. Se paga online (Love Bali).'},
+ ]},
+];
+// Lo que pagaron por noche en cada zona (miles de IDR) para comparar.
+const PAGADO={java:[['Malang',400],['Yogyakarta',655]],ubud:[['Semarandana (Sanur)',355],['Devani (Sidemen)',1182],['Arkamara (Ubud)',1625]],penida:[['Akatara',486]],lbj:[['Manta Manta',300],['Manta Superior',380]],gili:[['Kaluku',919]],uluwatu:[['Mule Malu',1811]]};
+
+const fmtK=k=>k>=1000?(k/1000).toLocaleString('es-AR',{maximumFractionDigits:1})+'M':k+'k';
+const idrBtn=k=>`<button type="button" class="idr" data-k="${k}">${fmtK(k)}</button>`;
+function zoneFromDay(d){
+  const s=(d.lugar||'').toLowerCase(),last=s.split('→').pop();
+  const m=t=>/penida/.test(t)?'penida':/uluwatu/.test(t)?'uluwatu':/gili|lombok/.test(t)?'gili':/labuan|komodo|lbj/.test(t)?'lbj':/ubud|sanur|sidemen/.test(t)?'ubud':/yogya|malang|bromo|ijen|jakarta/.test(t)?'java':null;
+  return m(last)||m(s);
+}
+let pzAuto=null;
+let pzone=(()=>{try{return localStorage.getItem('id26pz')||'java'}catch(e){return 'java'}})();
+function setPZone(z){pzone=z;try{localStorage.setItem('id26pz',z)}catch(e){}renderPrecios();}
+function renderPrecios(){
+  const el=document.getElementById('precios-body');if(!el)return;
+  const st=DATA.length?hoyState(new Date()):null;
+  pzAuto=st?zoneFromDay(st.day):null;
+  if(pzAuto&&!renderPrecios.used){pzone=pzAuto;renderPrecios.used=true;}
+  document.getElementById('pz-chips').innerHTML=PZ.map(([k,l])=>`<button class="zf${k===pzone?' on':''}" onclick="setPZone('${k}')">${l}${k===pzAuto?' · hoy':''}</button>`).join('');
+  const chips=document.getElementById('pz-chips'),on=chips.querySelector('.zf.on');
+  if(on)requestAnimationFrame(()=>{chips.scrollLeft=on.offsetLeft-(chips.clientWidth-on.offsetWidth)/2;});
+  el.innerHTML=PRECIOS.map(c=>{
+    const its=c.items.filter(it=>it.z[pzone]);
+    if(!its.length)return '';
+    const max=Math.max(...its.map(it=>it.z[pzone][1]));
+    const rows=its.map(it=>{
+      const [lo,hi]=it.z[pzone];
+      const l=(lo/max*100).toFixed(1),w=Math.max(3,(hi-lo)/max*100).toFixed(1);
+      return `<div class="pr-row">
+        <div class="pr-top"><span class="pr-e" aria-hidden="true">${it.e}</span><span class="pr-n">${e(it.n)}</span>
+          <span class="pr-v">${lo===hi?idrBtn(lo):idrBtn(lo)+'<span class="pr-dash">–</span>'+idrBtn(hi)}</span></div>
+        <div class="pr-bar" aria-hidden="true"><span style="left:${l}%;width:${w}%"></span></div>
+        ${it.tip?`<div class="pr-tip">${e(it.tip)}</div>`:''}
+      </div>`;
+    }).join('');
+    const paid=c.cat==='hoteles'&&PAGADO[pzone]?`<div class="pr-paid">✓ Lo que pagaron: ${PAGADO[pzone].map(([n,k])=>`${e(n)} ${idrBtn(k)}`).join(' · ')}</div>`:'';
+    return `<section class="pr-card"><h3 class="pr-h">${c.ic} ${e(c.t)}</h3>${rows}${paid}</section>`;
+  }).join('');
+  const sel=document.getElementById('pc-item'),cur=sel.value;
+  sel.innerHTML=PRECIOS.flatMap(c=>c.items.filter(it=>it.z[pzone]).map(it=>`<option value="${e(it.n)}">${it.e} ${e(it.n)}</option>`)).join('');
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+  checkPrecio();
+}
+function checkPrecio(){
+  const out=document.getElementById('pc-out');if(!out)return;
+  const it=PRECIOS.flatMap(c=>c.items).find(x=>x.n===fval('pc-item'));
+  const raw=pnum(fval('pc-amt'));
+  if(!it||!it.z[pzone]||!(raw>0)){out.innerHTML='<span class="pc-hint">Escribí cuánto te piden en rupias (ej: 150.000) y te digo si es razonable.</span>';return;}
+  const [lo,hi]=it.z[pzone].map(k=>k*1000);
+  const amt=raw<1000?raw*1000:raw; // "150" se entiende como 150k
+  const [cls,txt]=amt<lo*0.8?['ok','👍 Barato']:amt<=hi?['ok','✓ Precio normal']:amt<=hi*1.3?['warn','⚠️ Algo caro']:['bad','❌ Caro · negociá'];
+  const scaleMax=Math.max(hi*1.6,amt*1.05),pos=v=>Math.min(100,v/scaleMax*100).toFixed(1);
+  out.innerHTML=`<div class="pc-verdict ${cls}">${txt}</div>
+    <div class="pc-scale"><span class="pc-range" style="left:${pos(lo)}%;width:${(pos(hi)-pos(lo)).toFixed(1)}%"></span><span class="pc-mark ${cls}" style="left:${pos(amt)}%"></span></div>
+    <div class="pc-meta">Te piden ${idrBtn(Math.round(amt/1000))} · normal ${idrBtn(lo/1000)}–${idrBtn(hi/1000)}</div>`;
+}
+// Popup con la equivalencia en USD (y ARS) al tocar cualquier monto en IDR.
+function showIdrPop(btn){
+  const pop=document.getElementById('idr-pop');
+  const idr=+btn.dataset.k*1000,usd=idr/RATES.IDR,tc=CONFIG.tcArs||1350;
+  pop.innerHTML=`<b>Rp ${idr.toLocaleString('es-AR')}</b><span>≈ USD ${usd.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span><span class="ip-ars">≈ ARS ${Math.round(usd*tc).toLocaleString('es-AR')}</span>`;
+  pop.hidden=false;
+  const r=btn.getBoundingClientRect(),pw=pop.offsetWidth,ph=pop.offsetHeight;
+  let x=r.left+r.width/2-pw/2;x=Math.max(8,Math.min(innerWidth-pw-8,x));
+  let y=r.top-ph-8;if(y<60)y=r.bottom+8;
+  pop.style.left=x+'px';pop.style.top=y+'px';
+  document.querySelectorAll('.idr.on').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+}
+function hideIdrPop(){const p=document.getElementById('idr-pop');if(p&&!p.hidden){p.hidden=true;document.querySelectorAll('.idr.on').forEach(b=>b.classList.remove('on'));}}
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('.idr');if(b){ev.stopPropagation();showIdrPop(b);}else hideIdrPop();},true);
+addEventListener('scroll',hideIdrPop,{passive:true});
 
 // ── EXPORT ────────────────────────────────────────────
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
