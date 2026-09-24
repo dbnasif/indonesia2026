@@ -389,6 +389,25 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .idr-pop span{font-size:15px;font-weight:800;color:var(--ac2)}
 .idr-pop .ip-ars{font-size:11px;font-weight:600;color:var(--mu)}
 .nb{min-width:0}
+.gv-row{margin-top:8px;width:100%}
+.gv-row .cur-btn{flex:1;padding:8px 10px}
+.rf-bar{margin-bottom:4px}
+.rf-bar .cur-btns{display:flex;width:100%}
+.rf-bar .cur-btn{flex:1;padding:7px 6px}
+.rs-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:8px}
+.rs-top{display:flex;align-items:baseline;gap:8px}
+.rs-n{flex:1;min-width:0;font-size:15px;font-weight:800;line-height:1.3}
+.rs-star{margin-right:4px}
+.rs-p{font-size:12px;font-weight:700;color:var(--gr);flex-shrink:0;font-variant-numeric:tabular-nums}
+.rs-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.rs-tag,.rs-diet{font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mu)}
+.rs-diet.both{color:#86efac;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3)}
+.rs-diet.veg,.rs-diet.vegan{color:#fde68a;background:rgba(234,179,8,.08);border-color:rgba(234,179,8,.3)}
+.rs-diet i{font-style:normal;font-weight:500;opacity:.75;margin-left:2px}
+.rs-why{font-size:13px;color:var(--tx);opacity:.9;margin-top:8px;line-height:1.45}
+.rs-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.rs-note{font-size:11px;color:var(--mu);margin-top:10px}
+.rs-foot .maps-btn{margin-top:8px;padding:6px 10px}
 /* DOCUMENTOS */
 .sos{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:14px;margin-bottom:4px}
 .sos-h{font-size:13px;font-weight:800;color:#fca5a5;margin-bottom:10px}
@@ -724,7 +743,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="page" id="p-precios">
   <div class="swrap">
     <div class="zfils" id="pz-chips" style="margin-top:0"></div>
+    <div class="cur-btns gv-row" role="group" aria-label="Vista de la guía">
+      <button class="cur-btn" id="gv-precios" onclick="setGuiaView('precios')">💲 Precios</button>
+      <button class="cur-btn" id="gv-comer" onclick="setGuiaView('comer')">🍽️ Dónde comer</button>
+    </div>
   </div>
+  <div id="guia-comer" hidden>
+    <div class="rf-bar">
+      <div class="cur-btns" id="rf-row" role="group" aria-label="Filtrar por opciones">
+        <button class="cur-btn" data-f="todos" onclick="setRestoFilter('todos')">Todos</button>
+        <button class="cur-btn" data-f="both" onclick="setRestoFilter('both')">👫 Para los dos</button>
+        <button class="cur-btn" data-f="veg" onclick="setRestoFilter('veg')">🌱 Solo veggie</button>
+      </div>
+    </div>
+    <div id="restos-list"></div>
+    <p class="pr-src">Lugares con mención en guías y reseñas 2025–2026. Antes de ir, mirá que tengan reseñas del último mes en Maps. En un warung: <b>“tanpa daging, tanpa ikan”</b> = sin carne, sin pescado.</p>
+  </div>
+  <div id="guia-precios">
   <div class="pc">
     <div class="pc-h">🤔 ¿Es caro?</div>
     <div class="form-row" style="margin-bottom:0">
@@ -740,6 +775,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
   <div id="precios-body"></div>
   <p class="pr-src">Rangos de referencia armados con guías y blogs de viaje de 2026 (±30%). Tipo de cambio: USD 1 = IDR 16.200.</p>
+  </div>
 </section>
 <div class="idr-pop" id="idr-pop" hidden role="status"></div>
 
@@ -798,7 +834,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <button class="nb" onclick="go('hoteles',this)"><span class="ni">🏨</span>Hoteles</button>
   <button class="nb" onclick="go('vuelos',this)"><span class="ni">✈️</span>Vuelos</button>
   <button class="nb" onclick="go('docs',this)"><span class="ni">📎</span>Docs</button>
-  <button class="nb" onclick="go('precios',this)"><span class="ni">💲</span>Precios</button>
+  <button class="nb" onclick="go('precios',this)"><span class="ni">🧭</span>Guía</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 
@@ -984,7 +1020,7 @@ function go(p,btn){
   if(p==='gastos') renderGastos();
   if(p==='home'){recalcStats();renderHoy();}
   if(p==='docs') renderDocs();
-  if(p==='precios') renderPrecios();
+  if(p==='precios'){renderPrecios();applyGuiaView();}
 }
 
 // ── HOME STATS ────────────────────────────────────────
@@ -2016,7 +2052,7 @@ function zoneFromDay(d){
 }
 let pzAuto=null;
 let pzone=(()=>{try{return localStorage.getItem('id26pz')||'java'}catch(e){return 'java'}})();
-function setPZone(z){pzone=z;try{localStorage.setItem('id26pz',z)}catch(e){}renderPrecios();}
+function setPZone(z){pzone=z;try{localStorage.setItem('id26pz',z)}catch(e){}renderPrecios();renderRestos();}
 function renderPrecios(){
   const el=document.getElementById('precios-body');if(!el)return;
   const st=DATA.length?hoyState(new Date()):null;
@@ -2076,6 +2112,74 @@ function hideIdrPop(){const p=document.getElementById('idr-pop');if(p&&!p.hidden
 document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('.idr');if(b){ev.stopPropagation();showIdrPop(b);}else hideIdrPop();},true);
 addEventListener('scroll',hideIdrPop,{passive:true});
 
+// ── DÓNDE COMER ───────────────────────────────────────
+// Lugares con mención en guías/reseñas 2025–2026. d: both (veggie + carne/pescado),
+// veg (solo vegetariano), vegan (solo vegano). ok:false = "para los dos" deducido, a confirmar.
+const RESTOS=[
+ {z:'java',city:'Yogyakarta',n:'ViaVia Jogja',area:'Prawirotaman, Yogyakarta',d:'both',ok:true,c:['🌍 Internacional','🇮🇩 Indonesia'],p:'$$',why:'Plato del día con opción carne, pescado o veggie. Panadería propia.',note:'8–23 h'},
+ {z:'java',city:'Yogyakarta',n:'Bale Raos',area:'Kraton, Yogyakarta',d:'both',ok:false,c:['🇮🇩 Javanesa real'],p:'$$',why:'Cocina de los sultanes, dentro del Kraton: combina con la visita del 16/10.'},
+ {z:'java',city:'Yogyakarta',n:'Gadjah Wong',area:'Yogyakarta',d:'both',ok:false,c:['🇮🇩 Indonesia','🌍 Internacional'],p:'$$$',star:true,why:'Cena especial a orillas del río.'},
+ {z:'java',city:'Yogyakarta',n:'Milas',area:'Prawirotaman, Yogyakarta',d:'veg',ok:true,c:['🇮🇩 Indonesia'],p:'$',why:'Clásico vegetariano con jardín (ya está en el plan).'},
+ {z:'java',city:'Malang',n:'Melati Restaurant',area:'Hotel Tugu, Malang',d:'both',ok:false,c:['🇮🇩 Indonesia','🥩 Steaks'],p:'$$$',star:true,why:'Dentro de un museo de antigüedades. Abierto 24 h: ideal antes del pickup de las 00:00.',note:'24 h'},
+ {z:'java',city:'Malang',n:'Toko Oen',area:'Alun-Alun, Malang',d:'both',ok:false,c:['☕ Café','🍦 Helados'],p:'$$',why:'Salón colonial de 1930 frente a la plaza.'},
+ {z:'ubud',city:'Ubud',n:'Sun Sun Warung',area:'Jl. Jembawan 2, Ubud',d:'both',ok:true,c:['🇮🇩 Balinesa casera'],p:'$',why:'Comida balinesa casera cerca del Palacio. Veggie y vegano marcados en la carta.',note:'11–22 h · puede haber espera'},
+ {z:'ubud',city:'Ubud',n:'Lynked',area:'Ubud',d:'both',ok:false,c:['🇮🇩 Toda Indonesia'],p:'$$',why:'Rendang, satay y costillas balinesas; cada plato dice de qué región viene.'},
+ {z:'ubud',city:'Ubud',n:'Hujan Locale',area:'Ubud',d:'both',ok:false,c:['🇮🇩 Indonesia moderna','🐟 Pescados'],p:'$$$',why:'Del chef Will Meyrick: pescado entero crocante, rendang.'},
+ {z:'ubud',city:'Ubud',n:'Locavore NXT',area:'Ubud',d:'both',ok:false,c:['⭐ Degustación'],p:'$$$$',star:true,why:'Puesto 44 en Asia’s 50 Best 2026. Reservar con anticipación y preguntar por versión veggie.'},
+ {z:'ubud',city:'Sanur',n:'Massimo',area:'Jl. Danau Tamblingan, Sanur',d:'both',ok:true,c:['🍝 Italiano','🍦 Gelato'],p:'$$',why:'Risotto de porcini, pizzas a la leña y más de 40 gustos de gelato.'},
+ {z:'ubud',city:'Sanur',n:'Jalapeño',area:'Jl. Danau Tamblingan, Sanur',d:'both',ok:true,c:['🌮 Mexicano'],p:'$$',why:'Tortillas caseras: tacos de pescado para Wally, carnitas de jaca para Dani.'},
+ {z:'ubud',city:'Sanur',n:'Kaluma',area:'Jl. Danau Tamblingan 64, Sanur',d:'both',ok:true,c:['🌍 Internacional'],p:'$$',why:'Música en vivo a la noche, barramundi.',note:'8–23 h'},
+ {z:'ubud',city:'Sidemen',n:'Warung Puriasih',area:'Sidemen, Bali',d:'both',ok:false,c:['🇮🇩 Balinesa'],p:'$',star:true,why:'Vista a los arrozales; “de los mejores tempeh de Bali”.'},
+ {z:'ubud',city:'Sidemen',n:'Sweet Warung View',area:'Sidemen, Bali',d:'both',ok:false,c:['🇮🇩 Balinesa'],p:'$',why:'Sección vegana; el curry de tempeh es lo mejor. Deck con vista.'},
+ {z:'ubud',city:'Sidemen',n:'Embang Warung',area:'Sidemen, Bali',d:'both',ok:false,c:['🇮🇩 Balinesa'],p:'$',why:'Muy concurrido, buenas vistas.'},
+ {z:'ubud',city:'Sidemen',n:'The Sleeping Gajah',area:'Wapa di Ume, Sidemen',d:'both',ok:false,c:['🌍 Internacional'],p:'$$$',why:'La mejor vista del valle para el atardecer.'},
+ {z:'penida',city:'Nusa Penida',n:'Warung Tu Pande',area:'Jl. Raya Toyapakeh, Nusa Penida',d:'both',ok:true,c:['🇮🇩 Indonesia','🐟 Parrilla de mariscos'],p:'$',why:'Mariscos a la parrilla y menú vegano muy elogiado. Familiar, cerca del hotel.',note:'7–22 h'},
+ {z:'penida',city:'Nusa Penida',n:'Amok Sun & Cliff Club',area:'Gamat Bay, Nusa Penida',d:'both',ok:false,c:['🌍 Fusión'],p:'$$$',star:true,why:'A 120 m sobre el mar, con piletas. Ya está en el plan.',note:'Atardecer: reservar desde 16 h'},
+ {z:'penida',city:'Nusa Penida',n:'Vegan Soul Kitchen',area:'Crystal Bay road, Nusa Penida',d:'vegan',ok:true,c:['🌿 Vegano'],p:'$',why:'Cabaña de madera en la jungla camino a Crystal Bay.'},
+ {z:'uluwatu',city:'Bingin / Uluwatu',n:'Gooseberry',area:'Bingin, Uluwatu',d:'both',ok:true,c:['🌍 Francés casual'],p:'$$$',star:true,why:'Sobre Bingin, famoso por sus albóndigas veganas. Cerca del hotel.'},
+ {z:'uluwatu',city:'Bingin / Uluwatu',n:'The Cashew Tree',area:'Bingin, Uluwatu',d:'both',ok:false,c:['🥗 Bowls','☕ Café'],p:'$$',why:'Muchas opciones veganas (ya está en el plan).'},
+ {z:'uluwatu',city:'Bingin / Uluwatu',n:'Artisan',area:'Bingin, Uluwatu',d:'both',ok:true,c:['☕ Brunch','🌍 Internacional'],p:'$$',why:'Brunch en un jardín; los jueves hay noche de steak.'},
+ {z:'uluwatu',city:'Bingin / Uluwatu',n:'Ulu Garden',area:'Uluwatu',d:'both',ok:false,c:['🐟 Pescado del día'],p:'$$',why:'Pescado del día en ambiente relajado.'},
+ {z:'uluwatu',city:'Bingin / Uluwatu',n:'Jimbaran seafood (playa)',area:'Jimbaran Beach, Bali',d:'both',ok:false,c:['🐟 Parrilla de mariscos'],p:'$$',why:'Mariscos en la arena al atardecer. Ideal para Wally; para Dani, arroz, verduras y maíz.'},
+ {z:'lbj',city:'Labuan Bajo',n:'Baccalá',area:'Labuan Bajo',d:'both',ok:true,c:['🍝 Italiano','🐟 Mariscos'],p:'$$',why:'Italiano de mar con pasta casera y opciones veganas.'},
+ {z:'lbj',city:'Labuan Bajo',n:'Happy Banana',area:'Labuan Bajo',d:'both',ok:true,c:['🍣 Japonés fusión'],p:'$$',why:'Sushi y bowls veganos.',note:'Cierra 19 h (domingo 17 h)'},
+ {z:'lbj',city:'Labuan Bajo',n:'Altomare',area:'Labuan Bajo',d:'both',ok:false,c:['🐟 Mediterráneo'],p:'$$$',star:true,why:'Terraza sobre el puerto.'},
+ {z:'lbj',city:'Labuan Bajo',n:'Taman Laut Handayani',area:'Labuan Bajo harbour',d:'both',ok:false,c:['🐟 Parrilla de pescado'],p:'$',why:'Pescado a la parrilla frente al puerto. Para Dani, poco más que arroz.'},
+ {z:'lbj',city:'Labuan Bajo',n:'Ahimsa',area:'Labuan Bajo',d:'vegan',ok:true,c:['🌿 Vegano'],p:'$',why:'Ya está en el plan.'},
+ {z:'gili',city:'Gili Air',n:'Papaya',area:'Gili Air',d:'both',ok:true,c:['🌍 Mediterráneo','🐟 Parrilla de langosta'],p:'$$',star:true,why:'De día tapas con opciones veggie; desde las 18 h, langosta y pescado a la parrilla en la playa.',note:'12–23 h · reservar WhatsApp +62 821-4793-2325'},
+ {z:'gili',city:'Gili Air',n:'Warung Sunny',area:'Gili Air',d:'both',ok:false,c:['🇮🇩 Toda Indonesia'],p:'$',why:'Cocina balinesa, de Sumatra y de Java.'},
+ {z:'gili',city:'Gili Air',n:'Chili Bar & Segar',area:'Gili Air east coast',d:'both',ok:false,c:['🌍 Creativo'],p:'$$',why:'Chozas de bambú en la costa este, tranquilo.'},
+ {z:'gili',city:'Gili Air',n:'KAI – The Spice Table',area:'Gili Air',d:'both',ok:false,c:['⭐ Alta cocina'],p:'$$$',star:true,why:'La mejor alta cocina de la isla.'},
+ {z:'gili',city:'Gili Air',n:'Pituq Café',area:'Gili Air',d:'vegan',ok:true,c:['🌿 Vegano'],p:'$$',why:'Vista a Lombok desde la terraza.'},
+];
+const DIET={both:['👫','Para los dos'],veg:['🌱','Solo veggie'],vegan:['🌿','Solo vegano']};
+let guiaView=(()=>{try{return localStorage.getItem('id26gv')||'precios'}catch(e){return 'precios'}})();
+let restoFilter='todos';
+function setGuiaView(v){guiaView=v;try{localStorage.setItem('id26gv',v)}catch(e){}applyGuiaView();}
+function applyGuiaView(){
+  document.getElementById('gv-precios').classList.toggle('on',guiaView==='precios');
+  document.getElementById('gv-comer').classList.toggle('on',guiaView==='comer');
+  document.getElementById('guia-precios').hidden=guiaView!=='precios';
+  document.getElementById('guia-comer').hidden=guiaView!=='comer';
+  if(guiaView==='comer')renderRestos();
+}
+function setRestoFilter(f){restoFilter=f;renderRestos();}
+function renderRestos(){
+  const el=document.getElementById('restos-list');if(!el)return;
+  document.querySelectorAll('#rf-row .cur-btn').forEach(b=>b.classList.toggle('on',b.dataset.f===restoFilter));
+  const list=RESTOS.filter(r=>r.z===pzone&&(restoFilter==='todos'||(restoFilter==='both'?r.d==='both':r.d!=='both')));
+  if(!list.length){el.innerHTML='<div class="empty">Sin lugares con este filtro en esta zona</div>';return;}
+  const cities=[...new Set(list.map(r=>r.city))];
+  el.innerHTML=cities.map(c=>`<div class="shdr">${e(c)}</div>`+list.filter(r=>r.city===c).map(r=>{
+    const [di,dl]=DIET[r.d];
+    const maps='https://maps.google.com/?q='+encodeURIComponent(r.n+', '+r.area+', Indonesia');
+    return `<div class="rs-card">
+      <div class="rs-top"><div class="rs-n">${r.star?'<span class="rs-star" title="Especial">⭐</span>':''}${e(r.n)}</div><span class="rs-p">${r.p}</span></div>
+      <div class="rs-tags"><span class="rs-diet ${r.d}">${di} ${dl}${r.d==='both'&&!r.ok?' <i>a confirmar</i>':''}</span>${r.c.map(x=>`<span class="rs-tag">${e(x)}</span>`).join('')}</div>
+      <div class="rs-why">${e(r.why)}</div>
+      <div class="rs-foot">${r.note?`<span class="rs-note">🕒 ${e(r.note)}</span>`:'<span></span>'}<a class="maps-btn" href="${maps}" target="_blank" rel="noopener">📍 Maps</a></div>
+    </div>`;}).join('')).join('');
+}
 // ── EXPORT ────────────────────────────────────────────
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
