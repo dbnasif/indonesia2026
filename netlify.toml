@@ -1,0 +1,10 @@
+[build]
+  # site/ se genera con: python3 build.py (y se sube al repo)
+  command = ""
+  publish = "site"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"

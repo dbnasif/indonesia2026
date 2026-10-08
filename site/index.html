@@ -1,3 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0e1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Indonesia 2026">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌏</text></svg>">
+<style>
+/* Lo que en Claude agrega el marco de la página. */
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Pantalla de login */
+.login-ov{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
+.login-box{width:100%;max-width:360px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px}
+.login-h{font-size:20px;font-weight:800}
+.login-p,.login-msg{font-size:13px;color:var(--mu);line-height:1.5}
+#lg-step2{display:flex;flex-direction:column;gap:10px}
+</style>
+<script src="supabase.js"></script>
+<script src="config.js"></script>
+<script src="supabase-db.js"></script>
+</head>
+<body>
 <title>Indonesia 2026</title>
 <style>
 :root {
@@ -2255,3 +2281,6 @@ initStore();
 // Durante el viaje la app abre en Inicio (Hoy); fuera de fechas, en Gastos como siempre.
 if(hoyState(new Date()))go('home',document.querySelector(`.nb[onclick*="'home'"]`));
 </script>
+
+</body>
+</html>
