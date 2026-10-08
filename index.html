@@ -984,8 +984,8 @@ async function initStore(){
   DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();USERDOCS=local.docs||[];
   applyConfig();refreshAll();
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
-  // Versión web (Netlify): login + base en Supabase (netlify/supabase-db.js).
-  if(!db&&window.SUPA){try{db=await window.SUPA.db();}catch(e){console.warn(e);db=null;}}
+  // Versión web (Netlify): login + base en Firebase (netlify/firebase-db.js).
+  if(!db&&window.WEBDB){try{db=await window.WEBDB.db();}catch(e){console.warn(e);db=null;}}
   if(!db){
     setSync('local','Solo este dispositivo');
     const info=document.getElementById('data-info');

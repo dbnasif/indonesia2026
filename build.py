@@ -2,7 +2,7 @@
 
 index.html es la misma página que se publica en Claude (sin <html>/<head>
 propios). Acá se le agrega el encabezado de una página normal y el login +
-base de datos de Supabase (netlify/). Uso: python3 build.py
+base de datos de Firebase (netlify/). Uso: python3 build.py
 """
 import shutil
 from pathlib import Path
@@ -31,9 +31,11 @@ HEAD = """<!doctype html>
 .login-p,.login-msg{font-size:13px;color:var(--mu);line-height:1.5}
 #lg-step2{display:flex;flex-direction:column;gap:10px}
 </style>
-<script src="supabase.js"></script>
+<script src="firebase-app-compat.js"></script>
+<script src="firebase-auth-compat.js"></script>
+<script src="firebase-firestore-compat.js"></script>
 <script src="config.js"></script>
-<script src="supabase-db.js"></script>
+<script src="firebase-db.js"></script>
 </head>
 <body>
 """
@@ -45,7 +47,8 @@ def main():
     SITE.mkdir()
     page = (ROOT / "index.html").read_text(encoding="utf-8")
     (SITE / "index.html").write_text(HEAD + page + "\n</body>\n</html>\n", encoding="utf-8")
-    for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/supabase-db.js", "netlify/supabase.js"]:
+    for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js", "netlify/seed.json",
+              "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js"]:
         shutil.copy(ROOT / f, SITE / Path(f).name)
     print("site/ listo")
 

@@ -1,8 +1,12 @@
-// Datos públicos del proyecto Supabase (Project Settings → API).
-// La "anon key" está pensada para ir en el navegador: lo que protege los datos
-// son las reglas (RLS) de supabase/schema.sql, que solo dejan entrar a estos mails.
+// Configuración web de Firebase (Consola → Configuración del proyecto → Tus apps → SDK).
+// Estos datos son públicos por diseño: lo que protege la información son las
+// reglas de firestore.rules, que solo dejan entrar a los mails de abajo.
 window.APP_CONFIG = {
-  url: 'PEGAR_PROJECT_URL',        // ej: https://abcdxyz.supabase.co
-  anonKey: 'PEGAR_ANON_KEY',
+  firebase: {
+    apiKey: 'PEGAR',
+    authDomain: 'PEGAR.firebaseapp.com',
+    projectId: 'PEGAR',
+    appId: 'PEGAR',
+  },
   allowed: ['danii.nasif@gmail.com', 'augustotraghetti@gmail.com'],
 };
