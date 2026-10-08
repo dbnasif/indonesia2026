@@ -4,11 +4,22 @@ index.html es la misma página que se publica en Claude (sin <html>/<head>
 propios). Acá se le agrega el encabezado de una página normal y el login +
 base de datos de Firebase (netlify/). Uso: python3 build.py
 """
+import json
+import os
 import shutil
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).parent
 SITE = ROOT / "site"
+PRIVATE = ROOT / "private"
+
+
+def encrypt(payload, phrase):
+    """AES-GCM con clave PBKDF2 de la frase (tools/encrypt.js); lo descifra netlify/firebase-db.js."""
+    out = subprocess.run(["node", str(ROOT / "tools" / "encrypt.js"), phrase],
+                         input=json.dumps(payload, ensure_ascii=False), capture_output=True, text=True, check=True)
+    return json.loads(out.stdout)
 
 HEAD = """<!doctype html>
 <html lang="es">
@@ -46,10 +57,25 @@ def main():
         shutil.rmtree(SITE)
     SITE.mkdir()
     page = (ROOT / "index.html").read_text(encoding="utf-8")
+    # Códigos de reserva, PNR, visas y seguro: en la web van como marcadores ⟪n⟫ y
+    # el valor real viaja cifrado (privado.enc) junto con los datos iniciales.
+    codes = json.loads((PRIVATE / "secrets.json").read_text(encoding="utf-8"))
+    order = sorted(range(len(codes)), key=lambda i: -len(codes[i]))
+    for i in order:
+        page = page.replace(codes[i], f"⟪{i}⟫")
+    phrase = os.environ.get("INDONESIA_FRASE") or (PRIVATE / "frase.txt").read_text(encoding="utf-8").strip()
+    seed = json.loads((PRIVATE / "seed.json").read_text(encoding="utf-8"))
+    payload = {"codes": {str(i): c for i, c in enumerate(codes)}, "seed": seed}
+    (SITE / "privado.enc").write_text(json.dumps(encrypt(payload, phrase)), encoding="utf-8")
     (SITE / "index.html").write_text(HEAD + page + "\n</body>\n</html>\n", encoding="utf-8")
-    for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js", "netlify/seed.json",
+    for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js",
               "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js"]:
         shutil.copy(ROOT / f, SITE / Path(f).name)
+    # Control: ningún código puede quedar en claro en lo que se publica.
+    leaks = [c for f in SITE.iterdir() if f.suffix in (".html", ".js", ".json")
+             for c in codes if c in f.read_text(encoding="utf-8", errors="ignore")]
+    if leaks:
+        raise SystemExit(f"Quedaron códigos sin ocultar: {sorted(set(leaks))}")
     print("site/ listo")
 
 
