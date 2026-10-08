@@ -66,7 +66,7 @@
     box.appendChild(b);
   }
 
-  // ── Base de datos: tabla public.docs (col, id, data) ─────────
+  // ── Base de datos: tabla public.indonesia_docs (col, id, data) ─────────
   function makeDb() {
     const cache = {}, loaded = {}, colL = {}, docL = {};
     const meta = { fromCache: false, hasPendingWrites: false };
@@ -81,12 +81,12 @@
     };
     const errOf = e => ({ code: e && (e.code === '42501' || /row-level security/i.test(e.message || '')) ? 'invalid_argument' : 'unavailable', message: (e && e.message) || 'error' });
     async function load(col, onErr) {
-      const { data, error } = await sb.from('docs').select('id,data').eq('col', col);
+      const { data, error } = await sb.from('indonesia_docs').select('id,data').eq('col', col);
       if (error) { onErr && onErr(errOf(error)); return; }
       cache[col] = new Map(data.map(r => [r.id, r.data])); loaded[col] = true; notify(col);
     }
     // Cambios en vivo de la otra persona.
-    sb.channel('docs-live').on('postgres_changes', { event: '*', schema: 'public', table: 'docs' }, p => {
+    sb.channel('indonesia-docs-live').on('postgres_changes', { event: '*', schema: 'public', table: 'indonesia_docs' }, p => {
       const row = p.eventType === 'DELETE' ? p.old : p.new;
       if (!row || !row.col || !cache[row.col]) return;
       if (p.eventType === 'DELETE') cache[row.col].delete(row.id); else cache[row.col].set(row.id, row.data);
@@ -99,13 +99,13 @@
       id, path: col + '/' + id,
       async set(data) {
         (cache[col] = cache[col] || new Map()).set(id, data); notify(col);
-        const { error } = await sb.from('docs').upsert({ col, id, data, updated_at: new Date().toISOString() });
+        const { error } = await sb.from('indonesia_docs').upsert({ col, id, data, updated_at: new Date().toISOString() });
         if (error) { await load(col); throw errOf(error); }
       },
       async update(patch) { const cur = (cache[col] && cache[col].get(id)) || {}; return this.set({ ...cur, ...patch }); },
       async delete() {
         cache[col] && cache[col].delete(id); notify(col);
-        const { error } = await sb.from('docs').delete().eq('col', col).eq('id', id);
+        const { error } = await sb.from('indonesia_docs').delete().eq('col', col).eq('id', id);
         if (error) { await load(col); throw errOf(error); }
       },
       onSnapshot(next, onErr) {

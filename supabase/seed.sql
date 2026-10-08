@@ -1,6 +1,6 @@
 -- Datos de la app al 08/10/2026 (copiados de la versión en Claude).
 -- Correr DESPUÉS de schema.sql. Si ya existen, los pisa con estos valores.
-insert into public.docs (col, id, data) values
+insert into public.indonesia_docs (col, id, data) values
   ('categorias', 'c-regalos-mym', '{"deleted": false, "emoji": "🏷", "nombre": "Regalos", "orden": 7, "slot": null}'::jsonb),
   ('categorias', 'c-visa', '{"deleted": false, "emoji": "🛂", "nombre": "Visa", "orden": 6, "slot": 7}'::jsonb),
   ('categorias', 'c-vuelos', '{"deleted": false, "emoji": "✈️", "nombre": "Vuelos", "orden": 5, "slot": 6}'::jsonb),

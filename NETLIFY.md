@@ -7,7 +7,7 @@ La app de `index.html` funciona en dos lugares:
 
 ## Puesta en marcha (una sola vez)
 
-1. **Supabase** → crear proyecto → *SQL Editor* → pegar y correr `supabase/schema.sql`, después `supabase/seed.sql`.
+1. **Supabase** → en un proyecto existente o nuevo → *SQL Editor* → pegar y correr `supabase/schema.sql`, después `supabase/seed.sql`.
 2. **Supabase → Authentication → URL Configuration**: *Site URL* = la URL de Netlify (y agregarla en *Redirect URLs*).
 3. **Supabase → Authentication → Email Templates → Magic Link**: agregar `{{ .Token }}` al texto para que el mail traiga el código además del link.
 4. **Supabase → Project Settings → API**: copiar *Project URL* y *anon public key* en `netlify/config.js`, y correr `python3 build.py`.
