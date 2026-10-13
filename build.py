@@ -30,6 +30,10 @@ HEAD = """<!doctype html>
 <meta name="theme-color" content="#0e1117">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Indonesia 2026">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌏</text></svg>">
 <style>
 /* Lo que en Claude agrega el marco de la página. */
@@ -71,7 +75,8 @@ def main():
     (SITE / "privado.enc").write_text(json.dumps(box), encoding="utf-8")
     (SITE / "index.html").write_text(HEAD + page + "\n</body>\n</html>\n", encoding="utf-8")
     for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js",
-              "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js"]:
+              "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js",
+              "netlify/manifest.webmanifest", "netlify/icons/icon-180.png", "netlify/icons/icon-192.png", "netlify/icons/icon-512.png"]:
         shutil.copy(ROOT / f, SITE / Path(f).name)
     # Control: ningún código puede quedar en claro en lo que se publica.
     leaks = [c for f in SITE.iterdir() if f.suffix in (".html", ".js", ".json")
