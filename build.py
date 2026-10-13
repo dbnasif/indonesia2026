@@ -66,7 +66,9 @@ def main():
     phrase = os.environ.get("INDONESIA_FRASE") or (PRIVATE / "frase.txt").read_text(encoding="utf-8").strip()
     seed = json.loads((PRIVATE / "seed.json").read_text(encoding="utf-8"))
     payload = {"codes": {str(i): c for i, c in enumerate(codes)}, "seed": seed}
-    (SITE / "privado.enc").write_text(json.dumps(encrypt(payload, phrase)), encoding="utf-8")
+    box = encrypt(payload, phrase)
+    box["n"] = len(codes)  # público: avisa a la app si hay códigos nuevos para desbloquear
+    (SITE / "privado.enc").write_text(json.dumps(box), encoding="utf-8")
     (SITE / "index.html").write_text(HEAD + page + "\n</body>\n</html>\n", encoding="utf-8")
     for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js",
               "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js"]:

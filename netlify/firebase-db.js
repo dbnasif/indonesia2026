@@ -102,13 +102,13 @@
     batch.set(fs.doc('privado/codigos'), payload.codes);
     await batch.commit();
   }
-  function activationScreen() {
+  function activationScreen(update) {
     return new Promise(resolve => {
       const ov = document.createElement('div');
       ov.className = 'login-ov';
       ov.innerHTML = `<form class="login-box">
-        <div class="login-h">🔐 Activar la app</div>
-        <p class="login-p">Solo una vez, para los dos: escribí la frase de activación. Carga los gastos y los códigos de reservas.</p>
+        <div class="login-h">🔐 ${update ? 'Hay códigos nuevos' : 'Activar la app'}</div>
+        <p class="login-p">${update ? 'Se agregaron números de reserva. Lo hace una sola persona, una vez: escribí la frase de activación. Si no la tenés, tocá “Ahora no”.' : 'Solo una vez, para los dos: escribí la frase de activación. Carga los gastos y los códigos de reservas.'}</p>
         <input class="fi" id="ac-frase" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="palabra-palabra-palabra-palabra-123">
         <button class="add-g-btn" id="ac-go" type="submit">Activar</button>
         <button class="cbtn" id="ac-skip" type="button">Ahora no</button>
@@ -128,8 +128,20 @@
   }
   async function loadCodes() {
     const snap = await fs.doc('privado/codigos').get();
-    const codes = snap.exists ? snap.data() : await activationScreen();
-    if (codes) startUnmask(codes);
+    if (!snap.exists) { const codes = await activationScreen(); if (codes) startUnmask(codes); return; }
+    let codes = snap.data();
+    // privado.enc trae más códigos que los guardados: se piden una vez (o hasta que
+    // alguien los cargue; quien toca "Ahora no" no lo vuelve a ver por esta versión).
+    let n = 0;
+    try { n = (await fetch('privado.enc', { cache: 'no-cache' }).then(r => r.json())).n || 0; } catch (e) {}
+    let skip = '';
+    try { skip = localStorage.getItem('id26skip') || ''; } catch (e) {}
+    if (n > Object.keys(codes).length && skip !== String(n)) {
+      const nuevos = await activationScreen(true);
+      if (nuevos) codes = nuevos;
+      else { try { localStorage.setItem('id26skip', String(n)); } catch (e) {} }
+    }
+    startUnmask(codes);
   }
 
   // ── Adaptador: misma forma que la base de Claude ─────────
