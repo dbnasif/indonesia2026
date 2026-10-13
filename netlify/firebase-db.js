@@ -68,10 +68,12 @@
   const unmaskStr = v => v.replace(MARK, (m, i) => (CODES && CODES[i] != null ? CODES[i] : m));
   function unmask(root) {
     if (!CODES || !root) return;
-    if (root.nodeType === 3) { if (MARK.test(root.nodeValue)) root.nodeValue = unmaskStr(root.nodeValue); MARK.lastIndex = 0; return; }
+    // Solo se escribe si cambia: reescribir el mismo texto dispara el observer otra vez
+    // y, con un marcador sin código conocido, la página quedaba en un bucle infinito.
+    if (root.nodeType === 3) { const v = unmaskStr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
     if (root.nodeType !== 1) return;
     const walk = el => {
-      for (const a of Array.from(el.attributes || [])) { if (a.value.includes('⟪')) el.setAttribute(a.name, unmaskStr(a.value)); }
+      for (const a of Array.from(el.attributes || [])) { if (a.value.includes('⟪')) { const v = unmaskStr(a.value); if (v !== a.value) el.setAttribute(a.name, v); } }
       for (const n of Array.from(el.childNodes)) n.nodeType === 3 ? unmask(n) : n.nodeType === 1 && walk(n);
     };
     walk(root);

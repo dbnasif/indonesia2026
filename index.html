@@ -184,8 +184,8 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .monto-input{flex:1;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs) 0 0 var(--rs);padding:10px 12px;font-size:13px;color:var(--tx);outline:none}
 .monto-input:focus{border-color:var(--ac)}
 .cur-tog{border:1px solid var(--bd);border-left:none;background:var(--sf);color:var(--mu);border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;font-size:12px;font-weight:700;min-width:54px}
-.cur-tog.usd{color:#86efac;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
-.cur-tog.idr{color:#fde68a;border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.08)}
+.cur-tog.c-usd{color:#86efac;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.cur-tog.c-idr{color:#fde68a;border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.08)}
 
 /* split mode */
 .split-mode-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
@@ -280,6 +280,7 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .seg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .seg-lbl{font-size:12px;color:var(--mu)}
 .hist-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip-nocat{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:rgba(234,179,8,.16);color:var(--yw);margin-left:4px;vertical-align:1px;letter-spacing:.2px}
 .chip-prev{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:rgba(167,139,250,.16);color:#c4b5fd;margin-left:4px;vertical-align:1px;letter-spacing:.2px}
 /* itinerario tabla */
 .it-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
@@ -307,6 +308,8 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .gt .t-who{white-space:nowrap;display:flex;align-items:center;gap:4px}
 .gt .t-who.tbc{color:var(--yw);font-weight:800}
 .gt tr.tbc td:first-child{box-shadow:inset 3px 0 var(--yw)}
+.bal-fil{margin-bottom:12px;width:max-content;max-width:100%}
+.bal-fil .cur-btn{padding:6px 10px}
 .debt-tbc{margin-top:10px;font-size:11px;color:var(--yw);line-height:1.5}
 .gt .t-amt{font-weight:800;color:var(--gr)}
 .gt .t-act{display:flex;gap:4px;justify-content:flex-end}
@@ -573,6 +576,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <h3>⚖️ Balance</h3><span class="ph-sum" id="bal-mini"></span><span class="ph-chev" aria-hidden="true">▾</span>
     </button>
     <div class="panel-b debt settled" id="debt">
+    <div class="cur-btns bal-fil" role="group" aria-label="Qué gastos cuenta el balance">
+      <button class="cur-btn on" id="bf-todos" onclick="setBalFilter('todos')">Todo</button>
+      <button class="cur-btn" id="bf-previo" onclick="setBalFilter('previo')">Previo al viaje</button>
+      <button class="cur-btn" id="bf-viaje" onclick="setBalFilter('viaje')">Durante el viaje</button>
+    </div>
     <div class="debt-main"><div class="debt-who" id="debt-who">Están a mano ✓</div><div class="debt-amt" id="debt-amt"></div></div>
     <div class="dv" id="dv" aria-hidden="true">
       <div class="dv-names"><span id="dv-dani">Dani</span><span id="dv-wally">Wally</span></div>
@@ -596,7 +604,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <input class="fi" id="g-desc" placeholder="Descripción">
       <div class="monto-wrap">
         <input class="monto-input" id="g-monto" placeholder="Monto" type="text" inputmode="decimal" autocomplete="off" oninput="refreshCustom();checkCustom('pf');checkCustom('sf')">
-        <button class="cur-tog usd" id="g-cur-btn" onclick="toggleGCur()">USD</button>
+        <button class="cur-tog c-usd" id="g-cur-btn" onclick="toggleGCur()">USD</button>
       </div>
     </div>
     <div class="form-row">
@@ -1106,12 +1114,12 @@ function go(p,btn){
 
 // ── HOME STATS ────────────────────────────────────────
 function recalcStats(){
-  const pagadoUSD = GASTOS.filter(g=>!isTBC(g)).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const pagadoUSD = realGastos().filter(g=>!isTBC(g)).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('st-pagado').textContent = fmtAmt(pagadoUSD);
-  const totalUSD = GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const totalUSD = realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('st-gastos').textContent = fmtAmt(totalUSD);
-  const daniUSD = GASTOS.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
-  const wallyUSD = GASTOS.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
+  const daniUSD = realGastos().reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
+  const wallyUSD = realGastos().reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
   document.getElementById('st-dani').textContent = fmtAmt(daniUSD);
   document.getElementById('st-wally').textContent = fmtAmt(wallyUSD);
 }
@@ -1333,7 +1341,7 @@ function roundCur(v,cur){return cur==='USD'?v.toFixed(2):Math.round(v).toString(
 function toggleGCur(){
   gCur=gCur==='USD'?'IDR':'USD';
   const btn=document.getElementById('g-cur-btn');
-  if(btn){btn.textContent=gCur;btn.className='cur-tog '+(gCur==='USD'?'usd':'idr');}
+  if(btn){btn.textContent=gCur;btn.className='cur-tog '+(gCur==='USD'?'c-usd':'c-idr');}
   document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
   refreshCustom();
 }
@@ -1450,6 +1458,7 @@ function addGasto(){
   const errP=customErr('pf'),errS=customErr('sf');
   if(errP||errS){checkCustom('pf');checkCustom('sf');toast(errP?'¿Quién pagó?: '+errP:'¿Para quién?: '+errS);return;}
   const cat=fval('g-cat');
+  if(!cat&&!confirm('¿Estás seguro que no querés cargar categoría?\n\nEl gasto queda sin categoría, con un ⚠️ en el historial para completarlo después.')){document.getElementById('g-cat').focus();return;}
   const fecha=fval('g-fecha');
   const notas=document.getElementById('g-notas').value.trim();
   const amtUSD=toUSD(monto,gCur);
@@ -1477,7 +1486,7 @@ function addGasto(){
 
 function resetGastoForm(){
   editingGastoId=null;
-  ['g-desc','g-monto','g-notas'].forEach(id=>fset(id,''));
+  ['g-desc','g-monto','g-notas','g-cat'].forEach(id=>fset(id,''));
   document.getElementById('g-form-title').textContent='+ Nuevo gasto';
   document.getElementById('g-save-btn').textContent='Agregar gasto';
   document.getElementById('g-edit-banner').classList.remove('show');
@@ -1491,12 +1500,12 @@ function editGasto(id){
   editingGastoId=id;
   fset('g-desc',g.desc||'');
   fset('g-monto',g.monto||'');
-  fset('g-cat',catInfo(g.cat).id);
+  fset('g-cat',g.cat&&allCats().some(c=>c.id===g.cat)?g.cat:'');
   setEtapa(etapaOf(g));etapaManual=true;
   fset('g-fecha',g.fecha||'');
   fset('g-notas',g.notas||'');
   gCur=g.cur||'USD';
-  const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'usd':'idr');
+  const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'c-usd':'c-idr');
   document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
   mpSel.dani=g.mpDani||'efectivo';mpSel.wally=g.mpWally||'efectivo';renderDD('dani');renderDD('wally');
   fillCustom('pf',parseFloat(g.payDani||0),parseFloat(g.payWally||0),gCur);
@@ -1529,8 +1538,13 @@ const PALETTE=['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#908
 const DEFAULT_CATS=[
   {id:'comida',nombre:'Comida',emoji:'🍜',slot:0,orden:0},{id:'transporte',nombre:'Transporte',emoji:'🚗',slot:1,orden:1},
   {id:'actividad',nombre:'Actividad',emoji:'🎟',slot:2,orden:2},{id:'hotel',nombre:'Hotel',emoji:'🏨',slot:3,orden:3},
-  {id:'compras',nombre:'Compras',emoji:'🛍',slot:4,orden:4},{id:'otro',nombre:'Otro',emoji:'💳',slot:5,orden:99},
+  {id:'compras',nombre:'Compras',emoji:'🛍',slot:4,orden:4},{id:'deuda',nombre:'Deuda saldada',emoji:'🤝',slot:null,orden:98},
+  {id:'otro',nombre:'Otro',emoji:'💳',slot:5,orden:99},
 ];
+// "Deuda saldada": cuando uno le devuelve plata al otro. Cuenta para el balance,
+// pero no es un gasto del viaje: no suma en totales ni en el gráfico.
+const isSettle=g=>g.cat==='deuda';
+const realGastos=()=>GASTOS.filter(g=>!isSettle(g));
 let CATDOCS={};
 function allCats(){
   const base=DEFAULT_CATS.map(d=>({...d,...(CATDOCS[d.id]||{}),id:d.id}));
@@ -1543,8 +1557,8 @@ function catLabel(c){return `${c.emoji||'•'} ${c.nombre}`;}
 function renderCatSelect(){
   const sel=document.getElementById('g-cat');if(!sel)return;
   const cur=sel.value;
-  sel.innerHTML=allCats().map(c=>`<option value="${e(c.id)}">${e(catLabel(c))}</option>`).join('');
-  sel.value=allCats().some(c=>c.id===cur)?cur:(allCats()[0]||{}).id;
+  sel.innerHTML='<option value="">Categoría…</option>'+allCats().map(c=>`<option value="${e(c.id)}">${e(catLabel(c))}</option>`).join('');
+  sel.value=allCats().some(c=>c.id===cur)?cur:'';
 }
 function toggleCatEditor(force){
   const ed=document.getElementById('cat-editor');
@@ -1662,7 +1676,7 @@ async function exportXlsx(){
   ws['!cols']=hdr.map(h=>({wch:Math.max(10,Math.min(40,h.length+2,...rows.map(r=>String(r[h]instanceof Date?'00/00/0000 00:00':r[h]).length+2)))}));
   ws['!autofilter']={ref:ws['!ref']};
   const sum=k=>GASTOS.filter(g=>!isTBC(g)).reduce((a,g)=>a+parseFloat(g[k]||0),0);
-  const total=GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const total=realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   const net=sum('payDani')-sum('splitDani');
   const res=[
     ['Resumen de gastos · Indonesia 2026'],['Generado el',now],[],
@@ -1724,7 +1738,7 @@ function renderChart(){
   const CATS=chartCats();
   const rows=[['Wally',{}],['Dani',{}],['Total',{}]];
   CATS.forEach(([k])=>rows.forEach(r=>r[1][k]=0));
-  GASTOS.forEach(g=>{
+  realGastos().forEach(g=>{
     const k=catOf(g),d=parseFloat(g.splitDani||0),w=parseFloat(g.splitWally||0);
     rows[0][1][k]+=w;rows[1][1][k]+=d;rows[2][1][k]+=d+w;
   });
@@ -1763,9 +1777,16 @@ function whoCell(mode,d,w,mpD,mpW){
   const sub=mode==='custom'?`<div class="t-sub">D ${fmtAmt(d)}<br>W ${fmtAmt(w)}</div>`:'';
   return `<div class="t-who">${MODE_LBL[mode]} ${icons}</div>${sub}`;
 }
+// El balance siempre se muestra en dólares, más allá de la moneda elegida arriba.
+const fmtUSD=v=>'USD '+v.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+let balFilter='todos';
+function setBalFilter(f){
+  balFilter=f;['todos','previo','viaje'].forEach(x=>document.getElementById('bf-'+x).classList.toggle('on',x===f));
+  renderGastos();
+}
 function renderDebt(total,paidD,paidW,dT,wT){
   const net=paidD-dT,amt=Math.abs(net),box=document.getElementById('debt');
-  ['dani-pay','dani-own','wally-pay','wally-own'].forEach((k,i)=>document.getElementById('dp-'+k).textContent=fmtAmt([paidD,dT,paidW,wT][i]));
+  ['dani-pay','dani-own','wally-pay','wally-own'].forEach((k,i)=>document.getElementById('dp-'+k).textContent=fmtUSD([paidD,dT,paidW,wT][i]));
   const fill=document.getElementById('dv-fill');
   const dvD=document.getElementById('dv-dani'),dvW=document.getElementById('dv-wally');
   dvD.classList.remove('deb');dvW.classList.remove('deb');
@@ -1779,8 +1800,8 @@ function renderDebt(total,paidD,paidW,dT,wT){
   box.classList.remove('settled');
   const debtor=net<0?'Dani':'Wally',creditor=net<0?'Wally':'Dani';
   document.getElementById('debt-who').innerHTML=`<span class="dn">${debtor}</span> le debe a ${creditor}`;
-  document.getElementById('debt-amt').textContent=fmtAmt(amt);
-  document.getElementById('bal-mini').textContent=`${debtor} debe ${fmtAmt(amt)}`;
+  document.getElementById('debt-amt').textContent=fmtUSD(amt);
+  document.getElementById('bal-mini').textContent=`${debtor} debe ${fmtUSD(amt)}`;
   (net<0?dvD:dvW).classList.add('deb');
   // Escala: la mitad de la barra = la mitad del gasto total del viaje.
   fill.className='dv-fill '+(net<0?'l':'r');
@@ -1788,20 +1809,22 @@ function renderDebt(total,paidD,paidW,dT,wT){
 }
 
 function renderGastos(){
-  const total=GASTOS.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const total=realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('g-total').textContent=fmtAmt(total);
   document.getElementById('g-total-mini').textContent=fmtAmt(total);
   const secEl=document.getElementById('g-total-sec');
   if(secEl) secEl.textContent=curDisplay!=='USD'?'≈ $'+total.toFixed(2)+' USD':'';
   // El balance solo cuenta gastos con quién pagó definido (los TBC quedan afuera).
-  const BAL=GASTOS.filter(g=>!isTBC(g)),TBC=GASTOS.filter(isTBC);
+  const ENBAL=balFilter==='todos'?GASTOS:GASTOS.filter(g=>etapaOf(g)===balFilter);
+  const BAL=ENBAL.filter(g=>!isTBC(g)),TBC=ENBAL.filter(isTBC);
+  const balTotal=BAL.filter(g=>!isSettle(g)).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   const dT=BAL.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
   const wT=BAL.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
   const paidD=BAL.reduce((a,g)=>a+parseFloat(g.payDani||0),0);
   const paidW=BAL.reduce((a,g)=>a+parseFloat(g.payWally||0),0);
-  renderDebt(total,paidD,paidW,dT,wT);
+  renderDebt(balTotal,paidD,paidW,dT,wT);
   const tb=document.getElementById('debt-tbc');
-  if(tb){tb.hidden=!TBC.length;tb.textContent=TBC.length?`❗ ${TBC.length} gasto${TBC.length===1?'':'s'} TBC (${fmtAmt(TBC.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0))}) no entra${TBC.length===1?'':'n'} en el balance hasta que cargues quién pagó.`:'';}
+  if(tb){tb.hidden=!TBC.length;tb.textContent=TBC.length?`❗ ${TBC.length} gasto${TBC.length===1?'':'s'} TBC (${fmtUSD(TBC.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0))}) no entra${TBC.length===1?'':'n'} en el balance hasta que cargues quién pagó.`:'';}
   renderChart();
 
   const el=document.getElementById('glist');
@@ -1816,7 +1839,7 @@ function renderGastos(){
       const cur=g.cur||'USD';
       const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.notas].filter(Boolean).map(e).join(' · ');
       return `<tr class="${[g.id===editingGastoId?'editing':'',isTBC(g)?'tbc':''].join(' ').trim()}">
-        <td><div class="t-desc">${e(catInfo(g.cat).emoji||'•')} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
+        <td><div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
         <td>${whoCell(g.payMode||'dani',parseFloat(g.payDani||0),parseFloat(g.payWally||0),g.mpDani,g.mpWally)}</td>
         <td>${whoCell(g.splitMode||'compartido',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0))}</td>
         <td class="num"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(g.monto)} ${e(cur)}</div>`:''}</td>
