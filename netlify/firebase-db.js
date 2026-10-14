@@ -57,6 +57,13 @@
     b.textContent = '🚪 Salir (' + (user.email || '') + ')';
     b.onclick = async () => { await auth.signOut(); location.reload(); };
     box.appendChild(b);
+    // Versión publicada: sirve para saber si el celu tiene la última o una vieja guardada.
+    if (window.APP_BUILD) {
+      const v = document.createElement('p');
+      v.className = 'login-p'; v.style.width = '100%';
+      v.textContent = 'Versión de la app: ' + window.APP_BUILD;
+      box.appendChild(v);
+    }
   }
 
   // ── Códigos privados y datos iniciales ────────────────────────
