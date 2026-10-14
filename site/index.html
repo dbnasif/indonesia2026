@@ -430,6 +430,22 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .gv-row{margin-top:8px;width:100%}
 .gv-row .cur-btn{flex:1;padding:8px 10px}
 .rf-bar{margin-bottom:4px}
+#guia-frases .srch{margin-bottom:0}
+#fr-chips{margin:8px 0 10px}
+.fr-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:11px 14px;margin-bottom:8px;color:var(--tx);font:inherit}
+.fr-card:active{border-color:var(--gr)}
+.fr-es{font-size:12px;color:var(--mu)}
+.fr-id{font-size:17px;font-weight:800;line-height:1.3}
+.fr-pr{font-size:11px;color:var(--mu);opacity:.85}
+.fr-big{position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
+.fr-big-id{font-size:clamp(30px,9vw,54px);font-weight:800;line-height:1.2}
+.fr-big-es{font-size:16px;color:var(--mu)}
+.fr-big-x{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--mu)}
+.cm-sec{margin-top:12px}
+.cm-it{font-size:12.5px;line-height:1.5;margin-top:6px}
+.cm-d{color:var(--mu)}
+.cm-v{font-weight:700;white-space:nowrap}
+.cm-v.vegan{color:#86efac}.cm-v.adapt{color:#93c5fd}.cm-v.veg{color:#fde68a}.cm-v.no{color:#fca5a5}
 .rf-bar .cur-btns{display:flex;width:100%}
 .rf-bar .cur-btn{flex:1;padding:7px 6px}
 .rs-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:8px}
@@ -810,8 +826,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="cur-btns gv-row" role="group" aria-label="Vista de la guía">
       <button class="cur-btn" id="gv-precios" onclick="setGuiaView('precios')">💲 Precios</button>
       <button class="cur-btn" id="gv-comer" onclick="setGuiaView('comer')">🍽️ Dónde comer</button>
+      <button class="cur-btn" id="gv-frases" onclick="setGuiaView('frases')">🗣️ Frases</button>
     </div>
   </div>
+  <div id="guia-frases" hidden>
+    <input class="srch" id="fr-q" type="search" placeholder="Buscá en castellano: gracias, cuenta, sin carne…" oninput="renderFrases()" aria-label="Buscar frase">
+    <div class="zfils" id="fr-chips"></div>
+    <div id="frases-list"></div>
+    <p class="pr-src">Tocá una frase para verla en grande y mostrársela a quien te atiende. 🔊 = cómo se pronuncia leyéndolo en castellano.</p>
+  </div>
+  <div class="fr-big" id="fr-big" hidden onclick="this.hidden=true" role="dialog" aria-label="Frase en grande"></div>
   <div id="guia-comer" hidden>
     <div class="rf-bar">
       <div class="cur-btns" id="rf-row" role="group" aria-label="Filtrar por opciones">
@@ -1156,6 +1180,77 @@ function recalcStats(){
   document.getElementById('st-wally').textContent = fmtAmt(wallyUSD);
 }
 
+// ── ITINERARIO — comida típica de cada lugar ──────────
+// v: 'vegan' = vegano · 'adapt' = vegano si se pide sin algo (ver nota) ·
+// 'veg' = vegetariano (lleva huevo o lácteo) · 'no' = carne o pescado.
+const DIET_V={vegan:'🌿 vegano',adapt:'🔄 adaptable',veg:'🥚 veggie, no vegano',no:'🍖 no vegano'};
+const COMIDA={
+  jakarta:[
+    ['Gado-gado','verduras hervidas, tofu y tempeh con salsa de maní','adapt','pedir sin huevo, sin terasi y sin kerupuk de camarón'],
+    ['Ketoprak','tofu, fideos de arroz y brotes con salsa de maní','adapt','pedir sin huevo'],
+    ['Kerak telor','omelette de arroz glutinoso con camarón seco y coco','no'],
+    ['Soto Betawi','sopa de carne vacuna con leche de coco','no']],
+  yogya:[
+    ['Gudeg','jaca verde guisada en leche de coco y azúcar de palma, el plato de Yogya','adapt','suele venir con huevo, pollo y piel de vaca: pedir solo gudeg con tahu o tempe'],
+    ['Tempe y tahu bacem','tempeh y tofu guisados dulces y dorados','vegan'],
+    ['Nasi kucing','bolsitas de arroz con sambal y tempeh, de los puestos callejeros (angkringan)','adapt','hay de pescado: elegir las de tempe'],
+    ['Bakpia','masita rellena de poroto mung, el souvenir de Yogya','veg','la masa a veces lleva huevo o manteca'],
+    ['Wedang uwuh','infusión caliente de especias y maderas, color rojo','vegan'],
+    ['Sate klathak','brochetas de cordero asadas en rayos de bicicleta','no']],
+  malang:[
+    ['Pecel','verduras hervidas con salsa de maní picante','adapt','pedir sin terasi'],
+    ['Keripik tempe','tempeh crocante en láminas, típico de Malang','vegan'],
+    ['Bakso Malang','sopa de albóndigas de carne con fideos y tofu','no'],
+    ['Rawon','sopa negra de carne con nuez keluak','no']],
+  bromo:[
+    ['Nasi goreng sayur','arroz frito con verduras, lo que hay en Cemara Lawang','adapt','pedir sin huevo, sin terasi'],
+    ['Kentang goreng','papas de la zona del Bromo, fritas','vegan'],
+    ['Nasi tempong','arroz con sambal muy picante y fritos, de Banyuwangi','adapt','elegir tempe, tahu y verduras']],
+  bali:[
+    ['Nasi campur','arroz con varios acompañamientos a elección','adapt','elegir tempe, tahu, verduras y sambal sin terasi'],
+    ['Sayur urab','verduras con coco rallado especiado','adapt','pedir sin terasi'],
+    ['Tipat cantok','cubos de arroz y verduras con salsa de maní','adapt','pedir sin terasi'],
+    ['Bubur injin','postre de arroz negro con leche de coco','vegan'],
+    ['Dadar gulung / jaja Bali','crêpe verde de pandan rellena de coco y azúcar de palma','veg','la crêpe suele llevar huevo'],
+    ['Babi guling','cerdo entero asado con especias, el plato de Bali','no'],
+    ['Bebek betutu','pato cocido lento en hojas con especias','no'],
+    ['Sate lilit','brochetas de pescado picado con coco en caña de limón','no']],
+  penida:[
+    ['Rumput laut','algas de los cultivos de la isla, en ensalada o crocantes','vegan'],
+    ['Ikan bakar','pescado del día a la parrilla con sambal','no'],
+    ['Nasi campur','arroz con acompañamientos a elección','adapt','elegir tempe, tahu y verduras']],
+  flores:[
+    ['Jagung bose','guiso de maíz con porotos, típico del este de Indonesia','vegan','a veces le agregan leche de coco: sigue siendo vegano'],
+    ['Rumpu rampe','salteado de hojas y flores de papaya','adapt','pedir sin terasi'],
+    ['Kopi Flores (Bajawa)','café de altura de la isla','vegan'],
+    ['Ikan kuah asam','sopa ácida de pescado con tamarindo','no'],
+    ['Se\'i','carne ahumada en hojas, típica de Nusa Tenggara','no']],
+  komodo:[
+    ['Comida del barco','arroz, verduras salteadas, tofu, tempeh y fruta','adapt','el pedido vegetariano y sin lácteos de Dani hay que recordarlo al subir'],
+    ['Ikan bakar','pescado fresco a la parrilla en cubierta','no']],
+  lombok:[
+    ['Plecing kangkung','espinaca de agua con sambal de tomate y lima','adapt','el sambal casi siempre lleva terasi: pedir sin'],
+    ['Beberuk terong','berenjena cruda con sambal fresco','adapt','pedir sin terasi'],
+    ['Ayam taliwang','pollo a la parrilla muy picante, el plato de Lombok','no'],
+    ['Sate rembiga','brochetas de carne vacuna dulces y picantes','no']],
+  gili:[
+    ['Plecing kangkung','espinaca de agua con sambal de tomate (cocina sasak de Lombok)','adapt','pedir sin terasi'],
+    ['Beberuk terong','berenjena cruda con sambal fresco','adapt','pedir sin terasi'],
+    ['Pescado a la parrilla del night market','pescado y mariscos frescos en la plaza del puerto','no']],
+  uluwatu:[
+    ['Nasi jinggo','arroz en hoja de banana con acompañamientos, barato y callejero','adapt','elegir el de tempe'],
+    ['Pisang goreng','banana frita rebozada','veg','el rebozado a veces lleva huevo'],
+    ['Seafood en Jimbaran','pescado y mariscos a la parrilla en la playa','no']],
+};
+const COMIDA_DIA={d0:'jakarta',d1:'yogya',d2:'yogya',d3:'malang',d4:'bromo',d5:'bali',d6:'bali',d7:'bali',d8:'bali',d9:'penida',d10:'penida',
+  d11:'flores',d12:'komodo',d13:'flores',d14:'lombok',d15:'gili',d16:'gili',d17:'bali',d18:'uluwatu',d19:'uluwatu'};
+function comidaTxt(d){return (COMIDA[COMIDA_DIA[d.id]]||[]).map(c=>c[0]+' '+c[1]).join(' ');}
+function comidaHtml(d){
+  const list=COMIDA[COMIDA_DIA[d.id]];if(!list)return '';
+  return `<div class="cm-sec"><div class="notes-hdr">🍛 Comida típica</div>${list.map(([n,desc,v,nota])=>
+    `<div class="cm-it"><b>${e(n)}</b> <span class="cm-d">(${e(desc)} · <span class="cm-v ${v}">${DIET_V[v]}</span>${nota?` — ${e(nota)}`:''})</span></div>`).join('')}</div>`;
+}
+
 // ── DÍAS ──────────────────────────────────────────────
 let curZona='ALL';
 function renderFiltros(){
@@ -1173,7 +1268,7 @@ function filteredDias(){
   const q=(document.getElementById('srch')?.value||'').toLowerCase();
   return DATA.filter(d=>{
     const ok=curZona==='ALL'||d.zona===curZona;
-    const hay=[d.lugar,d.act,d.detalle,d.fecha,d.hotel,'día '+(d.n+1)].join(' ').toLowerCase();
+    const hay=[d.lugar,d.act,d.detalle,d.fecha,d.hotel,'día '+(d.n+1),comidaTxt(d)].join(' ').toLowerCase();
     return ok&&(!q||hay.includes(q));
   });
 }
@@ -1239,6 +1334,7 @@ function _renderDias(){
         </div>
         ${d.hotel?`<div class="hrow"><div style="font-size:22px;flex-shrink:0">🏨</div><div><div class="hname">${e(d.hotel)}</div><div class="hmeta">${e(d.hotelConf||'')}</div></div></div>`:''}
         ${d.link?`<a class="lnk" href="${d.link}" target="_blank" rel="noopener">🔗 ${e(d.linkTxt||d.link)}</a>`:''}
+        ${comidaHtml(d)}
         <div class="notes-sec">
           <div class="notes-hdr">💬 Notas</div>
           <div id="nc-${d.id}">${renderNotes(d.id)}</div>
@@ -2303,8 +2399,13 @@ function applyGuiaView(){
   document.getElementById('gv-precios').classList.toggle('on',guiaView==='precios');
   document.getElementById('gv-comer').classList.toggle('on',guiaView==='comer');
   document.getElementById('guia-precios').hidden=guiaView!=='precios';
+  document.getElementById('gv-frases').classList.toggle('on',guiaView==='frases');
   document.getElementById('guia-comer').hidden=guiaView!=='comer';
+  document.getElementById('guia-frases').hidden=guiaView!=='frases';
+  // Las frases no dependen de la zona: se esconden los chips de zona.
+  document.getElementById('pz-chips').hidden=guiaView==='frases';
   if(guiaView==='comer')renderRestos();
+  if(guiaView==='frases')renderFrases();
 }
 function setRestoFilter(f){restoFilter=f;renderRestos();}
 function renderRestos(){
@@ -2323,6 +2424,105 @@ function renderRestos(){
       <div class="rs-foot">${r.note?`<span class="rs-note">🕒 ${e(r.note)}</span>`:'<span></span>'}<a class="maps-btn" href="${maps}" target="_blank" rel="noopener">📍 Maps</a></div>
     </div>`;}).join('')).join('');
 }
+// ── GUÍA — frases en indonesio ────────────────────────
+// c = circunstancia · id = indonesio · es = castellano · pr = cómo se dice ·
+// k = palabras extra para el buscador. ⭐ = las que más vamos a usar.
+const FR_CATS=[['todas','Todas'],['top','⭐ Más usadas'],['basico','👋 Básico'],['comer','🍽️ Comer'],['comprar','💸 Pagar y regatear'],['moverse','🚗 Moverse'],['hotel','🏨 Hotel'],['templo','🛕 Templos y paseos'],['sos','🆘 Emergencia'],['num','🔢 Números']];
+const FRASES=[
+ {c:'basico',t:1,id:'Terima kasih',es:'Gracias',pr:'tê-ri-ma cá-si'},
+ {c:'basico',t:1,id:'Suksma',es:'Gracias (en Bali)',pr:'súks-ma',k:'balines agradecer'},
+ {c:'basico',id:'Sama-sama',es:'De nada',pr:'sa-ma sa-ma'},
+ {c:'basico',t:1,id:'Tidak, terima kasih',es:'No, gracias (a vendedores)',pr:'tí-dak tê-ri-ma cá-si',k:'rechazar vendedor no quiero'},
+ {c:'basico',t:1,id:'Permisi',es:'Permiso / disculpe',pr:'per-mí-si',k:'llamar atencion pasar'},
+ {c:'basico',id:'Maaf',es:'Perdón',pr:'ma-af',k:'disculpa'},
+ {c:'basico',id:'Tolong',es:'Por favor (al pedir algo)',pr:'tó-long',k:'pedir favor'},
+ {c:'basico',id:'Ya / Tidak',es:'Sí / No',pr:'ia / tí-dak'},
+ {c:'basico',t:1,id:'Selamat pagi',es:'Buen día',pr:'se-lá-mat pá-gui',k:'saludo hola mañana'},
+ {c:'basico',id:'Selamat sore / malam',es:'Buenas tardes / noches',pr:'se-lá-mat só-re / má-lam',k:'saludo hola'},
+ {c:'basico',id:'Apa kabar? — Baik',es:'¿Cómo estás? — Bien',pr:'á-pa cá-bar — bá-ik',k:'saludo hola'},
+ {c:'basico',id:'Saya dari Argentina',es:'Soy de Argentina',pr:'sá-ia dá-ri ar-guen-tí-na',k:'de donde nacionalidad'},
+ {c:'basico',t:1,id:'Tidak mengerti',es:'No entiendo',pr:'tí-dak men-guér-ti'},
+ {c:'basico',id:'Bisa bahasa Inggris?',es:'¿Habla inglés?',pr:'bí-sa ba-ja-sa ing-gris',k:'ingles idioma'},
+ {c:'basico',id:'Tidak apa-apa',es:'No pasa nada / está bien',pr:'tí-dak a-pa á-pa',k:'tranquilo ok'},
+ {c:'basico',id:'Sebentar',es:'Un momento',pr:'se-bén-tar',k:'esperar'},
+ {c:'basico',id:'Mas / Mbak · Bli / Mbok (Bali)',es:'Para dirigirse a un hombre / una mujer joven',pr:'mas / mbak · bli / mbok',k:'señor señora mozo tratamiento'},
+ {c:'comer',t:1,id:'Saya vegetarian, tidak makan daging dan ikan',es:'Soy vegetariana, no como carne ni pescado',pr:'sá-ia ve-gue-ta-rián, tí-dak má-kan dá-guing dan í-kan',k:'veggie vegetariana carne pescado dani'},
+ {c:'comer',t:1,id:'Tanpa daging, tanpa ikan',es:'Sin carne, sin pescado',pr:'tán-pa dá-guing, tán-pa í-kan',k:'veggie vegetariana'},
+ {c:'comer',t:1,id:'Tanpa susu, tanpa keju',es:'Sin leche, sin queso',pr:'tán-pa sú-su, tán-pa ké-yu',k:'lacteos lactosa dani'},
+ {c:'comer',t:1,id:'Tidak pakai terasi',es:'Sin pasta de camarón',pr:'tí-dak pá-kai te-rá-si',k:'camaron sambal salsa veggie'},
+ {c:'comer',id:'Tanpa telur',es:'Sin huevo',pr:'tán-pa te-lur',k:'vegano'},
+ {c:'comer',id:'Ada menu vegetarian?',es:'¿Hay menú vegetariano?',pr:'á-da mé-nu ve-gue-ta-rián',k:'veggie carta'},
+ {c:'comer',t:1,id:'Tidak pedas / sedikit pedas',es:'No picante / poco picante',pr:'tí-dak pe-dás / se-dí-kit pe-dás',k:'picante chile'},
+ {c:'comer',id:'Air putih · tanpa es',es:'Agua sin gas · sin hielo',pr:'air pu-tí · tán-pa es',k:'beber tomar hielo'},
+ {c:'comer',id:'Kopi / teh tanpa gula',es:'Café / té sin azúcar',pr:'kó-pi / te tán-pa gú-la',k:'azucar bebida'},
+ {c:'comer',id:'Bungkus · makan di sini',es:'Para llevar · para comer acá',pr:'búng-kus · má-kan di sí-ni',k:'take away'},
+ {c:'comer',id:'Enak!',es:'¡Rico!',pr:'é-nak',k:'delicioso'},
+ {c:'comer',t:1,id:'Minta bon',es:'La cuenta, por favor',pr:'mín-ta bon',k:'pagar cuenta'},
+ {c:'comer',id:'Tahu · tempe · sayur',es:'Tofu · tempeh · verdura (seguros para Dani)',pr:'tá-ju · tém-pe · sá-iur',k:'menu palabras veggie'},
+ {c:'comer',id:'Ayam · ikan · babi · sapi · udang',es:'Pollo · pescado · cerdo · vaca · camarón',pr:'á-iam · í-kan · bá-bi · sá-pi · ú-dang',k:'menu palabras carne wally'},
+ {c:'comer',id:'Nasi · mie · goreng · bakar',es:'Arroz · fideos · frito · a la parrilla',pr:'ná-si · mi-e · gó-reng · bá-kar',k:'menu palabras'},
+ {c:'comprar',t:1,id:'Berapa (harganya)?',es:'¿Cuánto cuesta?',pr:'be-rá-pa (har-gá-nia)',k:'precio costo'},
+ {c:'comprar',t:1,id:'Bisa kurang?',es:'¿Me hace precio? / ¿Puede bajar?',pr:'bí-sa kú-rang',k:'regatear descuento'},
+ {c:'comprar',id:'Mahal sekali!',es:'¡Muy caro!',pr:'ma-jal se-ká-li',k:'regatear'},
+ {c:'comprar',id:'Harga pas?',es:'¿Precio final?',pr:'hár-ga pas',k:'regatear ultimo'},
+ {c:'comprar',id:'Lihat-lihat saja',es:'Solo estoy mirando',pr:'lí-jat lí-jat sá-ya',k:'vendedor tienda'},
+ {c:'comprar',id:'Bisa bayar pakai kartu?',es:'¿Puedo pagar con tarjeta?',pr:'bí-sa bá-iar pá-kai kár-tu',k:'tarjeta credito pagar'},
+ {c:'comprar',id:'Uang tunai · kembalian',es:'Efectivo · vuelto',pr:'u-áng tu-nái · kem-ba-lián',k:'cash cambio'},
+ {c:'comprar',id:'Di mana ATM?',es:'¿Dónde hay un cajero?',pr:'di má-na a-te-em',k:'cajero plata'},
+ {c:'moverse',t:1,id:'Di mana…?',es:'¿Dónde está…?',pr:'di má-na',k:'donde buscar'},
+ {c:'moverse',t:1,id:'Di mana toilet?',es:'¿Dónde está el baño?',pr:'di má-na tói-let',k:'baño'},
+ {c:'moverse',id:'Kiri · kanan · lurus',es:'Izquierda · derecha · derecho',pr:'kí-ri · ká-nan · lú-rus',k:'direccion'},
+ {c:'moverse',t:1,id:'Berhenti di sini',es:'Pare acá',pr:'ber-jén-ti di sí-ni',k:'taxi grab chofer parar'},
+ {c:'moverse',id:'Pelan-pelan',es:'Despacio',pr:'pe-lan pe-lan',k:'chofer manejar scooter'},
+ {c:'moverse',id:'Berapa lama?',es:'¿Cuánto tarda?',pr:'be-rá-pa lá-ma',k:'tiempo demora'},
+ {c:'moverse',id:'Jauh? · dekat',es:'¿Lejos? · cerca',pr:'yá-uj · dé-kat',k:'distancia'},
+ {c:'moverse',id:'Saya mau ke…',es:'Quiero ir a…',pr:'sá-ia mau ke',k:'ir destino taxi'},
+ {c:'moverse',id:'Bandara · pelabuhan · stasiun',es:'Aeropuerto · puerto · estación',pr:'ban-dá-ra · pe-la-bú-jan · stá-siun',k:'ferry tren barco'},
+ {c:'hotel',t:1,id:'Saya ada reservasi',es:'Tengo una reserva',pr:'sá-ia á-da re-ser-vá-si',k:'check in'},
+ {c:'hotel',id:'Bisa titip tas?',es:'¿Puedo dejar las valijas?',pr:'bí-sa tí-tip tas',k:'equipaje guardar'},
+ {c:'hotel',id:'Wifi password-nya apa?',es:'¿Cuál es la clave del wifi?',pr:'uái-fai pás-uord-nia á-pa',k:'internet clave'},
+ {c:'hotel',id:'Sarapan jam berapa?',es:'¿A qué hora es el desayuno?',pr:'sa-rá-pan yam be-rá-pa',k:'desayuno horario'},
+ {c:'hotel',id:'AC tidak dingin · tidak ada air panas',es:'El aire no enfría · no hay agua caliente',pr:'a-se tí-dak dín-guin · tí-dak á-da air pá-nas',k:'problema queja ducha'},
+ {c:'hotel',id:'Handuk · kunci · kamar',es:'Toalla · llave · habitación',pr:'hán-duk · kún-chi · ká-mar',k:'pedir'},
+ {c:'templo',id:'Pura · candi',es:'Templo balinés · templo antiguo',pr:'pú-ra · chán-di',k:'templo'},
+ {c:'templo',id:'Boleh foto?',es:'¿Se puede sacar foto?',pr:'bó-le fó-to',k:'foto permiso'},
+ {c:'templo',id:'Sewa sarung di mana?',es:'¿Dónde alquilo un sarong?',pr:'sé-ua sá-rung di má-na',k:'pollera templo ropa'},
+ {c:'templo',id:'Awas monyet!',es:'¡Cuidado con los monos!',pr:'á-uas mó-niet',k:'monos uluwatu monkey forest'},
+ {c:'templo',id:'Pantai · air terjun · gunung',es:'Playa · cascada · volcán',pr:'pán-tai · air ter-yún · gú-nung',k:'paseo excursion'},
+ {c:'templo',id:'Matahari terbit / terbenam',es:'Amanecer / atardecer',pr:'ma-ta-já-ri ter-bít / ter-bé-nam',k:'sunrise sunset'},
+ {c:'sos',t:1,id:'Tolong!',es:'¡Ayuda!',pr:'tó-long',k:'auxilio emergencia'},
+ {c:'sos',id:'Saya sakit',es:'Estoy enferma / enfermo',pr:'sá-ia sá-kit',k:'mal salud'},
+ {c:'sos',id:'Rumah sakit · apotek',es:'Hospital · farmacia',pr:'rú-maj sá-kit · a-pó-tek',k:'medico salud remedio'},
+ {c:'sos',id:'Panggil dokter / polisi',es:'Llame a un médico / a la policía',pr:'pán-guil dók-ter / po-lí-si',k:'medico policia'},
+ {c:'sos',id:'Saya alergi…',es:'Soy alérgica a…',pr:'sá-ia a-lér-gui',k:'alergia'},
+ {c:'num',t:1,id:'Satu · dua · tiga · empat · lima',es:'1 · 2 · 3 · 4 · 5',pr:'sá-tu · dú-a · tí-ga · em-pat · lí-ma',k:'numeros contar uno dos tres'},
+ {c:'num',id:'Enam · tujuh · delapan · sembilan · sepuluh',es:'6 · 7 · 8 · 9 · 10',pr:'é-nam · tú-yu · de-lá-pan · sem-bí-lan · se-pú-lu',k:'numeros contar seis diez'},
+ {c:'num',t:1,id:'Ribu · juta',es:'Mil · millón (precios: "lima puluh ribu" = 50.000)',pr:'rí-bu · yú-ta',k:'numeros precio plata miles'},
+ {c:'num',id:'Seratus · seribu · puluh',es:'100 · 1.000 · decenas (dua puluh = 20)',pr:'se-rá-tus · se-rí-bu · pú-lu',k:'numeros cien mil'},
+];
+let frCat='top';
+const fold=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function setFrCat(c){frCat=c;renderFrases();}
+function renderFrases(){
+  const el=document.getElementById('frases-list');if(!el)return;
+  document.getElementById('fr-chips').innerHTML=FR_CATS.map(([k,l])=>`<button class="zf${k===frCat?' on':''}" onclick="setFrCat('${k}')">${l}</button>`).join('');
+  const q=fold(document.getElementById('fr-q').value).trim();
+  // Con texto en el buscador se busca en todas, sin importar la circunstancia elegida.
+  const list=FRASES.filter(f=>q?q.split(/\s+/).every(w=>fold(f.es+' '+(f.k||'')+' '+f.id).includes(w))
+    :frCat==='todas'||(frCat==='top'?f.t:f.c===frCat));
+  if(!list.length){el.innerHTML='<div class="empty">No encontré esa frase. Probá con otra palabra.</div>';return;}
+  const lbl=Object.fromEntries(FR_CATS);
+  el.innerHTML=list.map(f=>{const i=FRASES.indexOf(f);return `<button class="fr-card" onclick="showFrase(${i})">
+    <span class="fr-es">${e(f.es)}</span><span class="fr-id">${e(f.id)}</span>
+    <span class="fr-pr">🔊 ${e(f.pr)}${q||frCat==='todas'||frCat==='top'?` · ${e(lbl[f.c])}`:''}</span></button>`;}).join('');
+}
+// Pantalla completa para mostrarle la frase al mozo o al chofer.
+function showFrase(i){
+  const f=FRASES[i],ov=document.getElementById('fr-big');
+  ov.innerHTML=`<div class="fr-big-id">${e(f.id)}</div><div class="fr-big-es">${e(f.es)}</div><div class="fr-big-x">Tocá para cerrar</div>`;
+  ov.hidden=false;
+}
+
 // ── EXPORT ────────────────────────────────────────────
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
