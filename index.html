@@ -280,6 +280,21 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .seg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .seg-lbl{font-size:12px;color:var(--mu)}
 .hist-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.cx-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.cx-sum:empty{display:none}
+.cx-st{background:var(--sf2);border-radius:var(--rs);padding:9px 10px;font-size:11px;color:var(--mu);line-height:1.5;font-variant-numeric:tabular-nums}
+.cx-st b{display:block;color:var(--tx);font-size:14px}
+.cx-lbl{display:block;font-size:11px;color:var(--mu);font-weight:600;margin-bottom:4px}
+.cx-person{margin-bottom:8px}
+.cx-row{display:grid;grid-template-columns:1fr;gap:8px}
+.cx-row.card{grid-template-columns:1fr 1.3fr}
+.cx-c{display:flex;align-items:center;gap:4px;margin-top:3px}
+.cx-c .mp-ic{flex-shrink:0}
+.cx-gt .t-act{flex-direction:column}
+.cx-gt td,.cx-gt th{padding-left:6px;padding-right:6px}
+.cx-pre{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;font-size:12px;color:var(--mu);line-height:1.6}
+.cx-pre:empty{display:none}
+.cx-pre b.big{display:block;font-size:20px;color:#86efac;font-variant-numeric:tabular-nums}
 .chip-nocat{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:rgba(234,179,8,.16);color:var(--yw);margin-left:4px;vertical-align:1px;letter-spacing:.2px}
 .chip-prev{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:rgba(167,139,250,.16);color:#c4b5fd;margin-left:4px;vertical-align:1px;letter-spacing:.2px}
 /* itinerario tabla */
@@ -748,6 +763,50 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
   </section>
 
+  <section class="panel" id="pn-cambio">
+    <button class="panel-h" aria-expanded="true" aria-controls="pb-cambio" onclick="togglePanel('cambio')">
+      <h3>💱 Cambio de dólares</h3><span class="ph-sum" id="cx-mini"></span><span class="ph-chev" aria-hidden="true">▾</span>
+    </button>
+    <div class="panel-b" id="pb-cambio">
+      <div class="cx-sum" id="cx-sum"></div>
+      <div class="edit-banner" id="cx-edit-banner"><span>✏️ Estás modificando un cambio</span><button class="edit-cancel" onclick="resetCambio()">Cancelar</button></div>
+      <div class="grp-h">¿Cómo?</div>
+      <div class="split-mode-row" role="group" aria-label="Cómo se cambió">
+        <button class="sm-btn on" id="cx-t-cambio" onclick="setCxTipo('cambio')">💵 Casa de cambio</button>
+        <button class="sm-btn" id="cx-t-cajero" onclick="setCxTipo('cajero')">🏧 Cajero</button>
+      </div>
+      <div class="grp-h">¿Quién?</div>
+      <div class="split-mode-row" role="group" aria-label="Quién cambió">
+        <button class="sm-btn on" id="cx-w-dani" onclick="setCxWho('dani')">Dani</button>
+        <button class="sm-btn" id="cx-w-wally" onclick="setCxWho('wally')">Wally</button>
+        <button class="sm-btn" id="cx-w-ambos" onclick="setCxWho('ambos')">Parte y parte</button>
+      </div>
+      <div class="cx-person" id="cx-p-dani">
+        <label class="cx-lbl" for="cx-usd-dani" id="cx-l-dani">Dólares</label>
+        <div class="cx-row"><input class="fi" id="cx-usd-dani" type="text" inputmode="decimal" autocomplete="off" placeholder="USD" oninput="cxPre()">
+        <select class="fsel cx-card" id="cx-card-dani" aria-label="Tarjeta de Dani"></select></div>
+      </div>
+      <div class="cx-person" id="cx-p-wally" hidden>
+        <label class="cx-lbl" for="cx-usd-wally" id="cx-l-wally">Dólares de Wally</label>
+        <div class="cx-row"><input class="fi" id="cx-usd-wally" type="text" inputmode="decimal" autocomplete="off" placeholder="USD" oninput="cxPre()">
+        <select class="fsel cx-card" id="cx-card-wally" aria-label="Tarjeta de Wally"></select></div>
+      </div>
+      <div class="form-row">
+        <div><label class="cx-lbl" for="cx-cot">Cotización (Rp por USD 1)</label><input class="fi" id="cx-cot" type="text" inputmode="decimal" autocomplete="off" placeholder="16.200" oninput="cxPre()"></div>
+        <div id="cx-fee-wrap" hidden><label class="cx-lbl" for="cx-fee">Comisión cajero (Rp)</label><input class="fi" id="cx-fee" type="text" inputmode="decimal" autocomplete="off" placeholder="opcional" oninput="cxPre()"></div>
+      </div>
+      <div class="cx-pre" id="cx-pre" aria-live="polite"></div>
+      <div class="form-row">
+        <div><label class="cx-lbl" for="cx-city">Ciudad</label><select class="fsel" id="cx-city" onchange="cxCity()"></select></div>
+        <div><label class="cx-lbl" for="cx-fecha">Fecha</label><input class="fi" id="cx-fecha" type="date"></div>
+      </div>
+      <input class="fi" id="cx-city-otro" placeholder="¿Dónde? (escribí la ciudad)" hidden style="margin-bottom:8px">
+      <input class="fi" id="cx-notas" placeholder="Nota (opcional): nombre de la casa de cambio, banco del cajero…" style="margin-bottom:8px">
+      <button class="add-g-btn" id="cx-save" onclick="saveCambio()">Registrar cambio</button>
+      <div id="cx-list" style="margin-top:14px"></div>
+    </div>
+  </section>
+
 </section>
 
 <!-- VUELOS -->
@@ -990,7 +1049,7 @@ let DETALLES={}, NOTAS=[], GASTOS=[], CONFIG={tcArs:1350};
 let DATA=[];
 function buildData(){DATA=DIAS.map(d=>({...d,detalle:DETALLES[d.id]??d.detalle}));renderHoy();}
 function notesOf(dia){return NOTAS.filter(n=>n.dia===dia).sort((a,b)=>(a.ts||0)-(b.ts||0));}
-function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS,docs:USERDOCS});}
+function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS,docs:USERDOCS,cambios:CAMBIOS});}
 function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
 async function dbWrite(fn){
@@ -1033,8 +1092,8 @@ function refreshAll(){
 
 async function initStore(){
   const local=lsGet();
-  DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();USERDOCS=local.docs||[];
-  applyConfig();refreshAll();
+  DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();USERDOCS=local.docs||[];CAMBIOS=local.cambios||[];
+  applyConfig();refreshAll();initCambio();renderCambios();
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
   // Versión web (Netlify): login + base en Firebase (netlify/firebase-db.js).
   if(!db&&window.WEBDB){try{db=await window.WEBDB.db();}catch(e){console.warn(e);db=null;}}
@@ -1044,10 +1103,10 @@ async function initStore(){
     if(info) info.textContent='Esta copia no está conectada a la base compartida: los cambios quedan solo en este navegador. Abrí el link de la app para sincronizar.';
     return;
   }
-  DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};USERDOCS=[];
+  DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};USERDOCS=[];CAMBIOS=[];
   setSync('','Sincronizando…');
   const fail=err=>{setSync('err','Sin conexión');console.warn(err);};
-  const done=new Set();const ready=k=>{done.add(k);if(done.size===6){setSync('ok','Sincronizado');aplicarParches();}};
+  const done=new Set();const ready=k=>{done.add(k);if(done.size===7){setSync('ok','Sincronizado');aplicarParches();}};
   db.collection('dias').onSnapshot(sn=>{
     DETALLES={};sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.detalle==='string')DETALLES[d.id]=v.detalle;});
     buildData();if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('dias');
@@ -1067,6 +1126,9 @@ async function initStore(){
   db.collection('docs').onSnapshot(sn=>{
     USERDOCS=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ts||0)-(b.ts||0));
     renderDocs();ready('docs');
+  },fail);
+  db.collection('cambios').onSnapshot(sn=>{
+    CAMBIOS=sn.docs.map(d=>({id:d.id,...d.data()}));renderCambios();ready('cambios');
   },fail);
   db.doc('config/app').onSnapshot(sn=>{
     if(sn.exists)CONFIG={...CONFIG,...sn.data()};
@@ -1944,8 +2006,133 @@ function renderGastos(){
     <tfoot><tr><td colspan="3">Total · ${LIST.length} gasto${LIST.length===1?'':'s'}</td><td class="num">${fmtAmt(ltotal)}</td><td></td></tr></tfoot>
   </table></div>`;
 }
-['bal','form','sum','hist'].forEach(applyPanel);
+['bal','form','sum','hist','cambio'].forEach(applyPanel);
 renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
+
+
+// ── CAMBIO DE DÓLARES ─────────────────────────────────
+// Cada vez que cambiamos USD a rupias (casa de cambio) o sacamos del cajero.
+// Va en la colección "cambios": no es un gasto, no entra en el balance.
+const CIUDADES=['Jakarta','Yogyakarta','Malang','Bromo / Ijen','Ubud','Nusa Penida','Sanur','Labuan Bajo','Gili Air','Lombok','Sidemen','Uluwatu / Jimbaran','Denpasar (aeropuerto)'];
+let CAMBIOS=[],cxTipo='cambio',cxWho='dani',cxEdit=null;
+const fmtRp=v=>'Rp '+Math.round(v).toLocaleString('es-AR');
+const cardOpts=who=>MP[who].filter(o=>o.bank);
+const cardTxt=(who,k)=>{const o=mpOpt(who,k);return o&&o.bank?o.t+' '+BANKS[o.bank].name:'';};
+function hoyISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function initCambio(){
+  document.getElementById('cx-city').innerHTML=CIUDADES.map(c=>`<option>${e(c)}</option>`).join('')+'<option value="__otro">Otra…</option>';
+  ['dani','wally'].forEach(w=>{document.getElementById('cx-card-'+w).innerHTML=cardOpts(w).map(o=>`<option value="${o.k}">${e(o.t+' '+BANKS[o.bank].name)}</option>`).join('');});
+  resetCambio();
+}
+function setCxTipo(t){
+  cxTipo=t;['cambio','cajero'].forEach(x=>document.getElementById('cx-t-'+x).classList.toggle('on',x===t));
+  document.querySelectorAll('.cx-card').forEach(s=>{s.hidden=t!=='cajero';s.parentElement.classList.toggle('card',t==='cajero');});
+  document.getElementById('cx-fee-wrap').hidden=t!=='cajero';
+  cxPre();
+}
+function setCxWho(w){
+  cxWho=w;['dani','wally','ambos'].forEach(x=>document.getElementById('cx-w-'+x).classList.toggle('on',x===w));
+  document.getElementById('cx-p-dani').hidden=w==='wally';
+  document.getElementById('cx-p-wally').hidden=w==='dani';
+  document.getElementById('cx-l-dani').textContent=w==='ambos'?'Dólares de Dani':'Dólares';
+  document.getElementById('cx-l-wally').textContent=w==='ambos'?'Dólares de Wally':'Dólares';
+  cxPre();
+}
+function cxCity(){
+  const o=document.getElementById('cx-city-otro');o.hidden=fval('cx-city')!=='__otro';if(!o.hidden)o.focus();
+}
+// Lee el formulario; null en lo que falte.
+function cxRead(){
+  const n=id=>{const v=pnum(fval(id));return isNaN(v)?null:v;};
+  const d=cxWho==='wally'?0:n('cx-usd-dani'),w=cxWho==='dani'?0:n('cx-usd-wally');
+  return {d,w,cot:n('cx-cot'),fee:cxTipo==='cajero'?(n('cx-fee')||0):0};
+}
+function cxPre(){
+  const el=document.getElementById('cx-pre'),{d,w,cot,fee}=cxRead();
+  const usd=(d||0)+(w||0);
+  if(!usd||!cot){el.innerHTML='';return;}
+  const rp=usd*cot,diff=(cot/RATES.IDR-1)*100;
+  const ref=Math.abs(diff)<.5?'igual a la referencia':`${Math.abs(diff).toFixed(1)}% ${diff>0?'mejor':'peor'} que la referencia (${RATES.IDR.toLocaleString('es-AR')})`;
+  el.innerHTML=`${cxTipo==='cajero'?'Vas a sacar':'Te tienen que dar'}<b class="big">${fmtRp(rp)}</b>`+
+    (cxWho==='ambos'?`Dani ${fmtRp((d||0)*cot)} · Wally ${fmtRp((w||0)*cot)}<br>`:'')+
+    (fee?`Comisión del cajero ${fmtRp(fee)} · te cuesta USD ${((rp+fee)/cot).toFixed(2)}<br>`:'')+
+    `Cotización ${ref}`;
+}
+function resetCambio(){
+  cxEdit=null;['cx-usd-dani','cx-usd-wally','cx-fee','cx-notas','cx-city-otro'].forEach(id=>fset(id,''));
+  fset('cx-fecha',hoyISO());
+  // Ciudad sugerida: la del día del itinerario, si estamos viajando.
+  const st=DATA.length?hoyState(new Date()):null,lugar=st&&st.day?st.day.lugar:'';
+  const sug=CIUDADES.find(c=>lugar.split('→').pop().includes(c.split(' ')[0]));
+  fset('cx-city',sug||CIUDADES[0]);cxCity();
+  document.getElementById('cx-save').textContent='Registrar cambio';
+  document.getElementById('cx-edit-banner').classList.remove('show');
+  setCxTipo('cambio');setCxWho('dani');
+}
+function saveCambio(){
+  const {d,w,cot,fee}=cxRead();
+  if(cxWho!=='wally'&&!(d>0)){toast('Poné cuántos dólares'+(cxWho==='ambos'?' cambió Dani.':'.'));document.getElementById('cx-usd-dani').focus();return;}
+  if(cxWho!=='dani'&&!(w>0)){toast('Poné cuántos dólares'+(cxWho==='ambos'?' cambió Wally.':'.'));document.getElementById('cx-usd-wally').focus();return;}
+  if(!(cot>0)){toast('Poné la cotización.');document.getElementById('cx-cot').focus();return;}
+  let ciudad=fval('cx-city');
+  if(ciudad==='__otro'){ciudad=fval('cx-city-otro').trim();if(!ciudad){toast('Escribí la ciudad.');document.getElementById('cx-city-otro').focus();return;}}
+  const c={tipo:cxTipo,quien:cxWho,usdDani:d||0,usdWally:w||0,cot,fee:fee||0,ciudad,fecha:fval('cx-fecha')||hoyISO(),
+    cardDani:cxTipo==='cajero'&&cxWho!=='wally'?fval('cx-card-dani'):null,
+    cardWally:cxTipo==='cajero'&&cxWho!=='dani'?fval('cx-card-wally'):null,
+    notas:fval('cx-notas').trim(),upd:Date.now()};
+  const id=cxEdit||newId('cx'),old=CAMBIOS.find(x=>x.id===id);
+  c.ts=old&&old.ts||Date.now();
+  CAMBIOS=[{id,...c},...CAMBIOS.filter(x=>x.id!==id)];
+  const was=!!cxEdit;resetCambio();renderCambios();
+  put('cambios',id,c).then(ok=>{if(ok)toast(was?'Cambio modificado':'Cambio registrado');});
+}
+function editCambio(id){
+  const c=CAMBIOS.find(x=>x.id===id);if(!c)return;
+  resetCambio();cxEdit=id;
+  setCxTipo(c.tipo||'cambio');setCxWho(c.quien||'dani');
+  fset('cx-usd-dani',c.usdDani||'');fset('cx-usd-wally',c.usdWally||'');fset('cx-cot',c.cot||'');fset('cx-fee',c.fee||'');
+  if(c.cardDani)fset('cx-card-dani',c.cardDani);if(c.cardWally)fset('cx-card-wally',c.cardWally);
+  if(CIUDADES.includes(c.ciudad))fset('cx-city',c.ciudad);else{fset('cx-city','__otro');fset('cx-city-otro',c.ciudad||'');}
+  document.getElementById('cx-city-otro').hidden=fval('cx-city')!=='__otro';
+  fset('cx-fecha',c.fecha||'');fset('cx-notas',c.notas||'');cxPre();
+  document.getElementById('cx-save').textContent='Guardar cambios';
+  document.getElementById('cx-edit-banner').classList.add('show');
+  togglePanel('cambio',true);document.getElementById('pn-cambio').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function delCambio(id,btn){
+  if(btn&&!btn.classList.contains('arm')){
+    btn.classList.add('arm');btn.textContent='¿Borrar?';
+    setTimeout(()=>{if(btn.isConnected){btn.classList.remove('arm');btn.textContent='🗑️';}},3000);return;
+  }
+  CAMBIOS=CAMBIOS.filter(x=>x.id!==id);if(cxEdit===id)resetCambio();renderCambios();
+  del('cambios',id).then(ok=>{if(ok)toast('Cambio eliminado');});
+}
+function renderCambios(){
+  const L=[...CAMBIOS].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')||(b.ts||0)-(a.ts||0));
+  const usd=c=>(c.usdDani||0)+(c.usdWally||0);
+  const tU=L.reduce((a,c)=>a+usd(c),0),tR=L.reduce((a,c)=>a+usd(c)*c.cot,0);
+  const uD=L.reduce((a,c)=>a+(c.usdDani||0),0),uW=L.reduce((a,c)=>a+(c.usdWally||0),0);
+  document.getElementById('cx-mini').textContent=L.length?`USD ${Math.round(tU)} → ${fmtRp(tR)}`:'';
+  document.getElementById('cx-sum').innerHTML=L.length?
+    `<div class="cx-st">Cambiado<b>USD ${tU.toLocaleString('es-AR',{maximumFractionDigits:2})}</b></div>`+
+    `<div class="cx-st">Recibido<b>${fmtRp(tR)}</b></div>`+
+    `<div class="cx-st">Promedio<b>${Math.round(tR/tU).toLocaleString('es-AR')}</b></div>`+
+    `<div class="cx-st" style="grid-column:span 3">Dani USD ${uD.toLocaleString('es-AR',{maximumFractionDigits:2})} · Wally USD ${uW.toLocaleString('es-AR',{maximumFractionDigits:2})}</div>`:'';
+  const el=document.getElementById('cx-list');
+  if(!L.length){el.innerHTML='<div class="empty">Todavía no registraron cambios</div>';return;}
+  const who={dani:'Dani',wally:'Wally',ambos:'Parte y parte'};
+  el.innerHTML=`<div class="gt-wrap"><table class="gt cx-gt">
+    <thead><tr><th>Cambio</th><th>Quién</th><th class="num">USD → Rp</th><th><span hidden>Acciones</span></th></tr></thead>
+    <tbody>${L.map(c=>{
+      const cards=c.tipo==='cajero'?[['dani',c.cardDani],['wally',c.cardWally]].filter(x=>x[1]).map(([w,k])=>`<span class="cx-c">${mpIcon(mpOpt(w,k))}${e(cardTxt(w,k))}</span>`).join(''):'';
+      const sub=[c.fecha?c.fecha.slice(8,10)+'/'+c.fecha.slice(5,7):'',e(c.ciudad||''),c.notas?e(c.notas):''].filter(Boolean).join(' · ');
+      return `<tr>
+        <td><div class="t-desc">${c.tipo==='cajero'?'🏧 Cajero':'💵 Casa de cambio'}</div><div class="t-sub">${sub}</div>${cards?`<div class="t-sub">${cards}</div>`:''}</td>
+        <td><div class="t-who">${who[c.quien]||''}</div>${c.quien==='ambos'?`<div class="t-sub">D ${c.usdDani}<br>W ${c.usdWally}</div>`:''}</td>
+        <td class="num"><div class="t-amt">USD ${usd(c).toLocaleString('es-AR',{maximumFractionDigits:2})}</div><div class="t-sub">× ${Number(c.cot).toLocaleString('es-AR')}</div><div class="t-sub">${fmtRp(usd(c)*c.cot)}</div>${c.fee?`<div class="t-sub">comisión ${fmtRp(c.fee)}</div>`:''}</td>
+        <td><div class="t-act"><button class="gi-edit" onclick="editCambio('${c.id}')" title="Modificar" aria-label="Modificar cambio">✏️</button><button class="gi-del" onclick="delCambio('${c.id}',this)" title="Eliminar" aria-label="Eliminar cambio">🗑️</button></div></td>
+      </tr>`;}).join('')}</tbody></table></div>`;
+}
 
 // ── VUELOS ────────────────────────────────────────────
 function showFT(tab,btn){
@@ -2495,7 +2682,7 @@ function showFrase(i){
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
   const notes={};NOTAS.forEach(n=>{(notes[n.dia]=notes[n.dia]||[]).push(n.texto);});
-  const json=JSON.stringify({data:DATA,notes,gastos:GASTOS,config:CONFIG,at:new Date().toISOString()},null,2);
+  const json=JSON.stringify({data:DATA,notes,gastos:GASTOS,cambios:CAMBIOS,config:CONFIG,at:new Date().toISOString()},null,2);
   const filename='Indonesia2026_backup_'+new Date().toISOString().slice(0,10)+'.json';
   let dl=null;
   try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){}
