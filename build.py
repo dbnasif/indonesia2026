@@ -46,7 +46,8 @@ HEAD = """<!doctype html>
 .login-p,.login-msg{font-size:13px;color:var(--mu);line-height:1.5}
 #lg-step2{display:flex;flex-direction:column;gap:10px}
 </style>
-<script>window.APP_BUILD="__BUILD__";</script>
+<script>window.APP_BUILD="__BUILD__";
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('sw',e)));</script>
 <script src="firebase-app-compat.js"></script>
 <script src="firebase-auth-compat.js"></script>
 <script src="firebase-firestore-compat.js"></script>
@@ -77,6 +78,7 @@ def main():
     from datetime import datetime, timedelta, timezone
     build = (datetime.now(timezone.utc) - timedelta(hours=3)).strftime("%d/%m %H:%M")  # hora de Argentina
     (SITE / "index.html").write_text(HEAD.replace("__BUILD__", build) + page + "\n</body>\n</html>\n", encoding="utf-8")
+    (SITE / "sw.js").write_text((ROOT / "netlify" / "sw.js").read_text(encoding="utf-8").replace("__BUILD__", build), encoding="utf-8")
     for f in ["xlsx.mini.min.js", "netlify/config.js", "netlify/firebase-db.js",
               "netlify/firebase-app-compat.js", "netlify/firebase-auth-compat.js", "netlify/firebase-firestore-compat.js",
               "netlify/manifest.webmanifest", "netlify/icons/icon-180.png", "netlify/icons/icon-192.png", "netlify/icons/icon-512.png"]:

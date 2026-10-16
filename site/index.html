@@ -23,7 +23,8 @@
 .login-p,.login-msg{font-size:13px;color:var(--mu);line-height:1.5}
 #lg-step2{display:flex;flex-direction:column;gap:10px}
 </style>
-<script>window.APP_BUILD="15/10 06:59";</script>
+<script>window.APP_BUILD="16/10 00:51";
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('sw',e)));</script>
 <script src="firebase-app-compat.js"></script>
 <script src="firebase-auth-compat.js"></script>
 <script src="firebase-firestore-compat.js"></script>
@@ -1085,9 +1086,62 @@ function notesOf(dia){return NOTAS.filter(n=>n.dia===dia).sort((a,b)=>(a.ts||0)-
 function saveLocal(){if(!db) lsSet({detalles:DETALLES,notas:NOTAS,gastos:GASTOS,config:CONFIG,categorias:CATDOCS,docs:USERDOCS,cambios:CAMBIOS});}
 function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
-async function dbWrite(fn){
+// ── Escrituras sin señal ──────────────────────────────
+// Cada cambio queda anotado en el celu (localStorage) hasta que el servidor lo
+// confirma. Si la app se cierra sin señal, al volver a abrirla con conexión se
+// reenvía. Es un respaldo de la cola propia de Firebase, que en algunos celus
+// (iPhone sobre todo) se pierde cuando el sistema cierra la app.
+const OBK='id26outbox';
+const obGet=()=>{try{return JSON.parse(localStorage.getItem(OBK))||{}}catch(e){return{}}};
+const obSet=o=>{try{localStorage.setItem(OBK,JSON.stringify(o))}catch(e){}};
+function obAdd(op){const o=obGet();op.t=Date.now()+Math.random();o[op.col+'/'+op.id]=op;obSet(o);syncPill();return op.t;}
+function obDone(k,t){const o=obGet();if(o[k]&&o[k].t===t){delete o[k];obSet(o);}syncPill();}
+let synced=false;
+function syncPill(){
+  if(!db)return;
+  const n=Object.keys(obGet()).length;
+  if(!navigator.onLine)setSync('local',n?`Sin señal · ${n} sin subir`:'Sin señal');
+  else if(n)setSync('local',`Subiendo ${n}…`);
+  else if(synced)setSync('ok','Sincronizado');
+}
+function obSend(op){
+  const ref=db.collection(op.col).doc(op.id),k=op.col+'/'+op.id;
+  return (op.del?ref.delete():ref.set(op.data)).then(()=>obDone(k,op.t),err=>{
+    // Un rechazo del servidor (permisos) no se arregla reintentando.
+    if(err&&err.code==='invalid_argument')obDone(k,op.t);
+    throw err;
+  });
+}
+// Lo que está en la cola se muestra igual, aunque todavía no haya llegado al servidor.
+function obMerge(col,list){
+  const ops=Object.values(obGet()).filter(o=>o.col===col);if(!ops.length)return list;
+  const out=list.filter(x=>!ops.some(o=>o.id===x.id));
+  ops.forEach(o=>{if(!o.del)out.push({id:o.id,...o.data});});
+  return out;
+}
+let obBusy=false;
+async function obFlush(){
+  if(!db||obBusy||!navigator.onLine)return;
+  obBusy=true;
+  try{await Promise.allSettled(Object.values(obGet()).map(obSend));}
+  finally{obBusy=false;syncPill();}
+}
+addEventListener('online',()=>{syncPill();obFlush();});
+addEventListener('offline',syncPill);
+
+async function dbWrite(fn,op){
   if(!db){saveLocal();return true;}
-  try{await fn();return true;}
+  if(op){
+    op.t=obAdd(op);
+    // Sin señal la confirmación del servidor no llega: el cambio ya está guardado
+    // en el celu, así que no se espera más de 2,5 s para seguir.
+    const sent=obSend(op);
+    const res=await Promise.race([sent.then(()=>'ok',e=>e),new Promise(r=>setTimeout(()=>r('wait'),2500))]);
+    if(res==='ok')return true;
+    if(res==='wait'){sent.catch(()=>{});offNote=true;setTimeout(()=>{if(offNote){offNote=false;toast('📴 Guardado en este celu. Se sube solo cuando vuelva la señal.');}},50);return true;}
+    fn=()=>obSend(op);var first=res;
+  }
+  try{if(first)throw first;await fn();return true;}
   catch(err){
     if(err&&err.code==='unavailable'){
       await new Promise(r=>setTimeout(r,600+Math.random()*800));
@@ -1100,12 +1154,14 @@ async function dbWrite(fn){
     return false;
   }
 }
-const put=(col,id,data)=>dbWrite(()=>db.collection(col).doc(id).set(data));
-const del=(col,id)=>dbWrite(()=>db.collection(col).doc(id).delete());
+const put=(col,id,data)=>dbWrite(null,{col,id,data});
+const del=(col,id)=>dbWrite(null,{col,id,del:true});
 
 function setSync(cls,txt){const el=document.getElementById('sync');if(el){el.className='sync '+cls;el.textContent=txt;}}
-let toastT;
-function toast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true;},4000);}
+let toastT,offNote=false;
+function toast(msg){const t=document.getElementById('toast');if(!t)return;
+  if(offNote){offNote=false;msg+=' · 📴 se sube cuando vuelva la señal';}
+  t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true;},4000);}
 
 function applyConfig(){
   const inp=document.getElementById('tc-ars');
@@ -1139,7 +1195,7 @@ async function initStore(){
   DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};USERDOCS=[];CAMBIOS=[];
   setSync('','Sincronizando…');
   const fail=err=>{setSync('err','Sin conexión');console.warn(err);};
-  const done=new Set();const ready=k=>{done.add(k);if(done.size===7){setSync('ok','Sincronizado');aplicarParches();}};
+  const done=new Set();const ready=k=>{done.add(k);if(done.size===7){synced=true;syncPill();obFlush();aplicarParches();}};
   db.collection('dias').onSnapshot(sn=>{
     DETALLES={};sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.detalle==='string')DETALLES[d.id]=v.detalle;});
     buildData();if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('dias');
@@ -1149,7 +1205,7 @@ async function initStore(){
     if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('notas');
   },fail);
   db.collection('gastos').onSnapshot(sn=>{
-    GASTOS=sn.docs.map(d=>normG({id:d.id,...d.data()})).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    GASTOS=obMerge('gastos',sn.docs.map(d=>({id:d.id,...d.data()}))).map(normG).sort((a,b)=>(b.ts||0)-(a.ts||0));
     renderGastos();recalcStats();ready('gastos');
   },fail);
   db.collection('categorias').onSnapshot(sn=>{
@@ -1161,7 +1217,7 @@ async function initStore(){
     renderDocs();ready('docs');
   },fail);
   db.collection('cambios').onSnapshot(sn=>{
-    CAMBIOS=sn.docs.map(d=>({id:d.id,...d.data()}));renderCambios();ready('cambios');
+    CAMBIOS=obMerge('cambios',sn.docs.map(d=>({id:d.id,...d.data()})));renderCambios();ready('cambios');
   },fail);
   db.doc('config/app').onSnapshot(sn=>{
     if(sn.exists)CONFIG={...CONFIG,...sn.data()};

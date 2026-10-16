@@ -7,7 +7,10 @@
   firebase.initializeApp(cfg.firebase);
   const auth = firebase.auth(), fs = firebase.firestore();
   // Funciona sin conexión: los cambios quedan en el celu y se suben al volver la señal.
-  fs.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+  // Si el navegador no soporta varias pestañas compartiendo la copia, se usa una sola.
+  fs.enablePersistence({ synchronizeTabs: true })
+    .catch(e => { console.warn('persistencia', e && e.code); return fs.enablePersistence(); })
+    .catch(e => console.warn('persistencia', e && e.code));
   const allowed = (cfg.allowed || []).map(m => m.toLowerCase());
 
   // ── Login (una vez por celular: la sesión queda guardada) ─────────
