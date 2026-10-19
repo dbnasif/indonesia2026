@@ -1,6 +1,6 @@
 // Guarda la app en el celu para que abra sin señal. La versión cambia en cada
 // publicación (build.py), así el celu baja los archivos nuevos cuando hay conexión.
-const V = 'id26-19/10 01:02';
+const V = 'id26-19/10 01:03';
 const SHELL = ['./', 'index.html', 'config.js', 'firebase-db.js', 'firebase-app-compat.js', 'firebase-auth-compat.js',
   'firebase-firestore-compat.js', 'xlsx.mini.min.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'privado.enc'];
 

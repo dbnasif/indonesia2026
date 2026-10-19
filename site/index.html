@@ -23,7 +23,7 @@
 .login-p,.login-msg{font-size:13px;color:var(--mu);line-height:1.5}
 #lg-step2{display:flex;flex-direction:column;gap:10px}
 </style>
-<script>window.APP_BUILD="19/10 01:02";
+<script>window.APP_BUILD="19/10 01:03";
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('sw',e)));</script>
 <script src="firebase-app-compat.js"></script>
 <script src="firebase-auth-compat.js"></script>
@@ -670,7 +670,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <input class="fi" id="g-desc" placeholder="Descripción">
       <div class="monto-wrap">
         <input class="monto-input" id="g-monto" placeholder="Monto" type="text" inputmode="decimal" autocomplete="off" oninput="refreshCustom();checkCustom('pf');checkCustom('sf')">
-        <button class="cur-tog c-usd" id="g-cur-btn" onclick="toggleGCur()">USD</button>
+        <button class="cur-tog c-idr" id="g-cur-btn" onclick="toggleGCur()">IDR</button>
       </div>
     </div>
     <div class="form-row">
@@ -1045,7 +1045,7 @@ const ZONE_COL = {JAVA:'#fb923c',BALI:'#34d399',FLORES:'#fbbf24',GILI:'#60a5fa',
 // ── RATES ─────────────────────────────────────────────
 const RATES = { ARS: 1350, IDR: 16200 }; // USD 1 = X
 let curDisplay = 'USD';
-let gCur = 'USD'; // currency of current gasto input
+let gCur = 'IDR'; // moneda del gasto que se está cargando (en el viaje casi todo es en rupias)
 
 function setCur(c) {
   curDisplay = c;
@@ -1743,6 +1743,7 @@ function addGasto(){
 function resetGastoForm(){
   editingGastoId=null;
   ['g-desc','g-monto','g-notas','g-cat','g-lugar-otro'].forEach(id=>fset(id,''));
+  if(gCur!=='IDR')toggleGCur();
   renderLugarSelect();fset('g-lugar',lugarDeHoy());gLugarOtro();
   document.getElementById('g-form-title').textContent='+ Nuevo gasto';
   document.getElementById('g-save-btn').textContent='Agregar gasto';
@@ -2185,6 +2186,7 @@ function renderGastos(){
 }
 ['bal','form','sum','hist','cambio'].forEach(applyPanel);
 renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
+document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
 
 
 // ── CAMBIO DE DÓLARES ─────────────────────────────────
