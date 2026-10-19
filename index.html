@@ -658,11 +658,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="form-row">
       <div class="cat-wrap">
-        <select class="fsel" id="g-cat" aria-label="Categoría"></select>
+        <select class="fsel" id="g-cat" aria-label="Categoría" onchange="gCatNueva()"></select>
         <button type="button" class="icon-btn" id="cat-edit-btn" onclick="toggleCatEditor()" title="Editar categorías" aria-label="Editar categorías" aria-expanded="false">⚙️</button>
       </div>
       <input class="fi" id="g-fecha" type="date" onchange="autoEtapa()">
     </div>
+    <input class="fi" id="g-cat-nueva" placeholder="Nombre de la categoría nueva" hidden style="margin-bottom:8px">
     <div class="cat-editor" id="cat-editor" hidden>
       <div class="ce-h">Categorías <span>Tocá ✓ para guardar cada cambio</span></div>
       <div id="ce-list"></div>
@@ -1694,7 +1695,12 @@ function addGasto(){
   if(isNaN(monto)||monto<=0){toast('Poné un monto mayor a 0.');document.getElementById('g-monto').focus();return;}
   const errP=customErr('pf'),errS=customErr('sf');
   if(errP||errS){checkCustom('pf');checkCustom('sf');toast(errP?'¿Quién pagó?: '+errP:'¿Para quién?: '+errS);return;}
-  const cat=fval('g-cat');
+  let cat=fval('g-cat');
+  if(cat==='__nueva'){
+    const nom=fval('g-cat-nueva').trim();
+    if(!nom){toast('Escribí el nombre de la categoría nueva.');document.getElementById('g-cat-nueva').focus();return;}
+    cat=crearCat(nom);
+  }
   if(!cat&&!confirm('¿Estás seguro que no querés cargar categoría?\n\nEl gasto queda sin categoría, con un ⚠️ en el historial para completarlo después.')){document.getElementById('g-cat').focus();return;}
   const fecha=fval('g-fecha');
   const notas=document.getElementById('g-notas').value.trim();
@@ -1725,7 +1731,8 @@ function addGasto(){
 
 function resetGastoForm(){
   editingGastoId=null;
-  ['g-desc','g-monto','g-notas','g-cat','g-lugar-otro'].forEach(id=>fset(id,''));
+  ['g-desc','g-monto','g-notas','g-cat','g-lugar-otro','g-cat-nueva'].forEach(id=>fset(id,''));
+  document.getElementById('g-cat-nueva').hidden=true;
   if(gCur!=='IDR')toggleGCur();
   renderLugarSelect();fset('g-lugar',lugarDeHoy());gLugarOtro();
   document.getElementById('g-form-title').textContent='+ Nuevo gasto';
@@ -1741,7 +1748,7 @@ function editGasto(id){
   editingGastoId=id;
   fset('g-desc',g.desc||'');
   fset('g-monto',g.monto||'');
-  fset('g-cat',g.cat&&allCats().some(c=>c.id===g.cat)?g.cat:'');
+  fset('g-cat',g.cat&&allCats().some(c=>c.id===g.cat)?g.cat:'');gCatNueva();
   setEtapa(etapaOf(g));etapaManual=true;
   fset('g-fecha',g.fecha||'');
   fset('g-notas',g.notas||'');
@@ -1776,11 +1783,11 @@ function delGasto(id,btn){
 // ── GASTOS — categorías editables ─────────────────────
 // Las 6 de fábrica se pueden renombrar/borrar (salvo "Otro"); las nuevas se
 // guardan en categorias/<id>. Cada categoría conserva su color (slot de paleta).
-const PALETTE=['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#9085e9','#e66767'];
+const PALETTE=['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#9085e9','#e66767','#14a3b8'];
 const DEFAULT_CATS=[
   {id:'comida',nombre:'Comida',emoji:'🍜',slot:0,orden:0},{id:'transporte',nombre:'Transporte',emoji:'🚗',slot:1,orden:1},
   {id:'actividad',nombre:'Actividad',emoji:'🎟',slot:2,orden:2},{id:'hotel',nombre:'Hotel',emoji:'🏨',slot:3,orden:3},
-  {id:'compras',nombre:'Compras',emoji:'🛍',slot:4,orden:4},{id:'deuda',nombre:'Deuda saldada',emoji:'🤝',slot:null,orden:98},
+  {id:'compras',nombre:'Compras',emoji:'🛍',slot:4,orden:4},{id:'tip',nombre:'Tip (propina)',emoji:'🙏',slot:8,orden:4.5},{id:'deuda',nombre:'Deuda saldada',emoji:'🤝',slot:null,orden:98},
   {id:'otro',nombre:'Otro',emoji:'💳',slot:5,orden:99},
 ];
 // "Deuda saldada": cuando uno le devuelve plata al otro. Cuenta para el balance,
@@ -1799,8 +1806,12 @@ function catLabel(c){return `${c.emoji||'•'} ${c.nombre}`;}
 function renderCatSelect(){
   const sel=document.getElementById('g-cat');if(!sel)return;
   const cur=sel.value;
-  sel.innerHTML='<option value="">Categoría…</option>'+allCats().map(c=>`<option value="${e(c.id)}">${e(catLabel(c))}</option>`).join('');
-  sel.value=allCats().some(c=>c.id===cur)?cur:'';
+  sel.innerHTML='<option value="">Categoría…</option>'+allCats().map(c=>`<option value="${e(c.id)}">${e(catLabel(c))}</option>`).join('')+
+    '<option value="__nueva">＋ Nueva categoría…</option>';
+  sel.value=cur==='__nueva'||allCats().some(c=>c.id===cur)?cur:'';
+}
+function gCatNueva(){
+  const i=document.getElementById('g-cat-nueva');i.hidden=fval('g-cat')!=='__nueva';if(!i.hidden)i.focus();
 }
 function toggleCatEditor(force){
   const ed=document.getElementById('cat-editor');
@@ -1829,6 +1840,18 @@ async function saveCat(id){
   const doc=catDoc({...c,nombre,emoji});
   CATDOCS={...CATDOCS,[id]:doc};refreshCats(true);renderGastos();
   if(await put('categorias',id,doc))toast('Categoría guardada');
+}
+// Crea la categoría y devuelve su id (si ya existe una con ese nombre, devuelve esa).
+function crearCat(nombre,emoji){
+  const ya=allCats().find(c=>c.nombre.toLowerCase()===nombre.toLowerCase());if(ya)return ya.id;
+  const used=new Set(allCats().map(c=>c.slot));
+  const slot=PALETTE.findIndex((_,i)=>!used.has(i));
+  const orden=Math.max(...allCats().filter(c=>c.id!=='otro').map(c=>c.orden??0),0)+1;
+  const id='c-'+fold(nombre).replace(/[^a-z0-9]+/g,'-').slice(0,24)+'-'+Math.random().toString(36).slice(2,5);
+  const doc={nombre,emoji:emoji||'🏷',slot:slot<0?null:slot,orden,deleted:false};
+  CATDOCS={...CATDOCS,[id]:doc};refreshCats(true);
+  put('categorias',id,doc);
+  return id;
 }
 async function addCat(){
   const nombre=document.getElementById('ce-new-name').value.trim();
@@ -1919,7 +1942,28 @@ function deducirLugar(g){
 }
 // Parches y lugares, uno detrás del otro y nunca dos veces a la vez.
 let mant=null;
-function mantener(){if(mant)return;mant=(async()=>{await aplicarParches();await aplicarLugares();})().finally(()=>{mant=null;});}
+function mantener(){if(mant)return;mant=(async()=>{await aplicarParches();await aplicarLugares();await aplicarTips();})().finally(()=>{mant=null;});}
+// Una sola vez: los gastos en "Otro" con tip o propina en el nombre pasan a la categoría Tip.
+const esTip=g=>/\b(tips?|propinas?)\b/.test(fold(g.desc));
+let tipsHechos=false;
+async function aplicarTips(){
+  const ID='tip-2026-10-19';
+  if(!db||tipsHechos||(CONFIG.parches||[]).includes(ID))return;
+  tipsHechos=true;
+  try{
+    const cfg=await db.doc('config/app').get();
+    if(cfg.metadata&&cfg.metadata.fromCache){tipsHechos=false;return;}
+    const hechos=(cfg.exists&&cfg.data().parches)||[];
+    if(hechos.includes(ID))return;
+    for(const g of GASTOS.filter(g=>g.cat&&catInfo(g.cat).id==='otro'&&esTip(g))){
+      const ref=db.collection('gastos').doc(g.id),cur=await ref.get();
+      if(cur.metadata&&cur.metadata.fromCache){tipsHechos=false;return;}
+      const d=cur.exists&&cur.data();
+      if(d&&d.cat&&catInfo(d.cat).id==='otro')await ref.update({cat:'tip'});
+    }
+    CONFIG={...CONFIG,...(cfg.exists?cfg.data():{}),parches:[...hechos,ID]};await db.doc('config/app').set(CONFIG);
+  }catch(e){console.warn('tips',e);tipsHechos=false;}
+}
 let lugaresHechos=false;
 async function aplicarLugares(){
   const ID='lugar-2026-10-19';
