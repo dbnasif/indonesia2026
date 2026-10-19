@@ -280,6 +280,7 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .seg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .seg-lbl{font-size:12px;color:var(--mu)}
 .hist-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.hist-tools .cur-btn{white-space:nowrap;padding:6px 9px}
 .cx-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .cx-sum:empty{display:none}
 .cx-st{background:var(--sf2);border-radius:var(--rs);padding:9px 10px;font-size:11px;color:var(--mu);line-height:1.5;font-variant-numeric:tabular-nums}
@@ -663,6 +664,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
     </div>
     <div class="form-full">
+      <select class="fsel" id="g-lugar" aria-label="Lugar" onchange="gLugarOtro()"></select>
+      <input class="fi" id="g-lugar-otro" placeholder="¿Dónde? (escribí el lugar)" hidden style="margin-top:8px">
+    </div>
+    <div class="form-full">
       <input class="fi" id="g-notas" placeholder="Nota (opcional)">
     </div>
 
@@ -755,6 +760,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
           <button class="cur-btn" id="hf-previo" onclick="setHistFilter('previo')">Previo</button>
           <button class="cur-btn" id="hf-viaje" onclick="setHistFilter('viaje')">Viaje</button>
           <button class="cur-btn" id="hf-tbc" onclick="setHistFilter('tbc')">❗ TBC</button>
+          <button class="cur-btn" id="hf-nolugar" onclick="setHistFilter('nolugar')">⚠️ Lugar</button>
         </div>
         <button class="data-btn" onclick="exportXlsx()">⬇️ Exportar a Excel</button>
       </div>
@@ -1148,7 +1154,7 @@ function refreshAll(){
 async function initStore(){
   const local=lsGet();
   DETALLES=local.detalles||{};NOTAS=local.notas||[];GASTOS=(local.gastos||[]).map(normG);CONFIG=local.config||CONFIG;CATDOCS=local.categorias||{};refreshCats();USERDOCS=local.docs||[];CAMBIOS=local.cambios||[];
-  applyConfig();refreshAll();initCambio();renderCambios();
+  applyConfig();refreshAll();initCambio();renderCambios();renderLugarSelect();fset('g-lugar',lugarDeHoy());gLugarOtro();
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
   // Versión web (Netlify): login + base en Firebase (netlify/firebase-db.js).
   if(!db&&window.WEBDB){try{db=await window.WEBDB.db();}catch(e){console.warn(e);db=null;}}
@@ -1161,7 +1167,7 @@ async function initStore(){
   DETALLES={};NOTAS=[];GASTOS=[];CATDOCS={};USERDOCS=[];CAMBIOS=[];
   setSync('','Sincronizando…');
   const fail=err=>{setSync('err','Sin conexión');console.warn(err);};
-  const done=new Set();const ready=k=>{done.add(k);if(done.size===7){synced=true;syncPill();obFlush();aplicarParches();}};
+  const done=new Set();const ready=k=>{done.add(k);if(done.size===7){synced=true;syncPill();obFlush();mantener();}};
   db.collection('dias').onSnapshot(sn=>{
     DETALLES={};sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.detalle==='string')DETALLES[d.id]=v.detalle;});
     buildData();if(document.getElementById('p-dias').classList.contains('on'))renderDias();ready('dias');
@@ -1172,6 +1178,7 @@ async function initStore(){
   },fail);
   db.collection('gastos').onSnapshot(sn=>{
     GASTOS=obMerge('gastos',sn.docs.map(d=>({id:d.id,...d.data()}))).map(normG).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    renderLugarSelect();
     renderGastos();recalcStats();ready('gastos');
   },fail);
   db.collection('categorias').onSnapshot(sn=>{
@@ -1674,10 +1681,12 @@ function addGasto(){
   if(!cat&&!confirm('¿Estás seguro que no querés cargar categoría?\n\nEl gasto queda sin categoría, con un ⚠️ en el historial para completarlo después.')){document.getElementById('g-cat').focus();return;}
   const fecha=fval('g-fecha');
   const notas=document.getElementById('g-notas').value.trim();
+  let lugar=fval('g-lugar');
+  if(lugar==='__otro')lugar=fval('g-lugar-otro').trim();
   const amtUSD=toUSD(monto,gCur);
   const pay=calcShare(payMode,'pf',amtUSD);
   const split=calcShare(splitMode,'sf',amtUSD);
-  const payload={desc,monto,cur:gCur,cat,fecha,notas,
+  const payload={desc,monto,cur:gCur,cat,fecha,notas,lugar,
     payMode,payDani:pay.dani,payWally:pay.wally,
     mpDani:pay.dani>0?mpSel.dani:null,mpWally:pay.wally>0?mpSel.wally:null,
     splitMode,splitDani:split.dani,splitWally:split.wally,etapa,upd:Date.now()};
@@ -1699,7 +1708,8 @@ function addGasto(){
 
 function resetGastoForm(){
   editingGastoId=null;
-  ['g-desc','g-monto','g-notas','g-cat'].forEach(id=>fset(id,''));
+  ['g-desc','g-monto','g-notas','g-cat','g-lugar-otro'].forEach(id=>fset(id,''));
+  renderLugarSelect();fset('g-lugar',lugarDeHoy());gLugarOtro();
   document.getElementById('g-form-title').textContent='+ Nuevo gasto';
   document.getElementById('g-save-btn').textContent='Agregar gasto';
   document.getElementById('g-edit-banner').classList.remove('show');
@@ -1717,6 +1727,7 @@ function editGasto(id){
   setEtapa(etapaOf(g));etapaManual=true;
   fset('g-fecha',g.fecha||'');
   fset('g-notas',g.notas||'');
+  renderLugarSelect(g.lugar);fset('g-lugar',g.lugar||'');fset('g-lugar-otro','');gLugarOtro();
   gCur=g.cur||'USD';
   const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'c-usd':'c-idr');
   document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
@@ -1834,6 +1845,83 @@ async function delCat(id,btn){
 }
 function refreshCats(force){renderCatSelect();renderCatEditor(force);}
 
+
+// ── GASTOS — lugar ────────────────────────────────────
+// Ciudades del viaje (las mismas del cambio de dólares) + "General" para lo que no
+// es de un lugar (vuelos, visa, eSIM) + los que se escribieron a mano.
+const LUGAR_GENERAL='General (vuelos, visa, online)';
+function renderLugarSelect(extra){
+  const sel=document.getElementById('g-lugar');if(!sel)return;
+  const cur=sel.value;
+  const manual=[...new Set(GASTOS.map(g=>g.lugar).concat(extra||[]).filter(l=>l&&l!==LUGAR_GENERAL&&!CIUDADES.includes(l)))].sort();
+  sel.innerHTML='<option value="">Lugar…</option>'+[...CIUDADES,...manual].map(c=>`<option>${e(c)}</option>`).join('')+
+    `<option>${e(LUGAR_GENERAL)}</option><option value="__otro">Otro…</option>`;
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+function gLugarOtro(){
+  const o=document.getElementById('g-lugar-otro');o.hidden=fval('g-lugar')!=='__otro';
+  if(!o.hidden&&document.activeElement===document.getElementById('g-lugar'))o.focus();
+}
+// Lugar según el día del itinerario, solo en días sin traslado entre ciudades
+// (el 15/10 hay escala en Dubai, el 16/10 vuelo a Yogya, el 24/10 ferry a Penida…).
+const LUGAR_DIA={d2:'Yogyakarta',d4:'Bromo / Ijen',d6:'Ubud',d7:'Ubud',d8:'Ubud',d12:'Komodo (barco)',d15:'Gili Air',d16:'Gili Air',d19:'Uluwatu / Jimbaran'};
+function lugarDeFecha(f){
+  if(!f)return '';
+  const n=Math.round((new Date(f+'T00:00:00')-new Date('2026-10-15T00:00:00'))/864e5);
+  return LUGAR_DIA['d'+n]||'';
+}
+function lugarDeHoy(){return lugarDeFecha(hoyISO());}
+// Deduce el lugar de un gasto ya cargado. Devuelve '' si no hay forma segura.
+const LUGAR_PISTAS=[
+  [/orchardz/,'Jakarta'],
+  [/prima in|malioboro hotel|borobudur|prambanan|kraton|taman sari|yogya/,'Yogyakarta'],
+  [/kertanegara|malang/,'Malang'],
+  [/smartine|bromo|ijen/,'Bromo / Ijen'],
+  [/arkamara|ubud|monkey forest|campuhan|tegallalang/,'Ubud'],
+  [/akatara|penida|kelingking/,'Nusa Penida'],
+  [/semarandana|sanur/,'Sanur'],
+  [/manta manta|labuan bajo/,'Labuan Bajo'],
+  [/dahayu|komodo/,'Komodo (barco)'],
+  [/kaluku|gili/,'Gili Air'],
+  [/devani|sidemen/,'Sidemen'],
+  [/mule malu|uluwatu|jimbaran|kecak|bingin/,'Uluwatu / Jimbaran'],
+  [/holafly|esim|e-voa|seguro|universal assistance/,LUGAR_GENERAL],
+];
+function deducirLugar(g){
+  if(g.cat==='c-vuelos'||g.cat==='c-visa')return LUGAR_GENERAL;
+  const desc=fold(g.desc),notas=fold(g.notas);
+  // Un traslado entre ciudades (con "→") no es de un solo lugar: lo decide quien cargó.
+  if(desc.includes('→'))return '';
+  // Primero el nombre del gasto; la nota solo si el nombre no dice nada.
+  const pistas=t=>[...new Set(LUGAR_PISTAS.filter(([re])=>re.test(t)).map(x=>x[1]))];
+  let hits=pistas(desc);if(!hits.length)hits=pistas(notas);
+  if(hits.length===1)return hits[0];
+  if(hits.length>1)return '';
+  return lugarDeFecha(g.fecha);
+}
+// Parches y lugares, uno detrás del otro y nunca dos veces a la vez.
+let mant=null;
+function mantener(){if(mant)return;mant=(async()=>{await aplicarParches();await aplicarLugares();})().finally(()=>{mant=null;});}
+let lugaresHechos=false;
+async function aplicarLugares(){
+  const ID='lugar-2026-10-19';
+  if(!db||lugaresHechos||(CONFIG.parches||[]).includes(ID))return;
+  lugaresHechos=true;
+  try{
+    const cfg=await db.doc('config/app').get();
+    if(cfg.metadata&&cfg.metadata.fromCache){lugaresHechos=false;return;}
+    const hechos=(cfg.exists&&cfg.data().parches)||[];
+    if(hechos.includes(ID))return;
+    for(const g of GASTOS.filter(g=>!g.lugar)){
+      const l=deducirLugar(g);if(!l)continue;
+      const ref=db.collection('gastos').doc(g.id),cur=await ref.get();
+      if(cur.metadata&&cur.metadata.fromCache){lugaresHechos=false;return;}
+      if(cur.exists&&!cur.data().lugar)await ref.update({lugar:l,lugarAuto:true});
+    }
+    CONFIG={...CONFIG,...(cfg.exists?cfg.data():{}),parches:[...hechos,ID]};await db.doc('config/app').set(CONFIG);
+  }catch(e){console.warn('lugares',e);lugaresHechos=false;}
+}
+
 // ── GASTOS — etiqueta (previo al viaje / viaje) ───────
 const TRIP_START='2026-10-13';
 let etapa='viaje',etapaManual=false;
@@ -1846,7 +1934,7 @@ function autoEtapa(){if(etapaManual)return;const f=fval('g-fecha');setEtapa(f&&f
 function etapaOf(g){return g.etapa||(g.fecha&&g.fecha<TRIP_START?'previo':'viaje');}
 let histFilter='todos';
 function setHistFilter(f){
-  histFilter=f;['todos','previo','viaje','tbc'].forEach(x=>document.getElementById('hf-'+x).classList.toggle('on',x===f));
+  histFilter=f;['todos','previo','viaje','tbc','nolugar'].forEach(x=>document.getElementById('hf-'+x).classList.toggle('on',x===f));
   renderGastos();
 }
 
@@ -1878,7 +1966,7 @@ async function exportXlsx(){
       'Pagó':MODE_LBL[g.payMode||'dani'],'Pagó Dani (USD)':r2(parseFloat(g.payDani||0)),'Método Dani':mpText('dani',g.mpDani),
       'Pagó Wally (USD)':r2(parseFloat(g.payWally||0)),'Método Wally':mpText('wally',g.mpWally),
       'Para':MODE_LBL[g.splitMode||'compartido'],'Le corresponde a Dani (USD)':r2(parseFloat(g.splitDani||0)),'Le corresponde a Wally (USD)':r2(parseFloat(g.splitWally||0)),
-      'Notas':g.notas||'','Origen':g.origen||'App',
+      'Lugar':g.lugar||'','Notas':g.notas||'','Origen':g.origen||'App',
       'Registrado el':g.ts?new Date(g.ts):'','Última modificación':g.upd?new Date(g.upd):(g.ts?new Date(g.ts):''),
     };
   });
@@ -2041,18 +2129,18 @@ function renderGastos(){
   renderChart();
 
   const el=document.getElementById('glist');
-  const LIST=histFilter==='todos'?GASTOS:histFilter==='tbc'?GASTOS.filter(isTBC):GASTOS.filter(g=>etapaOf(g)===histFilter);
+  const LIST=histFilter==='todos'?GASTOS:histFilter==='tbc'?GASTOS.filter(isTBC):histFilter==='nolugar'?GASTOS.filter(g=>!g.lugar):GASTOS.filter(g=>etapaOf(g)===histFilter);
   const ltotal=LIST.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('hist-mini').textContent=`${GASTOS.length} gasto${GASTOS.length===1?'':'s'}`;
-  if(!LIST.length){el.innerHTML=`<div class="empty">${histFilter==='tbc'?'No hay gastos TBC ✓':GASTOS.length?'No hay gastos con esta etiqueta':'Registrá tu primer gasto arriba'}</div>`;return;}
+  if(!LIST.length){el.innerHTML=`<div class="empty">${histFilter==='tbc'?'No hay gastos TBC ✓':histFilter==='nolugar'?'Todos los gastos tienen lugar ✓':GASTOS.length?'No hay gastos con esta etiqueta':'Registrá tu primer gasto arriba'}</div>`;return;}
   el.innerHTML=`<div class="gt-wrap"><table class="gt">
     <thead><tr><th>Gasto</th><th>Pagó</th><th>Para</th><th class="num">Monto</th><th><span hidden>Acciones</span></th></tr></thead>
     <tbody>${LIST.map(g=>{
       const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
       const cur=g.cur||'USD';
-      const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.notas].filter(Boolean).map(e).join(' · ');
+      const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.lugar?'📍 '+g.lugar:'',g.notas].filter(Boolean).map(e).join(' · ');
       return `<tr class="${[g.id===editingGastoId?'editing':'',isTBC(g)?'tbc':''].join(' ').trim()}">
-        <td><div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
+        <td><div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}${g.lugar?'':'<span class="chip-nocat">⚠️ SIN LUGAR</span>'}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
         <td>${whoCell(g.payMode||'dani',parseFloat(g.payDani||0),parseFloat(g.payWally||0),g.mpDani,g.mpWally)}</td>
         <td>${whoCell(g.splitMode||'compartido',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0))}</td>
         <td class="num"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(g.monto)} ${e(cur)}</div>`:''}</td>
@@ -2068,7 +2156,7 @@ renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
 // ── CAMBIO DE DÓLARES ─────────────────────────────────
 // Cada vez que cambiamos USD a rupias (casa de cambio) o sacamos del cajero.
 // Va en la colección "cambios": no es un gasto, no entra en el balance.
-const CIUDADES=['Jakarta','Yogyakarta','Malang','Bromo / Ijen','Ubud','Nusa Penida','Sanur','Labuan Bajo','Gili Air','Lombok','Sidemen','Uluwatu / Jimbaran','Denpasar (aeropuerto)'];
+const CIUDADES=['Jakarta','Yogyakarta','Malang','Bromo / Ijen','Ubud','Nusa Penida','Sanur','Labuan Bajo','Komodo (barco)','Gili Air','Lombok','Sidemen','Uluwatu / Jimbaran','Denpasar (aeropuerto)'];
 let CAMBIOS=[],cxTipo='cambio',cxWho='dani',cxEdit=null;
 const fmtRp=v=>'Rp '+Math.round(v).toLocaleString('es-AR');
 const cardOpts=who=>MP[who].filter(o=>o.bank);
