@@ -331,6 +331,23 @@ button{cursor:pointer}a{color:var(--ac);text-decoration:none}
 .gt .t-act{display:flex;gap:4px;justify-content:flex-end}
 .gt .t-act button{min-width:30px;height:30px;font-size:12px}
 .gt tfoot td{font-weight:800;border-bottom:none;padding-top:10px;padding-bottom:10px}
+/* historial de gastos en tarjetas */
+.gl{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin:0 -4px;overflow:hidden}
+.gr{padding:10px 12px;border-bottom:1px solid var(--bd)}
+.gr:nth-child(even){background:rgba(255,255,255,.02)}
+.gr.editing{background:rgba(59,130,246,.1)}
+.gr.tbc{box-shadow:inset 3px 0 var(--yw)}
+.gr-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.gr-top .t-desc{flex:1;min-width:0;overflow-wrap:anywhere}
+.gr-amt{text-align:right;flex-shrink:0}
+.gr-bot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.gr-who{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 14px;min-width:0}
+.gr-p{display:flex;align-items:flex-start;gap:6px}
+.gr-p .t-sub{margin-top:0}
+.gr-k{font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;line-height:20px}
+.gr .t-who{line-height:20px}
+.gr .t-act{flex-shrink:0}
+.gr-foot{display:flex;justify-content:space-between;padding:11px 12px;font-weight:800}
 .add-g-btn{width:100%;border:none;background:var(--ac);color:#fff;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;margin-top:4px}
 
 /* gasto item */
@@ -1742,7 +1759,7 @@ function editGasto(id){
   togglePanel('form',true);renderGastos();
   document.getElementById('pn-form')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function cancelEditGasto(){resetGastoForm();}
+function cancelEditGasto(){resetGastoForm();renderGastos();}
 function delGasto(id,btn){
   const g=GASTOS.find(x=>x.id===id);if(!g)return;
   if(btn&&!btn.classList.contains('arm')){
@@ -2134,21 +2151,24 @@ function renderGastos(){
   const ltotal=LIST.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
   document.getElementById('hist-mini').textContent=`${GASTOS.length} gasto${GASTOS.length===1?'':'s'}`;
   if(!LIST.length){el.innerHTML=`<div class="empty">${histFilter==='tbc'?'No hay gastos TBC ✓':histFilter==='nolugar'?'Todos los gastos tienen lugar ✓':GASTOS.length?'No hay gastos con esta etiqueta':'Registrá tu primer gasto arriba'}</div>`;return;}
-  el.innerHTML=`<div class="gt-wrap"><table class="gt">
-    <thead><tr><th>Gasto</th><th>Pagó</th><th>Para</th><th class="num">Monto</th><th><span hidden>Acciones</span></th></tr></thead>
-    <tbody>${LIST.map(g=>{
+  // Tarjetas en vez de tabla: todo entra en el ancho del celu, sin deslizar.
+  el.innerHTML=`<div class="gt gl">${LIST.map(g=>{
       const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
       const cur=g.cur||'USD';
       const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.lugar?'📍 '+g.lugar:'',g.notas].filter(Boolean).map(e).join(' · ');
-      return `<tr class="${[g.id===editingGastoId?'editing':'',isTBC(g)?'tbc':''].join(' ').trim()}">
-        <td><div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}${g.lugar?'':'<span class="chip-nocat">⚠️ SIN LUGAR</span>'}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</td>
-        <td>${whoCell(g.payMode||'dani',parseFloat(g.payDani||0),parseFloat(g.payWally||0),g.mpDani,g.mpWally)}</td>
-        <td>${whoCell(g.splitMode||'compartido',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0))}</td>
-        <td class="num"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(g.monto)} ${e(cur)}</div>`:''}</td>
-        <td><div class="t-act"><button class="gi-edit" onclick="editGasto('${g.id}')" title="Modificar" aria-label="Modificar ${e(g.desc)}">✏️</button><button class="gi-del" onclick="delGasto('${g.id}',this)" title="Eliminar" aria-label="Eliminar ${e(g.desc)}">🗑️</button></div></td>
-      </tr>`;}).join('')}</tbody>
-    <tfoot><tr><td colspan="3">Total · ${LIST.length} gasto${LIST.length===1?'':'s'}</td><td class="num">${fmtAmt(ltotal)}</td><td></td></tr></tfoot>
-  </table></div>`;
+      return `<div class="gr ${[g.id===editingGastoId?'editing':'',isTBC(g)?'tbc':''].join(' ').trim()}">
+        <div class="gr-top">
+          <div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}${g.lugar?'':'<span class="chip-nocat">⚠️ SIN LUGAR</span>'}</div>
+          <div class="gr-amt"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(Number(g.monto).toLocaleString('es-AR'))} ${e(cur)}</div>`:''}</div>
+        </div>
+        ${sub?`<div class="t-sub">${sub}</div>`:''}
+        <div class="gr-bot">
+          <div class="gr-who"><span class="gr-p"><span class="gr-k">Pagó</span>${whoCell(g.payMode||'dani',parseFloat(g.payDani||0),parseFloat(g.payWally||0),g.mpDani,g.mpWally)}</span><span class="gr-p"><span class="gr-k">Para</span>${whoCell(g.splitMode||'compartido',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0))}</span></div>
+          <div class="t-act"><button class="gi-edit" onclick="editGasto('${g.id}')" title="Modificar" aria-label="Modificar ${e(g.desc)}">✏️</button><button class="gi-del" onclick="delGasto('${g.id}',this)" title="Eliminar" aria-label="Eliminar ${e(g.desc)}">🗑️</button></div>
+        </div>
+      </div>`;}).join('')}
+    <div class="gr-foot"><span>Total · ${LIST.length} gasto${LIST.length===1?'':'s'}</span><span>${fmtAmt(ltotal)}</span></div>
+  </div>`;
 }
 ['bal','form','sum','hist','cambio'].forEach(applyPanel);
 renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
@@ -2266,17 +2286,20 @@ function renderCambios(){
   const el=document.getElementById('cx-list');
   if(!L.length){el.innerHTML='<div class="empty">Todavía no registraron cambios</div>';return;}
   const who={dani:'Dani',wally:'Wally',ambos:'Parte y parte'};
-  el.innerHTML=`<div class="gt-wrap"><table class="gt cx-gt">
-    <thead><tr><th>Cambio</th><th>Quién</th><th class="num">USD → Rp</th><th><span hidden>Acciones</span></th></tr></thead>
-    <tbody>${L.map(c=>{
+  el.innerHTML=`<div class="gt gl">${L.map(c=>{
       const cards=c.tipo==='cajero'?[['dani',c.cardDani],['wally',c.cardWally]].filter(x=>x[1]).map(([w,k])=>`<span class="cx-c">${mpIcon(mpOpt(w,k))}${e(cardTxt(w,k))}</span>`).join(''):'';
-      const sub=[c.fecha?c.fecha.slice(8,10)+'/'+c.fecha.slice(5,7):'',e(c.ciudad||''),c.notas?e(c.notas):''].filter(Boolean).join(' · ');
-      return `<tr>
-        <td><div class="t-desc">${c.tipo==='cajero'?'🏧 Cajero':'💵 Casa de cambio'}</div><div class="t-sub">${sub}</div>${cards?`<div class="t-sub">${cards}</div>`:''}</td>
-        <td><div class="t-who">${who[c.quien]||''}</div>${c.quien==='ambos'?`<div class="t-sub">D ${c.usdDani}<br>W ${c.usdWally}</div>`:''}</td>
-        <td class="num"><div class="t-amt">USD ${usd(c).toLocaleString('es-AR',{maximumFractionDigits:2})}</div><div class="t-sub">× ${Number(c.cot).toLocaleString('es-AR')}</div><div class="t-sub">${fmtRp(usd(c)*c.cot)}</div>${c.fee?`<div class="t-sub">comisión ${fmtRp(c.fee)}</div>`:''}</td>
-        <td><div class="t-act"><button class="gi-edit" onclick="editCambio('${c.id}')" title="Modificar" aria-label="Modificar cambio">✏️</button><button class="gi-del" onclick="delCambio('${c.id}',this)" title="Eliminar" aria-label="Eliminar cambio">🗑️</button></div></td>
-      </tr>`;}).join('')}</tbody></table></div>`;
+      const sub=[c.fecha?c.fecha.slice(8,10)+'/'+c.fecha.slice(5,7):'',c.ciudad?'📍 '+e(c.ciudad):'',c.notas?e(c.notas):''].filter(Boolean).join(' · ');
+      return `<div class="gr">
+        <div class="gr-top">
+          <div class="t-desc">${c.tipo==='cajero'?'🏧 Cajero':'💵 Casa de cambio'}</div>
+          <div class="gr-amt"><div class="t-amt">${fmtRp(usd(c)*c.cot)}</div><div class="t-sub">USD ${usd(c).toLocaleString('es-AR',{maximumFractionDigits:2})} × ${Number(c.cot).toLocaleString('es-AR')}</div>${c.fee?`<div class="t-sub">comisión ${fmtRp(c.fee)}</div>`:''}</div>
+        </div>
+        <div class="t-sub">${sub}</div>${cards?`<div class="t-sub">${cards}</div>`:''}
+        <div class="gr-bot">
+          <div class="gr-who"><span class="gr-p"><span class="gr-k">Quién</span><span class="t-who">${who[c.quien]||''}</span></span>${c.quien==='ambos'?`<span class="t-sub">Dani USD ${c.usdDani} · Wally USD ${c.usdWally}</span>`:''}</div>
+          <div class="t-act"><button class="gi-edit" onclick="editCambio('${c.id}')" title="Modificar" aria-label="Modificar cambio">✏️</button><button class="gi-del" onclick="delCambio('${c.id}',this)" title="Eliminar" aria-label="Eliminar cambio">🗑️</button></div>
+        </div>
+      </div>`;}).join('')}</div>`;
 }
 
 // ── VUELOS ────────────────────────────────────────────

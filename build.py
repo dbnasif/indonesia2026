@@ -39,6 +39,8 @@ HEAD = """<!doctype html>
 /* Lo que en Claude agrega el marco de la página. */
 [hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* En el iPhone con la app instalada, lo que se desplaza no se ve detrás de la hora y la batería. */
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:60}
 /* Pantalla de login */
 .login-ov{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
 .login-box{width:100%;max-width:360px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px}
