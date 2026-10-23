@@ -1208,7 +1208,7 @@ async function initStore(){
     renderDocs();ready('docs');
   },fail);
   db.collection('cambios').onSnapshot(sn=>{
-    CAMBIOS=obMerge('cambios',sn.docs.map(d=>({id:d.id,...d.data()})));renderCambios();ready('cambios');
+    CAMBIOS=obMerge('cambios',sn.docs.map(d=>({id:d.id,...d.data()})));renderCambios();renderGastos();recalcStats();ready('cambios');
   },fail);
   db.doc('config/app').onSnapshot(sn=>{
     if(sn.exists)CONFIG={...CONFIG,...sn.data()};
@@ -1280,9 +1280,10 @@ function go(p,btn){
 
 // ── HOME STATS ────────────────────────────────────────
 function recalcStats(){
-  const pagadoUSD = realGastos().filter(g=>!isTBC(g)).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  cotizar();
+  const pagadoUSD = realGastos().filter(g=>!isTBC(g)).reduce((a,g)=>a+usdOf(g),0);
   document.getElementById('st-pagado').textContent = fmtAmt(pagadoUSD);
-  const totalUSD = realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const totalUSD = realGastos().reduce((a,g)=>a+usdOf(g),0);
   document.getElementById('st-gastos').textContent = fmtAmt(totalUSD);
   const daniUSD = realGastos().reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
   const wallyUSD = realGastos().reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
@@ -1679,7 +1680,7 @@ function fillCustom(grp,dUSD,wUSD,cur){
 // Completa gastos cargados con la versión anterior (solo tenían "mp").
 function normG(g){
   if(g.payMode) return g;
-  const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+  const u=usdOf(g);
   const leg=LEGACY_MP[g.mp];
   const who=leg?leg[0]:(g.mp||'').includes('Wally')?'wally':'dani';
   return {...g,payMode:who,payDani:who==='dani'?u:0,payWally:who==='wally'?u:0,
@@ -1716,7 +1717,7 @@ function addGasto(){
   let g;
   if(editingGastoId){
     const old=GASTOS.find(x=>x.id===editingGastoId);
-    const {mp:_legacy,...rest}=old||{ts:Date.now()};
+    const {mp:_legacy,...rest}=sinCalc(old||{ts:Date.now()});
     g={...rest,...payload,id:editingGastoId};
     GASTOS=GASTOS.map(x=>x.id===g.id?g:x);
   }else{
@@ -1724,8 +1725,9 @@ function addGasto(){
     GASTOS=[g,...GASTOS];
   }
   const wasEdit=!!editingGastoId;
+  // Lo que se guarda se toma antes de mostrar: al mostrar, los USD se reescalan con la cotización del efectivo.
+  const {id,...body}=sinCalc(g);
   resetGastoForm();renderGastos();recalcStats();
-  const {id,...body}=g;
   put('gastos',id,body).then(ok=>{if(ok)toast(wasEdit?'Gasto modificado':'Gasto agregado');});
 }
 
@@ -1739,7 +1741,9 @@ function resetGastoForm(){
   document.getElementById('g-save-btn').textContent='Agregar gasto';
   document.getElementById('g-edit-banner').classList.remove('show');
   ['pf','sf'].forEach(grp=>['dani','wally'].forEach(k=>{fset(`${grp}-${k}-pct`,'');fset(`${grp}-${k}-mnt`,'');}));
-  setPM('dani');setSM('compartido');
+  // Lo más común: pagado 50/50, para 50/50, los dos en efectivo.
+  mpSel.dani='efectivo';mpSel.wally='efectivo';renderDD('dani');renderDD('wally');
+  setPM('compartido');setSM('compartido');
   etapaManual=false;autoEtapa();
 }
 
@@ -1757,8 +1761,10 @@ function editGasto(id){
   const cb=document.getElementById('g-cur-btn');cb.textContent=gCur;cb.className='cur-tog '+(gCur==='USD'?'c-usd':'c-idr');
   document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
   mpSel.dani=g.mpDani||'efectivo';mpSel.wally=g.mpWally||'efectivo';renderDD('dani');renderDD('wally');
-  fillCustom('pf',parseFloat(g.payDani||0),parseFloat(g.payWally||0),gCur);
-  fillCustom('sf',parseFloat(g.splitDani||0),parseFloat(g.splitWally||0),gCur);
+  // Para el formulario, los USD guardados (a la cotización de referencia), no los reescalados.
+  const o=g._o||g;
+  fillCustom('pf',parseFloat(o.payDani||0),parseFloat(o.payWally||0),gCur);
+  fillCustom('sf',parseFloat(o.splitDani||0),parseFloat(o.splitWally||0),gCur);
   setPM(g.payMode||'dani');setSM(g.splitMode||'compartido');
   document.getElementById('g-form-title').textContent='✏️ Modificar gasto';
   document.getElementById('g-save-btn').textContent='Guardar cambios';
@@ -1881,7 +1887,7 @@ async function delCat(id,btn){
   GASTOS=GASTOS.map(g=>g.cat===id?{...g,cat:'otro',upd:Date.now()}:g);
   refreshCats(true);renderGastos();
   await put('categorias',id,doc);
-  for(const g of moved){const {id:gid,...body}=GASTOS.find(x=>x.id===g.id)||{};if(gid)await put('gastos',gid,body);}
+  for(const g of moved){const x=GASTOS.find(y=>y.id===g.id);if(!x)continue;const {id:gid,...body}=guardable(x);await put('gastos',gid,body);}
   toast(`Categoría borrada${moved.length?` · ${moved.length} gasto${moved.length>1?'s':''} pasó a “Otro”`:''}`);
 }
 function refreshCats(force){renderCatSelect();renderCatEditor(force);}
@@ -2015,16 +2021,17 @@ function mpText(who,k){const o=k&&mpOpt(who,k);return o?o.t+(o.bank?' '+BANKS[o.
 const r2=v=>Math.round(v*100)/100;
 function xlsMsg(t){const m=document.getElementById('xls-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportXlsx(){
+  cotizar();
   xlsMsg('Generando Excel…');
   let X;try{X=await loadXLSX();}catch(err){xlsMsg('No se pudo cargar el generador de Excel. Revisá la conexión.');return;}
   const now=new Date();
   const rows=[...GASTOS].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')||(a.ts||0)-(b.ts||0)).map(g=>{
-    const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');const c=catInfo(g.cat);
+    const u=usdOf(g);const c=catInfo(g.cat);
     return {
       'ID':g.id,'Etiqueta':etapaOf(g)==='previo'?'Previo al viaje':'Viaje',
       'Fecha del gasto':g.fecha?new Date(g.fecha+'T00:00:00'):'',
       'Descripción':g.desc||'','Categoría':c.nombre,
-      'Monto':parseFloat(g.monto||0),'Moneda':g.cur||'USD','Monto USD':r2(u),'Monto IDR':Math.round(u*RATES.IDR),
+      'Monto':parseFloat(g.monto||0),'Moneda':g.cur||'USD','Monto USD':r2(u),'Cotización usada':g._tc||(g.cur==='IDR'?RATES.IDR:''),'Monto IDR':(g.cur||'USD')==='IDR'?Math.round(parseFloat(g.monto||0)):Math.round(u*RATES.IDR),
       'Pagó':MODE_LBL[g.payMode||'dani'],'Pagó Dani (USD)':r2(parseFloat(g.payDani||0)),'Método Dani':mpText('dani',g.mpDani),
       'Pagó Wally (USD)':r2(parseFloat(g.payWally||0)),'Método Wally':mpText('wally',g.mpWally),
       'Para':MODE_LBL[g.splitMode||'compartido'],'Le corresponde a Dani (USD)':r2(parseFloat(g.splitDani||0)),'Le corresponde a Wally (USD)':r2(parseFloat(g.splitWally||0)),
@@ -2039,7 +2046,7 @@ async function exportXlsx(){
   ws['!cols']=hdr.map(h=>({wch:Math.max(10,Math.min(40,h.length+2,...rows.map(r=>String(r[h]instanceof Date?'00/00/0000 00:00':r[h]).length+2)))}));
   ws['!autofilter']={ref:ws['!ref']};
   const sum=k=>GASTOS.filter(g=>!isTBC(g)).reduce((a,g)=>a+parseFloat(g[k]||0),0);
-  const total=realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const total=realGastos().reduce((a,g)=>a+usdOf(g),0);
   const net=sum('payDani')-sum('splitDani');
   const res=[
     ['Resumen de gastos · Indonesia 2026'],['Generado el',now],[],
@@ -2048,9 +2055,9 @@ async function exportXlsx(){
     ['Balance',Math.abs(net)<.01?'Están a mano':(net<0?'Dani le debe a Wally':'Wally le debe a Dani'),r2(Math.abs(net))],[],
     ['Por categoría','Total (USD)','Dani (USD)','Wally (USD)'],
     ...allCats().map(c=>{const gs=GASTOS.filter(g=>catInfo(g.cat).id===c.id);
-      return [catLabel(c),r2(gs.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0)),r2(gs.reduce((a,g)=>a+parseFloat(g.splitDani||0),0)),r2(gs.reduce((a,g)=>a+parseFloat(g.splitWally||0),0))];}).filter(r=>r[1]>0),
+      return [catLabel(c),r2(gs.reduce((a,g)=>a+usdOf(g),0)),r2(gs.reduce((a,g)=>a+parseFloat(g.splitDani||0),0)),r2(gs.reduce((a,g)=>a+parseFloat(g.splitWally||0),0))];}).filter(r=>r[1]>0),
     [],['Por etiqueta','Total (USD)'],
-    ...['previo','viaje'].map(t=>[t==='previo'?'Previo al viaje':'Viaje',r2(GASTOS.filter(g=>etapaOf(g)===t).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0))]),
+    ...['previo','viaje'].map(t=>[t==='previo'?'Previo al viaje':'Viaje',r2(GASTOS.filter(g=>etapaOf(g)===t).reduce((a,g)=>a+usdOf(g),0))]),
     [],['Tipo de cambio usado','USD 1 = IDR '+RATES.IDR],
   ];
   const ws2=X.utils.aoa_to_sheet(res,{cellDates:true});
@@ -2130,6 +2137,45 @@ document.addEventListener('pointerover',ev=>{const s=ev.target.closest&&ev.targe
 document.addEventListener('focusin',ev=>{const s=ev.target.closest&&ev.target.closest('.ch-seg');if(s)chartRead(s);});
 document.addEventListener('click',ev=>{const s=ev.target.closest&&ev.target.closest('.ch-seg');if(s)chartRead(s);});
 
+
+// ── GASTOS — cotización del efectivo ──────────────────
+// Un gasto en rupias pagado en efectivo se pasa a USD con la cotización del último
+// cambio de dólares registrado en esa fecha o antes (casa de cambio o cajero).
+// Con tarjeta, o si todavía no hay ningún cambio previo, se usa la de referencia.
+// Los montos en USD guardados se reescalan al mostrarlos: la base no se toca, así un
+// cambio cargado después (con fecha anterior) corrige los gastos solo.
+const sinCalc=g=>Object.fromEntries(Object.entries(g).filter(([k])=>!k.startsWith('_')));
+// El gasto como está en la base: USD a la cotización de referencia, sin campos calculados.
+const guardable=g=>sinCalc({...g,...(g._o||{})});
+function esEfectivo(g){
+  const m=g.payMode||'dani';
+  if(m==='tbc')return false;
+  const usaD=m==='dani'||m==='compartido'||(m==='custom'&&(g._o?g._o.payDani:g.payDani)>0);
+  const usaW=m==='wally'||m==='compartido'||(m==='custom'&&(g._o?g._o.payWally:g.payWally)>0);
+  return (!usaD||g.mpDani==='efectivo')&&(!usaW||g.mpWally==='efectivo')&&(usaD||usaW);
+}
+function cambioPrevio(fecha){
+  if(!fecha)return null;
+  let best=null;
+  CAMBIOS.forEach(c=>{
+    if(!(c.cot>0)||!c.fecha||c.fecha>fecha)return;
+    if(!best||c.fecha>best.fecha||(c.fecha===best.fecha&&(c.ts||0)>(best.ts||0)))best=c;
+  });
+  return best;
+}
+function cotizar(){
+  GASTOS.forEach(g=>{
+    if(!g._o)g._o={payDani:+g.payDani||0,payWally:+g.payWally||0,splitDani:+g.splitDani||0,splitWally:+g.splitWally||0};
+    const c=(g.cur||'USD')==='IDR'&&esEfectivo(g)?cambioPrevio(g.fecha):null;
+    const monto=parseFloat(g.monto||0);
+    g._tc=c?c.cot:null;g._tcFecha=c?c.fecha:null;
+    g._u=c?monto/c.cot:toUSD(monto,g.cur||'USD');
+    const base=g._o.splitDani+g._o.splitWally,f=base>0?g._u/base:1;
+    ['payDani','payWally','splitDani','splitWally'].forEach(k=>{g[k]=g._o[k]*f;});
+  });
+}
+const usdOf=g=>g._u!=null?g._u:toUSD(parseFloat(g.monto||0),g.cur||'USD');
+
 // ── GASTOS — deuda, resumen y tabla ────────────────────
 const MODE_LBL={compartido:'50/50',dani:'Dani',wally:'Wally',custom:'Manual',tbc:'TBC (a confirmar)'};
 function whoCell(mode,d,w,mpD,mpW){
@@ -2172,7 +2218,8 @@ function renderDebt(total,paidD,paidW,dT,wT){
 }
 
 function renderGastos(){
-  const total=realGastos().reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  cotizar();
+  const total=realGastos().reduce((a,g)=>a+usdOf(g),0);
   document.getElementById('g-total').textContent=fmtAmt(total);
   document.getElementById('g-total-mini').textContent=fmtAmt(total);
   const secEl=document.getElementById('g-total-sec');
@@ -2180,30 +2227,30 @@ function renderGastos(){
   // El balance solo cuenta gastos con quién pagó definido (los TBC quedan afuera).
   const ENBAL=balFilter==='todos'?GASTOS:GASTOS.filter(g=>etapaOf(g)===balFilter);
   const BAL=ENBAL.filter(g=>!isTBC(g)),TBC=ENBAL.filter(isTBC);
-  const balTotal=BAL.filter(g=>!isSettle(g)).reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const balTotal=BAL.filter(g=>!isSettle(g)).reduce((a,g)=>a+usdOf(g),0);
   const dT=BAL.reduce((a,g)=>a+parseFloat(g.splitDani||0),0);
   const wT=BAL.reduce((a,g)=>a+parseFloat(g.splitWally||0),0);
   const paidD=BAL.reduce((a,g)=>a+parseFloat(g.payDani||0),0);
   const paidW=BAL.reduce((a,g)=>a+parseFloat(g.payWally||0),0);
   renderDebt(balTotal,paidD,paidW,dT,wT);
   const tb=document.getElementById('debt-tbc');
-  if(tb){tb.hidden=!TBC.length;tb.textContent=TBC.length?`❗ ${TBC.length} gasto${TBC.length===1?'':'s'} TBC (${fmtUSD(TBC.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0))}) no entra${TBC.length===1?'':'n'} en el balance hasta que cargues quién pagó.`:'';}
+  if(tb){tb.hidden=!TBC.length;tb.textContent=TBC.length?`❗ ${TBC.length} gasto${TBC.length===1?'':'s'} TBC (${fmtUSD(TBC.reduce((a,g)=>a+usdOf(g),0))}) no entra${TBC.length===1?'':'n'} en el balance hasta que cargues quién pagó.`:'';}
   renderChart();
 
   const el=document.getElementById('glist');
   const LIST=histFilter==='todos'?GASTOS:histFilter==='tbc'?GASTOS.filter(isTBC):histFilter==='nolugar'?GASTOS.filter(g=>!g.lugar):GASTOS.filter(g=>etapaOf(g)===histFilter);
-  const ltotal=LIST.reduce((a,g)=>a+toUSD(parseFloat(g.monto||0),g.cur||'USD'),0);
+  const ltotal=LIST.reduce((a,g)=>a+usdOf(g),0);
   document.getElementById('hist-mini').textContent=`${GASTOS.length} gasto${GASTOS.length===1?'':'s'}`;
   if(!LIST.length){el.innerHTML=`<div class="empty">${histFilter==='tbc'?'No hay gastos TBC ✓':histFilter==='nolugar'?'Todos los gastos tienen lugar ✓':GASTOS.length?'No hay gastos con esta etiqueta':'Registrá tu primer gasto arriba'}</div>`;return;}
   // Tarjetas en vez de tabla: todo entra en el ancho del celu, sin deslizar.
   el.innerHTML=`<div class="gt gl">${LIST.map(g=>{
-      const u=toUSD(parseFloat(g.monto||0),g.cur||'USD');
+      const u=usdOf(g);
       const cur=g.cur||'USD';
       const sub=[g.fecha?g.fecha.slice(8,10)+'/'+g.fecha.slice(5,7):'',g.lugar?'📍 '+g.lugar:'',g.notas].filter(Boolean).map(e).join(' · ');
       return `<div class="gr ${[g.id===editingGastoId?'editing':'',isTBC(g)?'tbc':''].join(' ').trim()}">
         <div class="gr-top">
           <div class="t-desc">${g.cat?e(catInfo(g.cat).emoji||'•'):'⚠️'} ${e(g.desc)}${etapaOf(g)==='previo'?'<span class="chip-prev">PREVIO</span>':''}${g.cat?'':'<span class="chip-nocat">SIN CATEGORÍA</span>'}${g.lugar?'':'<span class="chip-nocat">⚠️ SIN LUGAR</span>'}</div>
-          <div class="gr-amt"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(Number(g.monto).toLocaleString('es-AR'))} ${e(cur)}</div>`:''}</div>
+          <div class="gr-amt"><div class="t-amt">${fmtAmt(u)}</div>${cur!==curDisplay?`<div class="t-sub">${e(Number(g.monto).toLocaleString('es-AR'))} ${e(cur)}</div>`:''}${g._tc?`<div class="t-sub" title="Cotización del cambio del ${e(g._tcFecha)}">💵 a ${Number(g._tc).toLocaleString('es-AR')}</div>`:''}</div>
         </div>
         ${sub?`<div class="t-sub">${sub}</div>`:''}
         <div class="gr-bot">
@@ -2215,7 +2262,7 @@ function renderGastos(){
   </div>`;
 }
 ['bal','form','sum','hist','cambio'].forEach(applyPanel);
-renderDD('dani');renderDD('wally');setPM('dani');setSM('compartido');
+renderDD('dani');renderDD('wally');setPM('compartido');setSM('compartido');
 document.querySelectorAll('.mnt-in').forEach(i=>i.placeholder=gCur);
 
 
@@ -2292,7 +2339,7 @@ function saveCambio(){
   const id=cxEdit||newId('cx'),old=CAMBIOS.find(x=>x.id===id);
   c.ts=old&&old.ts||Date.now();
   CAMBIOS=[{id,...c},...CAMBIOS.filter(x=>x.id!==id)];
-  const was=!!cxEdit;resetCambio();renderCambios();
+  const was=!!cxEdit;resetCambio();renderCambios();renderGastos();recalcStats();
   put('cambios',id,c).then(ok=>{if(ok)toast(was?'Cambio modificado':'Cambio registrado');});
 }
 function editCambio(id){
@@ -2313,7 +2360,7 @@ function delCambio(id,btn){
     btn.classList.add('arm');btn.textContent='¿Borrar?';
     setTimeout(()=>{if(btn.isConnected){btn.classList.remove('arm');btn.textContent='🗑️';}},3000);return;
   }
-  CAMBIOS=CAMBIOS.filter(x=>x.id!==id);if(cxEdit===id)resetCambio();renderCambios();
+  CAMBIOS=CAMBIOS.filter(x=>x.id!==id);if(cxEdit===id)resetCambio();renderCambios();renderGastos();recalcStats();
   del('cambios',id).then(ok=>{if(ok)toast('Cambio eliminado');});
 }
 function renderCambios(){
@@ -2894,7 +2941,7 @@ function showFrase(i){
 function dataMsg(t){const m=document.getElementById('data-msg');if(m){m.textContent=t;m.hidden=!t;}}
 async function exportData(){
   const notes={};NOTAS.forEach(n=>{(notes[n.dia]=notes[n.dia]||[]).push(n.texto);});
-  const json=JSON.stringify({data:DATA,notes,gastos:GASTOS,cambios:CAMBIOS,config:CONFIG,at:new Date().toISOString()},null,2);
+  const json=JSON.stringify({data:DATA,notes,gastos:GASTOS.map(guardable),cambios:CAMBIOS,config:CONFIG,at:new Date().toISOString()},null,2);
   const filename='Indonesia2026_backup_'+new Date().toISOString().slice(0,10)+'.json';
   let dl=null;
   try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){}
@@ -2918,7 +2965,7 @@ async function importData(input){
   for(const g of gastos){
     if(!g||!g.desc)continue;
     const id=String(g.id||newId('g')).replace(/[^A-Za-z0-9_.~:@+-]/g,'_');
-    const {id:_,...body}=g;if(!body.ts)body.ts=parseInt(String(g.id).replace(/\D/g,''))||Date.now();
+    const {id:_,...body}=guardable(g);if(!body.ts)body.ts=parseInt(String(g.id).replace(/\D/g,''))||Date.now();
     GASTOS=[normG({id,...body}),...GASTOS.filter(x=>x.id!==id)];
     if(await put('gastos',id,body))nG++;
   }
